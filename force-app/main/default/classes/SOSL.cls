@@ -63,6 +63,136 @@ public virtual inherited sharing class SOSL {
         Boolean hasValue();
     }
 
+    public SOSL find(String searchText) {
+        return this;
+    }
+
+    public SOSL inAllFields() {
+        return this;
+    }
+
+    public SOSL inNameFields() {
+        return this;
+    }
+
+    public SOSL inEmailFields() {
+        return this;
+    }
+
+    public SOSL inPhoneFields() {
+        return this;
+    }
+
+    public SOSL inSidebarFields() {
+        return this;
+    }
+
+    public SOSL returning(SObjectType returningObject) {
+        return this;
+    }
+
+    public SOSL with(SObjectField field) {
+        return this;
+    }
+
+    public SOSL with(SObjectField field1, SObjectField field2) {
+        return this;
+    }
+
+    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3) {
+        return this;
+    }
+
+    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4) {
+        return this;
+    }
+
+    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5) {
+        return this;
+    }
+
+    public SOSL with(List<SObjectField> fields) {
+        return this;
+    }
+
+    public SOSL whereAre(FilterGroup filterGroup) {
+        return this;
+    }
+
+    public SOSL whereAre(Filter filter) {
+        return this;
+    }
+
+    public SOSL setLimit(Integer amount) {
+        return this;
+    }
+
+    public SOSL globalLimit(Integer amount) {
+        return this;
+    }
+
+    public SOSL offset(Integer startingRow) {
+        return this;
+    }
+
+    public SOSL orderBy(SObjectField field) {
+        return this;
+    }
+
+    public SOSL sortDesc() {
+        return this;
+    }
+
+    public SOSL nullsLast() {
+        return this;
+    }
+
+    public SOSL usingListView(String listView) {
+        return this;
+    }
+
+    // public SOSL withDataCategory() Inner Class here
+
+    public SOSL withDivision(String division) {
+        // WITH DIVISION
+        return this;
+    }
+
+    public SOSL withHighlight() {
+        // WITH HIGHLIGHT
+        return this;
+    }
+
+    public SOSL withMetadata(String metadata) {
+        // WITH METADATA
+        return this;
+    }
+
+    public SOSL withNetworkEqual() {
+        // WITH NETWORK =
+        return this;
+    }
+
+    public SOSL withNetworkIn() {
+        // WITH NETWORK IN
+        return this;
+    }
+
+    public SOSL withPriceBookId(Id priceBookId) {
+        // WITH PricebookId =
+        return this;
+    }
+
+    public SOSL withSnippet(String snippet) {
+        // WITH SNIPPET
+        return this;
+    }
+
+    public SOSL withoutSpellCorrection() {
+        // WITH SPELL_CORRECTION = false
+        return this;
+    }
+
     public interface QueryClause {
         String toString();
     }
