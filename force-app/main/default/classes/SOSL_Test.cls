@@ -31,3 +31,7 @@ public with sharing class SOSL_Test {
     List<Contact> contacts = result.get(Contact.SObject);
 
 }
+
+
+
+System.debug(LoggingLevel.DEBUG, ': ' + SOSL.find('Joe Smith').inAllFields().toString());

@@ -15,6 +15,10 @@
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
 public virtual inherited sharing class SOSL {
 
+    public static QReturning Returning(SObjectType ofObject) {
+        return new QReturning(ofObject);
+    }
+
     public interface FilterGroup { // SOQL.FilterGroup
         FilterGroup add(FilterGroup filterGroup); // SOQL.FilterGroup
         FilterGroup add(Filter filter); // SOQL.Filter
@@ -63,31 +67,46 @@ public virtual inherited sharing class SOSL {
         Boolean hasValue();
     }
 
-    public SOSL find(String searchText) {
-        return this;
+    // Config
+
+    private QueryBuilder builder;
+    private Executor executor;
+
+    public static SOSL find(String searchText) {
+        return new SOSL(searchText);
+    }
+
+    private SOSL(String searchValue) {
+       builder = new QueryBuilder(searchValue);
+       executor = new Executor();
     }
 
     public SOSL inAllFields() {
+        builder.searchGroup.inAllFields();
         return this;
     }
 
     public SOSL inNameFields() {
+        builder.searchGroup.inNameFields();
         return this;
     }
 
     public SOSL inEmailFields() {
+        builder.searchGroup.inEmailFields();
         return this;
     }
 
     public SOSL inPhoneFields() {
+        builder.searchGroup.inPhoneFields();
         return this;
     }
 
     public SOSL inSidebarFields() {
+        builder.searchGroup.inSidebarFields();
         return this;
     }
 
-    public SOSL returning(SObjectType returningObject) {
+    public SOSL returning(QReturning returning) {
         return this;
     }
 
@@ -193,6 +212,10 @@ public virtual inherited sharing class SOSL {
         return this;
     }
 
+    public override String toString() {
+        return builder.toString();
+    }
+
     public interface QueryClause {
         String toString();
     }
@@ -200,8 +223,32 @@ public virtual inherited sharing class SOSL {
     private class QueryBuilder implements QueryClause {
         private List<QueryClause> clauses = new QueryClause[10];
 
-        public QueryBuilder(String ofObject) {
-            //
+        public QueryBuilder(String searchValue) {
+            clauses.set(0, new QFind(searchValue));
+        }
+
+        public QFind find {
+            get {
+                return (QFind) clauses[0];
+            }
+        }
+
+        public QSearchGroup searchGroup {
+            get {
+                if (clauses[1] == null) {
+                    clauses.set(1, new QSearchGroup());
+                }
+                return (QSearchGroup) clauses[1];
+            }
+        }
+
+        public QReturnings returning {
+            get {
+                if (clauses[2] == null) {
+                    clauses.set(2, new QReturnings());
+                }
+                return (QReturnings) clauses[1];
+            }
         }
 
         public QMainFilterGroup conditions {
@@ -224,6 +271,76 @@ public virtual inherited sharing class SOSL {
             }
 
             return String.join(soqlParts, ' ').trim();
+        }
+    }
+
+    private class QFind implements QueryClause {
+        private String searchValue;
+
+        public QFind(String searchValue) {
+            this.searchValue = searchValue;
+        }
+
+        public override String toString() {
+            return 'FIND \'' + searchValue + '\'';
+        }
+    }
+
+    private class QSearchGroup implements QueryClause {
+        private String searchGroup;
+
+        public void inAllFields(){
+            this.searchGroup = 'ALL';
+        }
+
+        public void inEmailFields(){
+            this.searchGroup = 'EMAIL';
+        }
+
+        public void inNameFields(){
+            this.searchGroup = 'NAME';
+        }
+
+        public void inPhoneFields(){
+            this.searchGroup = 'PHONE';
+        }
+
+        public void inSidebarFields(){
+            this.searchGroup = 'SIDEBAR';
+        }
+
+        public override String toString() {
+            return 'IN ' + searchGroup + ' FIELDS';
+        }
+    }
+
+    private class QReturnings implements QueryClause {
+        private List<QReturnings> returnings = new List<QReturnings>();
+
+        public void add(QReturnings returning) {
+            returnings.add(returning);
+        }
+
+        public override String toString() {
+            List<String> returningString = new List<String>();
+
+            for (QReturnings returning : returnings) {
+                returningString.add('(' + returning + ')');
+            }
+
+            return 'RETURNING ' + String.join(returningString, ', ');
+        }
+    }
+
+    private class QReturning implements QueryClause {
+        private SObjectType ofObject;
+
+        public QReturning(SObjectType ofObject) {
+            this.ofObject = ofObject;
+        }
+
+        public override String toString() {
+            return 'RETURNING ';
         }
     }
 
