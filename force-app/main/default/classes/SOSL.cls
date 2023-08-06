@@ -19,6 +19,18 @@ public virtual inherited sharing class SOSL implements Searchable {
         return new QReturning(ofObject);
     }
 
+    public static FilterGroup FilterGroup { // A group to nest more filters
+        get {
+            return new QFilterGroup();
+        }
+    }
+
+    public static Filter Filter {
+        get {
+            return new QFilter();
+        }
+    }
+
     public interface Searchable {
         // FIND
         Searchable find(String searchText);
@@ -30,8 +42,20 @@ public virtual inherited sharing class SOSL implements Searchable {
         Searchable inSidebarFields();
         // RETURNING
         Searchable returning(Returning returning);
+        // WITH
+        // withDataCategory
+        Searchable withDivision(String division);
+        Searchable withSnippet(String snippet);
+        Searchable withNetworkEqual(Id networkId);
+        Searchable withNetworkIn(Iterable<Id> networkIds);
+        Searchable withPriceBookId(Id priceBookId);
+        Searchable withMetadata(String metadata);
+        Searchable withoutSpellCorrection();
         // LIMIT
         Searchable setLimit(Integer amount);
+        // UPDATE
+        Searchable updateViewStat();
+        Searchable updateTracking();
     }
 
     public interface Returning {
@@ -56,25 +80,27 @@ public virtual inherited sharing class SOSL implements Searchable {
         // Returning offset(Integer amount);
     }
 
-    public interface FilterGroup { // SOQL.FilterGroup
-        FilterGroup add(FilterGroup filterGroup); // SOQL.FilterGroup
-        FilterGroup add(Filter filter); // SOQL.Filter
+    public interface FilterGroup { // SOSL.FilterGroup
+        // ADD
+        FilterGroup add(FilterGroup filterGroup); // SOSL.FilterGroup
+        FilterGroup add(Filter filter); // SOSL.Filter
         FilterGroup add(String dynamicCondition); // Pass condition as String
-
+        // CONDITION ORDER
         FilterGroup anyConditionMatching(); // All group filters will be join by OR
         FilterGroup conditionLogic(String order);
-
+        // ADDITIONAL
         Boolean hasValues();
     }
 
-    public interface Filter { // SOQL.Filter
+    public interface Filter { // SOSL.Filter
+        // FIELDS
         Filter id();
         Filter recordType();
         Filter name();
         Filter with(SObjectField field);
         Filter with(String field);
         Filter with(String relationshipName, SObjectField field);
-
+        // COMPERATORS
         Filter isNull(); // = NULL
         Filter isNotNull(); // != NULL
         Filter isTrue(); // = TRUE
@@ -98,15 +124,14 @@ public virtual inherited sharing class SOSL implements Searchable {
         Filter includesSome(Iterable<String> values); // join with ,
         Filter excludesAll(Iterable<String> values); // join with ,
         Filter excludesSome(Iterable<String> values);  // join with ;
-
+        // ADDITIONAL
         Filter ignoreWhen(Boolean logicExpression); // Condition will be removed when logicExpression evaluates to true
-
         Boolean hasValue();
     }
 
     // Config
 
-    private QueryBuilder builder;
+    private SearchableBuilder builder;
     private Executor executor;
 
     public static SOSL find(String searchText) {
@@ -114,7 +139,7 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     private SOSL(String searchValue) {
-       builder = new QueryBuilder(searchValue);
+       builder = new SearchableBuilder(searchValue);
        executor = new Executor();
     }
 
@@ -151,10 +176,6 @@ public virtual inherited sharing class SOSL implements Searchable {
         return this;
     }
 
-    public SOSL usingListView(String listView) {
-        return this;
-    }
-
     // public SOSL withDataCategory() Inner Class here
 
     public SOSL withDivision(String division) {
@@ -172,12 +193,12 @@ public virtual inherited sharing class SOSL implements Searchable {
         return this;
     }
 
-    public SOSL withNetworkEqual() {
+    public SOSL withNetworkEqual(Id networkId) {
         // WITH NETWORK =
         return this;
     }
 
-    public SOSL withNetworkIn() {
+    public SOSL withNetworkIn(Iterable<Id> networkIds) {
         // WITH NETWORK IN
         return this;
     }
@@ -197,6 +218,14 @@ public virtual inherited sharing class SOSL implements Searchable {
         return this;
     }
 
+    public SOSL updateViewStat() {
+        return this;
+    }
+
+    public SOSL updateTracking() {
+        return this;
+    }
+
     public override String toString() {
         return builder.toString();
     }
@@ -205,10 +234,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         String toString();
     }
 
-    private class QueryBuilder implements QueryClause {
+    private class SearchableBuilder implements QueryClause {
         private List<QueryClause> clauses = new QueryClause[10];
 
-        public QueryBuilder(String searchValue) {
+        public SearchableBuilder(String searchValue) {
             clauses.set(0, new QFind(searchValue));
         }
 
