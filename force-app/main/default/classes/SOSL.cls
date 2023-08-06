@@ -13,10 +13,47 @@
  * - ExcessiveParameterList - Make methods similar to native SOQL
 **/
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
-public virtual inherited sharing class SOSL {
+public virtual inherited sharing class SOSL implements Searchable {
 
-    public static QReturning Returning(SObjectType ofObject) {
+    public static Returning Returning(SObjectType ofObject) {
         return new QReturning(ofObject);
+    }
+
+    public interface Searchable {
+        // FIND
+        Searchable find(String searchText);
+        // IN SearchGroup
+        Searchable inAllFields();
+        Searchable inNameFields();
+        Searchable inEmailFields();
+        Searchable inPhoneFields();
+        Searchable inSidebarFields();
+        // RETURNING
+        Searchable returning(Returning returning);
+        // LIMIT
+        Searchable setLimit(Integer amount);
+    }
+
+    public interface Returning {
+        // FIELDS
+        Returning with(SObjectField field1, SObjectField field2);
+        Returning with(SObjectField field1, SObjectField field2, SObjectField field3);
+        Returning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
+        Returning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+        Returning with(List<SObjectField> fields); // For more than 5 fields
+        // WHERE
+        // Returning whereAre(FilterGroup filterGroup);
+        // Returning whereAre(Filter filter);
+        // USING Listview=
+        // Returning  usingListView(String listView);
+        // ORDER BY
+        // Returning orderBy(SObjectField field);
+        // Returning sortDesc();
+        // Returning nullsLast();
+        // LIMIT
+        Returning setLimit(Integer amount);
+        // OFFSET
+        // Returning offset(Integer amount);
     }
 
     public interface FilterGroup { // SOQL.FilterGroup
@@ -106,63 +143,11 @@ public virtual inherited sharing class SOSL {
         return this;
     }
 
-    public SOSL returning(QReturning returning) {
-        return this;
-    }
-
-    public SOSL with(SObjectField field) {
-        return this;
-    }
-
-    public SOSL with(SObjectField field1, SObjectField field2) {
-        return this;
-    }
-
-    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3) {
-        return this;
-    }
-
-    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4) {
-        return this;
-    }
-
-    public SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5) {
-        return this;
-    }
-
-    public SOSL with(List<SObjectField> fields) {
-        return this;
-    }
-
-    public SOSL whereAre(FilterGroup filterGroup) {
-        return this;
-    }
-
-    public SOSL whereAre(Filter filter) {
+    public SOSL returning(Returning returning) {
         return this;
     }
 
     public SOSL setLimit(Integer amount) {
-        return this;
-    }
-
-    public SOSL globalLimit(Integer amount) {
-        return this;
-    }
-
-    public SOSL offset(Integer startingRow) {
-        return this;
-    }
-
-    public SOSL orderBy(SObjectField field) {
-        return this;
-    }
-
-    public SOSL sortDesc() {
-        return this;
-    }
-
-    public SOSL nullsLast() {
         return this;
     }
 
@@ -332,15 +317,60 @@ public virtual inherited sharing class SOSL {
         }
     }
 
-    private class QReturning implements QueryClause {
+    private class QReturning implements QueryClause, Returning {
         private SObjectType ofObject;
+        private Set<String> fields = new Set<String>();
+        private Integer amount;
 
         public QReturning(SObjectType ofObject) {
             this.ofObject = ofObject;
         }
 
+        public QReturning with(SObjectField field) {
+            fields.add(field.getDescribe().getName());
+            return this;
+        }
+
+        public QReturning with(SObjectField field1, SObjectField field2) {
+            return with(field1).with(field2);
+        }
+
+        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3) {
+            return with(field1, field2).with(field3);
+        }
+
+        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4) {
+            return with(field1, field2, field3).with(field4);
+        }
+
+        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5) {
+            return with(field1, field2, field3, field4).with(field5);
+        }
+
+        public QReturning with(List<SObjectField> fields) {
+            for (SObjectField field : fields) {
+                with(field);
+            }
+            return this;
+        }
+
+        public QReturning setLimit(Integer amount) {
+            this.amount = amount;
+            return this;
+        }
+
         public override String toString() {
-            return 'RETURNING ';
+            String returning = ofObject + '';
+
+            if (!fields.isEmpty()) {
+                returning += '(' + String.join(fields, ', ') + ')';
+            }
+
+            if (amount != null) {
+                returning += ' LIMIT ' + amount;
+            }
+
+            return returning;
         }
     }
 
