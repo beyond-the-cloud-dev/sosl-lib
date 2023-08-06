@@ -1,37 +1,92 @@
-public with sharing class SOSL_Test {
-    public SOSL_Test() {
+/**
+ * Copyright (c) 2023 BeyondTheCloud.Dev
+ * Licensed under the MIT License (https://github.com/beyond-the-cloud-dev/soql-lib/blob/main/LICENSE)
+ *
+ * PMD False Positives:
+ * - CyclomaticComplexity: It is a library and we tried to put everything into ONE test class
+ * - CognitiveComplexity: It is a library and we tried to put everything into ONE class
+ * - ApexDoc: Variable names are self-documented.
+**/
+@SuppressWarnings('PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.ApexDoc')
+@IsTest
+private class SOSL_Test {
+    private static final String SEARCH_TEXT = 'SearchText';
 
+    @IsTest
+    static void find() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account', sosl.toString());
     }
 
-    SOSL.Result result = SOSL.find('Joe Smith')
+    @IsTest
+    static void inAllFields() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
 
-    .inAllFields()
-    .inNameFields()
-    .inEmailFields()
-    .inPhoneFields()
-    .inSidebarFields()
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account', sosl.toString());
+    }
 
-    .returning(Account.SObjectType).with(Account.Name).setLimit(10)
-    .returning(Contact.SObjectType).with(Contact.FirstName, Contact.LastName).setLimit(10)
-    // OR
-    .returning(
-        SOSL.Returning(Account.SObjectType)
-            .with(Account.Name)
-            .setLimit(10)
-    )
-    .returning(
-        SOSL.Returning(Contact.SObjectType)
-            .with(Contact.FirstName, Contact.LastName)
-            .setLimit(20)
-    )
+    @IsTest
+    static void inNameFields() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inNameFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
 
-    .search();
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN NAME FIELDS RETURNING Account', sosl.toString());
+    }
 
-    List<Account> accounts = result.get(Account.SObject);
-    List<Contact> contacts = result.get(Contact.SObject);
+    @IsTest
+    static void inEmailFields() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inEmailFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
 
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN EMAIL FIELDS RETURNING Account', sosl.toString());
+    }
+
+    @IsTest
+    static void inPhoneFields() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inPhoneFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN PHONE FIELDS RETURNING Account', sosl.toString());
+    }
+
+    @IsTest
+    static void inSidebarFields() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inSidebarFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN SIDEBAR FIELDS RETURNING Account', sosl.toString());
+    }
 }
-
-
-
-System.debug(LoggingLevel.DEBUG, ': ' + SOSL.find('Joe Smith').inAllFields().toString());
