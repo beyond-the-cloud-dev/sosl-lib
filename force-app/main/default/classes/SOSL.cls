@@ -66,10 +66,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         Returning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
         Returning with(List<SObjectField> fields); // For more than 5 fields
         // WHERE
-        // Returning whereAre(FilterGroup filterGroup);
-        // Returning whereAre(Filter filter);
-        // USING Listview=
-        // Returning  usingListView(String listView);
+        Returning whereAre(FilterGroup filterGroup);
+        Returning whereAre(Filter filter);
+        // USING LISTVIEW
+        Returning usingListView(String listView);
         // ORDER BY
         // Returning orderBy(SObjectField field);
         // Returning sortDesc();
@@ -77,7 +77,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         // LIMIT
         Returning setLimit(Integer amount);
         // OFFSET
-        // Returning offset(Integer amount);
+        Returning offset(Integer amount);
     }
 
     public interface FilterGroup { // SOSL.FilterGroup
@@ -169,6 +169,7 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     public SOSL returning(Returning returning) {
+        builder.returnings.add(returning);
         return this;
     }
 
@@ -256,21 +257,12 @@ public virtual inherited sharing class SOSL implements Searchable {
             }
         }
 
-        public QReturnings returning {
+        public QReturnings returnings {
             get {
                 if (clauses[2] == null) {
                     clauses.set(2, new QReturnings());
                 }
-                return (QReturnings) clauses[1];
-            }
-        }
-
-        public QMainFilterGroup conditions {
-            get {
-                if (clauses[4] == null) {
-                    clauses.set(4, new QMainFilterGroup());
-                }
-                return (QMainFilterGroup) clauses[4];
+                return (QReturnings) clauses[2];
             }
         }
 
@@ -329,17 +321,17 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     private class QReturnings implements QueryClause {
-        private List<QReturnings> returnings = new List<QReturnings>();
+        private List<Returning> returnings = new List<Returning>();
 
-        public void add(QReturnings returning) {
+        public void add(Returning returning) {
             returnings.add(returning);
         }
 
         public override String toString() {
             List<String> returningString = new List<String>();
 
-            for (QReturnings returning : returnings) {
-                returningString.add('(' + returning + ')');
+            for (Returning returning : returnings) {
+                returningString.add(returning.toString());
             }
 
             return 'RETURNING ' + String.join(returningString, ', ');
@@ -347,16 +339,16 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     private class QReturning implements QueryClause, Returning {
-        private SObjectType ofObject;
-        private Set<String> fields = new Set<String>();
         private Integer amount;
 
+        private ReturningBuilder builder;
+
         public QReturning(SObjectType ofObject) {
-            this.ofObject = ofObject;
+            builder = new ReturningBuilder(ofObject);
         }
 
         public QReturning with(SObjectField field) {
-            fields.add(field.getDescribe().getName());
+            builder.fields.with(field);
             return this;
         }
 
@@ -377,29 +369,171 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
 
         public QReturning with(List<SObjectField> fields) {
+            builder.fields.with(fields);
+            return this;
+        }
+
+        public QReturning whereAre(FilterGroup filterGroup) {
+            builder.conditions.add(filterGroup);
+            return this;
+        }
+
+        public QReturning whereAre(Filter filter) {
+            builder.conditions.add(filter);
+            return this;
+        }
+
+        public QReturning usingListView(String listView) {
+            builder.listView.set(listView);
+            return this;
+        }
+
+        public QReturning setLimit(Integer amount) {
+            builder.returningLimit.max(amount);
+            return this;
+        }
+
+        public QReturning offset(Integer startingRow) {
+            builder.returningOffset.offset(startingRow);
+            return this;
+        }
+
+        public override String toString() {
+            return builder.toString();
+        }
+    }
+
+    private class ReturningBuilder implements QueryClause {
+        private List<QueryClause> clauses = new QueryClause[5];
+
+        public ReturningBuilder(SObjectType ofObject) {
+            clauses.set(0, new ROfObject(ofObject));
+        }
+
+        public RFields fields {
+            get {
+                if (clauses[1] == null) {
+                    clauses.set(1, new RFields());
+                }
+                return (RFields) clauses[1];
+            }
+        }
+
+        public QMainFilterGroup conditions {
+            get {
+                if (clauses[2] == null) {
+                    clauses.set(2, new QMainFilterGroup());
+                }
+                return (QMainFilterGroup) clauses[2];
+            }
+        }
+
+        public RListView listView {
+            get {
+                if (clauses[3] == null) {
+                    clauses.set(3, new RListView());
+                }
+                return (RListView) clauses[3];
+            }
+        }
+
+        public RLimit returningLimit {
+            get {
+                if (clauses[2] == null) {
+                    clauses.set(2, new RLimit());
+                }
+                return (RLimit) clauses[2];
+            }
+        }
+
+        public ROffset returningOffset {
+            get {
+                if (clauses[3] == null) {
+                    clauses.set(3, new ROffset());
+                }
+                return (ROffset) clauses[3];
+            }
+        }
+
+        public override String toString() {
+            List<String> soqlParts = new List<String>();
+
+            for (QueryClause clause : clauses) {
+                if (clause == null) {
+                    continue;
+                }
+                soqlParts.add(clause.toString());
+            }
+
+            return String.join(soqlParts, ' ').trim();
+        }
+    }
+
+    private class ROfObject implements QueryClause {
+        private String ofObject;
+
+        public ROfObject(SObjectType ofObject) {
+            this.ofObject = ofObject.getDescribe().getName();
+        }
+
+        public override String toString() {
+            return ofObject;
+        }
+    }
+
+    private class RFields implements QueryClause {
+        private Set<String> fields = new Set<String>();
+
+        public RFields with(SObjectField field) {
+            fields.add(field.getDescribe().getName());
+            return this;
+        }
+
+        public RFields with(List<SObjectField> fields) {
             for (SObjectField field : fields) {
                 with(field);
             }
             return this;
         }
 
-        public QReturning setLimit(Integer amount) {
-            this.amount = amount;
-            return this;
+        public override String toString() {
+            return '(' + String.join(fields, ', ') + ')';
+        }
+    }
+
+    private class RListView implements QueryClause {
+        private String listViewName;
+
+        public void set(String listViewName) {
+            this.listViewName = listViewName;
         }
 
         public override String toString() {
-            String returning = ofObject + '';
+            return 'USING LISTVIEW = ' + listViewName;
+        }
+    }
 
-            if (!fields.isEmpty()) {
-                returning += '(' + String.join(fields, ', ') + ')';
-            }
+    private class RLimit implements QueryClause {
+        private Integer amount;
 
-            if (amount != null) {
-                returning += ' LIMIT ' + amount;
-            }
+        public void max(Integer amount) {
+           this.amount = amount;
+        }
 
-            return returning;
+        public override String toString() {
+            return 'LIMIT ' + amount;
+        }
+    }
+
+    private class ROffset implements QueryClause {
+        private Integer offset;
+
+        public void offset(Integer offset) {
+           this.offset = offset;
+        }
+
+        public override String toString() {
+            return 'OFFSET ' + offset;
         }
     }
 
