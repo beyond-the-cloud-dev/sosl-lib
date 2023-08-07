@@ -50,6 +50,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         Searchable withNetworkIn(Iterable<Id> networkIds);
         Searchable withPriceBookId(Id priceBookId);
         Searchable withMetadata(String metadata);
+        Searchable withSpellCorrection();
         Searchable withoutSpellCorrection();
         // LIMIT
         Searchable setLimit(Integer amount);
@@ -174,48 +175,54 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     public SOSL setLimit(Integer amount) {
+        builder.soslLimit.set(amount);
         return this;
     }
 
     // public SOSL withDataCategory() Inner Class here
 
     public SOSL withDivision(String division) {
-        // WITH DIVISION
+        builder.soslWiths.newWith().withDivision(division);
         return this;
     }
 
     public SOSL withHighlight() {
-        // WITH HIGHLIGHT
+        builder.soslWiths.newWith().withHighlight();
         return this;
     }
 
     public SOSL withMetadata(String metadata) {
-        // WITH METADATA
+        builder.soslWiths.newWith().withMetadata(metadata);
         return this;
     }
 
     public SOSL withNetworkEqual(Id networkId) {
-        // WITH NETWORK =
+        builder.soslWiths.newWith().withNetworkEqual(networkid);
         return this;
     }
 
     public SOSL withNetworkIn(Iterable<Id> networkIds) {
-        // WITH NETWORK IN
+        builder.soslWiths.newWith().withNetworkIn(networkIds);
         return this;
     }
 
     public SOSL withPriceBookId(Id priceBookId) {
-        // WITH PricebookId =
+        builder.soslWiths.newWith().withPriceBookId(priceBookId);
         return this;
     }
 
     public SOSL withSnippet(String snippet) {
-        // WITH SNIPPET
+        builder.soslWiths.newWith().withSnippet(snippet);
+        return this;
+    }
+
+    public SOSL withSpellCorrection() {
+        builder.soslWiths.newWith().withSpellCorrection();
         return this;
     }
 
     public SOSL withoutSpellCorrection() {
-        // WITH SPELL_CORRECTION = false
+        builder.soslWiths.newWith().withoutSpellCorrection();
         return this;
     }
 
@@ -236,7 +243,7 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     private class SearchableBuilder implements QueryClause {
-        private List<QueryClause> clauses = new QueryClause[10];
+        private List<QueryClause> clauses = new QueryClause[4];
 
         public SearchableBuilder(String searchValue) {
             clauses.set(0, new QFind(searchValue));
@@ -263,6 +270,24 @@ public virtual inherited sharing class SOSL implements Searchable {
                     clauses.set(2, new QReturnings());
                 }
                 return (QReturnings) clauses[2];
+            }
+        }
+
+        public SoslLimit soslLimit {
+            get {
+                if (clauses[3] == null) {
+                    clauses.set(3, new SoslLimit());
+                }
+                return (SoslLimit) clauses[3];
+            }
+        }
+
+        public SoslWiths soslWiths {
+            get {
+                if (clauses[4] == null) {
+                    clauses.set(4, new SoslWiths());
+                }
+                return (SoslWiths) clauses[4];
             }
         }
 
@@ -389,7 +414,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
 
         public QReturning setLimit(Integer amount) {
-            builder.returningLimit.max(amount);
+            builder.returningLimit.set(amount);
             return this;
         }
 
@@ -437,12 +462,12 @@ public virtual inherited sharing class SOSL implements Searchable {
             }
         }
 
-        public RLimit returningLimit {
+        public SoslLimit returningLimit {
             get {
                 if (clauses[2] == null) {
-                    clauses.set(2, new RLimit());
+                    clauses.set(2, new SoslLimit());
                 }
-                return (RLimit) clauses[2];
+                return (SoslLimit) clauses[2];
             }
         }
 
@@ -513,10 +538,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class RLimit implements QueryClause {
+    private class SoslLimit implements QueryClause {
         private Integer amount;
 
-        public void max(Integer amount) {
+        public void set(Integer amount) {
            this.amount = amount;
         }
 
@@ -534,6 +559,67 @@ public virtual inherited sharing class SOSL implements Searchable {
 
         public override String toString() {
             return 'OFFSET ' + offset;
+        }
+    }
+
+    private class SoslWiths implements QueryClause {
+        private List<SoslWith> withs = new List<SoslWith>();
+
+        public SoslWith newWith() {
+            withs.add(new SoslWith());
+            return withs.get(withs.size() - 1);
+        }
+
+        public void add(SoslWith with) {
+            withs.add(with);
+        }
+
+        public override String toString() {
+            return String.join(withs, ' ');
+        }
+    }
+
+    private class SoslWith implements QueryClause {
+        private String with;
+
+        public void withDivision(String division) {
+            with = 'DIVISION = \'' + division + '\'';
+        }
+
+        public void withHighlight() {
+            with = 'HIGHLIGHT';
+        }
+
+        public void withSnippet(String snippet) {
+            with = 'SNIPPET = \'' + snippet + '\'';
+        }
+
+        public void withNetworkEqual(Id networkid) {
+            with = 'NETWORK = \'' + networkid + '\'';
+        }
+
+        public void withNetworkIn(Iterable<Id> networkIds) {
+            with = 'NETWORK IN (' + String.join(networkIds, ', ') + ')';
+        }
+
+        public void withPriceBookId(Id priceBookId) {
+            with = 'PricebookId = \'' + priceBookId + '\'';
+        }
+
+        public void withMetadata(String metadata) {
+            with = 'METADATA = \'' + metadata + '\'';
+        }
+
+        public void withSpellCorrection() {
+            with = 'SPELL_CORRECTION';
+        }
+
+        public void withoutSpellCorrection() {
+            with = 'SPELL_CORRECTION = false';
+        }
+
+        public override String toString() {
+            return 'WITH ' + with;
         }
     }
 
