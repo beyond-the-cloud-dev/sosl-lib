@@ -15,7 +15,7 @@
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
 public virtual inherited sharing class SOSL implements ISearchable {
 
-    public static IReturning FieldSpec(SObjectType ofObject) {
+    public static IReturning Returning(SObjectType ofObject) {
         return new ReturningClause(ofObject);
     }
 
@@ -108,6 +108,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         IFilter isTrue();
         IFilter isFalse();
         IFilter equal(Object value);
+        IFilter equal(String value);
         IFilter notEqual(Object value);
         IFilter lessThan(Object value);
         IFilter greaterThan(Object value);
@@ -424,10 +425,11 @@ public virtual inherited sharing class SOSL implements ISearchable {
     }
 
     private class ReturningClausesBuilder implements QueryClause {
+        private String ofObject;
         private List<QueryClause> clauses = new QueryClause[6];
 
         public ReturningClausesBuilder(SObjectType ofObject) {
-            clauses.set(0, new ReturningObject(ofObject));
+            this.ofObject = ofObject.getDescribe().getName();
         }
 
         public ReturningFields fields {
@@ -485,19 +487,11 @@ public virtual inherited sharing class SOSL implements ISearchable {
                 soqlParts.add(clause.toString());
             }
 
-            return String.join(soqlParts, ' ').trim();
-        }
-    }
+            if (soqlParts.isEmpty()) {
+                return ofObject;
+            }
 
-    private class ReturningObject implements QueryClause {
-        private String ofObject;
-
-        public ReturningObject(SObjectType ofObject) {
-            this.ofObject = ofObject.getDescribe().getName();
-        }
-
-        public override String toString() {
-            return ofObject;
+            return ofObject + '(' + String.join(soqlParts, ' ').trim() + ')';
         }
     }
 
@@ -517,7 +511,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public override String toString() {
-            return '(' + String.join(fields, ', ') + ')';
+            return String.join(fields, ', ');
         }
     }
 
@@ -804,7 +798,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter isNull() {
-            return equal(null);
+            return set('=', null);
         }
 
         public IFilter isNotNull() {
@@ -821,6 +815,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
 
         public IFilter equal(Object value) {
             return set('=', value);
+        }
+
+        public IFilter equal(String value) {
+            return set('=', '\'' + value + '\'');
         }
 
         public IFilter notEqual(Object value) {
@@ -864,7 +862,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         private String formattedString(String value) {
-            return value == null ? value : String.escapeSingleQuotes(value.trim());
+            return value == null ? value : value;//String.escapeSingleQuotes(value.trim());
         }
 
         public IFilter isIn(Iterable<Object> iterable) {
