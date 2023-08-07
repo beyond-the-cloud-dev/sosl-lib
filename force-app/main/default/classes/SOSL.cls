@@ -13,120 +13,121 @@
  * - ExcessiveParameterList - Make methods similar to native SOQL
 **/
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
-public virtual inherited sharing class SOSL implements Searchable {
+public virtual inherited sharing class SOSL implements ISearchable {
 
-    public static Returning Returning(SObjectType ofObject) {
-        return new QReturning(ofObject);
+    public static IReturning FieldSpec(SObjectType ofObject) {
+        return new ReturningClause(ofObject);
     }
 
-    public static FilterGroup FilterGroup { // A group to nest more filters
+    public static IFilterGroup FilterGroup {
         get {
-            return new QFilterGroup();
+            return new FilterGroupClause();
         }
     }
 
-    public static Filter Filter {
+    public static IFilter Filter {
         get {
-            return new QFilter();
+            return new FilterClause();
         }
     }
 
-    public interface Searchable {
+    public interface ISearchable {
         // FIND
-        Searchable find(String searchText);
+        ISearchable find(String searchText);
         // IN SearchGroup
-        Searchable inAllFields();
-        Searchable inNameFields();
-        Searchable inEmailFields();
-        Searchable inPhoneFields();
-        Searchable inSidebarFields();
+        ISearchable inAllFields();
+        ISearchable inNameFields();
+        ISearchable inEmailFields();
+        ISearchable inPhoneFields();
+        ISearchable inSidebarFields();
         // RETURNING
-        Searchable returning(Returning returning);
+        ISearchable returning(IReturning returning);
         // WITH
         // withDataCategory
-        Searchable withDivision(String division);
-        Searchable withSnippet(String snippet);
-        Searchable withNetworkEqual(Id networkId);
-        Searchable withNetworkIn(Iterable<Id> networkIds);
-        Searchable withPriceBookId(Id priceBookId);
-        Searchable withMetadata(String metadata);
-        Searchable withSpellCorrection();
-        Searchable withoutSpellCorrection();
+        ISearchable withDivision(String division);
+        ISearchable withSnippet(String snippet);
+        ISearchable withNetworkEqual(Id networkId);
+        ISearchable withNetworkIn(Iterable<Id> networkIds);
+        ISearchable withPriceBookId(Id priceBookId);
+        ISearchable withMetadata(String metadata);
+        ISearchable withSpellCorrection();
+        ISearchable withoutSpellCorrection();
         // LIMIT
-        Searchable setLimit(Integer amount);
+        ISearchable setLimit(Integer amount);
         // UPDATE
-        Searchable updateViewStat();
-        Searchable updateTracking();
+        ISearchable updateViewStat();
+        ISearchable updateTracking();
     }
 
-    public interface Returning {
+    public interface IReturning {
         // FIELDS
-        Returning with(SObjectField field1, SObjectField field2);
-        Returning with(SObjectField field1, SObjectField field2, SObjectField field3);
-        Returning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
-        Returning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
-        Returning with(List<SObjectField> fields); // For more than 5 fields
+        IReturning with(SObjectField field);
+        IReturning with(SObjectField field1, SObjectField field2);
+        IReturning with(SObjectField field1, SObjectField field2, SObjectField field3);
+        IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
+        IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+        IReturning with(List<SObjectField> fields);
         // WHERE
-        Returning whereAre(FilterGroup filterGroup);
-        Returning whereAre(Filter filter);
+        IReturning whereAre(IFilterGroup filterGroup);
+        IReturning whereAre(IFilter filter);
         // USING LISTVIEW
-        Returning usingListView(String listView);
+        IReturning usingListView(String listView);
         // ORDER BY
-        // Returning orderBy(SObjectField field);
-        // Returning sortDesc();
-        // Returning nullsLast();
+        // IReturning orderBy(SObjectField field);
+        // IReturning sortDesc();
+        // IReturning nullsLast();
         // LIMIT
-        Returning setLimit(Integer amount);
+        IReturning setLimit(Integer amount);
         // OFFSET
-        Returning offset(Integer amount);
+        IReturning offset(Integer amount);
     }
 
-    public interface FilterGroup { // SOSL.FilterGroup
+    public interface IFilterGroup {
         // ADD
-        FilterGroup add(FilterGroup filterGroup); // SOSL.FilterGroup
-        FilterGroup add(Filter filter); // SOSL.Filter
-        FilterGroup add(String dynamicCondition); // Pass condition as String
+        IFilterGroup add(IFilterGroup filterGroup);
+        IFilterGroup add(IFilter filter);
+        IFilterGroup add(String dynamicCondition);
         // CONDITION ORDER
-        FilterGroup anyConditionMatching(); // All group filters will be join by OR
-        FilterGroup conditionLogic(String order);
+        IFilterGroup anyConditionMatching();
+        IFilterGroup conditionLogic(String order);
         // ADDITIONAL
         Boolean hasValues();
     }
 
-    public interface Filter { // SOSL.Filter
+    public interface IFilter {
         // FIELDS
-        Filter id();
-        Filter recordType();
-        Filter name();
-        Filter with(SObjectField field);
-        Filter with(String field);
-        Filter with(String relationshipName, SObjectField field);
+        IFilter id();
+        IFilter recordType();
+        IFilter name();
+        IFilter with(SObjectField field);
+        IFilter with(String field);
+        IFilter with(String relationshipName, SObjectField field);
         // COMPERATORS
-        Filter isNull(); // = NULL
-        Filter isNotNull(); // != NULL
-        Filter isTrue(); // = TRUE
-        Filter isFalse(); // = FALSE
-        Filter equal(Object value); // = :value
-        Filter notEqual(Object value); // != :value
-        Filter lessThan(Object value); // < :value
-        Filter greaterThan(Object value); // > :value
-        Filter lessOrEqual(Object value); // <= :value
-        Filter greaterOrEqual(Object value); // >= :value
-        Filter containsSome(List<String> values); // LIKE :values
-        Filter contains(String value); // LIKE :'%' + value + '%'
-        Filter endsWith(String value); // LIKE :'%' + value
-        Filter startsWith(String value); // LIKE :value + '%'
-        Filter contains(String prefix, String value, String suffix); // custom LIKE
-        Filter isIn(Iterable<Object> iterable); // IN :inList or inSet
-        Filter isIn(List<Object> inList); // IN :inList
-        Filter notIn(Iterable<Object> iterable); // NOT IN :inList or inSet
-        Filter notIn(List<Object> inList); // NOT IN :inList
-        Filter includesAll(Iterable<String> values); // join with ;
-        Filter includesSome(Iterable<String> values); // join with ,
-        Filter excludesAll(Iterable<String> values); // join with ,
-        Filter excludesSome(Iterable<String> values);  // join with ;
+        IFilter isNull();
+        IFilter isNotNull();
+        IFilter isTrue();
+        IFilter isFalse();
+        IFilter equal(Object value);
+        IFilter notEqual(Object value);
+        IFilter lessThan(Object value);
+        IFilter greaterThan(Object value);
+        IFilter lessOrEqual(Object value);
+        IFilter greaterOrEqual(Object value);
+        IFilter containsSome(List<String> values);
+        IFilter contains(String value);
+        IFilter endsWith(String value);
+        IFilter startsWith(String value);
+        IFilter contains(String prefix, String value, String suffix);
+        IFilter isIn(Iterable<Object> iterable);
+        IFilter isIn(List<Object> inList);
+        IFilter notIn(Iterable<Object> iterable);
+        IFilter notIn(List<Object> inList);
+        IFilter includesAll(Iterable<String> values);
+        IFilter includesSome(Iterable<String> values);
+        IFilter excludesAll(Iterable<String> values);
+        IFilter excludesSome(Iterable<String> values);
         // ADDITIONAL
-        Filter ignoreWhen(Boolean logicExpression); // Condition will be removed when logicExpression evaluates to true
+        IFilter ignoreWhen(Boolean logicExpression);
         Boolean hasValue();
     }
 
@@ -145,32 +146,32 @@ public virtual inherited sharing class SOSL implements Searchable {
     }
 
     public SOSL inAllFields() {
-        builder.searchGroup.inAllFields();
+        builder.soslSearchGroup.inAllFields();
         return this;
     }
 
     public SOSL inNameFields() {
-        builder.searchGroup.inNameFields();
+        builder.soslSearchGroup.inNameFields();
         return this;
     }
 
     public SOSL inEmailFields() {
-        builder.searchGroup.inEmailFields();
+        builder.soslSearchGroup.inEmailFields();
         return this;
     }
 
     public SOSL inPhoneFields() {
-        builder.searchGroup.inPhoneFields();
+        builder.soslSearchGroup.inPhoneFields();
         return this;
     }
 
     public SOSL inSidebarFields() {
-        builder.searchGroup.inSidebarFields();
+        builder.soslSearchGroup.inSidebarFields();
         return this;
     }
 
-    public SOSL returning(Returning returning) {
-        builder.returnings.add(returning);
+    public SOSL returning(IReturning returning) {
+        builder.soslReturnings.add(returning);
         return this;
     }
 
@@ -246,48 +247,42 @@ public virtual inherited sharing class SOSL implements Searchable {
         private List<QueryClause> clauses = new QueryClause[4];
 
         public SearchableBuilder(String searchValue) {
-            clauses.set(0, new QFind(searchValue));
+            clauses.set(0, new FindClause(searchValue));
         }
 
-        public QFind find {
-            get {
-                return (QFind) clauses[0];
-            }
-        }
-
-        public QSearchGroup searchGroup {
+        public SearchClause soslSearchGroup {
             get {
                 if (clauses[1] == null) {
-                    clauses.set(1, new QSearchGroup());
+                    clauses.set(1, new SearchClause());
                 }
-                return (QSearchGroup) clauses[1];
+                return (SearchClause) clauses[1];
             }
         }
 
-        public QReturnings returnings {
+        public ReturningClauses soslReturnings {
             get {
                 if (clauses[2] == null) {
-                    clauses.set(2, new QReturnings());
+                    clauses.set(2, new ReturningClauses());
                 }
-                return (QReturnings) clauses[2];
+                return (ReturningClauses) clauses[2];
             }
         }
 
-        public SoslLimit soslLimit {
+        public LimitClause soslLimit {
             get {
                 if (clauses[3] == null) {
-                    clauses.set(3, new SoslLimit());
+                    clauses.set(3, new LimitClause());
                 }
-                return (SoslLimit) clauses[3];
+                return (LimitClause) clauses[3];
             }
         }
 
-        public SoslWiths soslWiths {
+        public WithClauses soslWiths {
             get {
                 if (clauses[4] == null) {
-                    clauses.set(4, new SoslWiths());
+                    clauses.set(4, new WithClauses());
                 }
-                return (SoslWiths) clauses[4];
+                return (WithClauses) clauses[4];
             }
         }
 
@@ -305,10 +300,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QFind implements QueryClause {
+    private class FindClause implements QueryClause {
         private String searchValue;
 
-        public QFind(String searchValue) {
+        public FindClause(String searchValue) {
             this.searchValue = searchValue;
         }
 
@@ -317,7 +312,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QSearchGroup implements QueryClause {
+    private class SearchClause implements QueryClause {
         private String searchGroup;
 
         public void inAllFields(){
@@ -345,17 +340,17 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QReturnings implements QueryClause {
-        private List<Returning> returnings = new List<Returning>();
+    private class ReturningClauses implements QueryClause {
+        private List<IReturning> returnings = new List<IReturning>();
 
-        public void add(Returning returning) {
+        public void add(IReturning returning) {
             returnings.add(returning);
         }
 
         public override String toString() {
             List<String> returningString = new List<String>();
 
-            for (Returning returning : returnings) {
+            for (IReturning returning : returnings) {
                 returningString.add(returning.toString());
             }
 
@@ -363,62 +358,62 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QReturning implements QueryClause, Returning {
+    private class ReturningClause implements QueryClause, IReturning {
         private Integer amount;
 
-        private ReturningBuilder builder;
+        private ReturningClausesBuilder builder;
 
-        public QReturning(SObjectType ofObject) {
-            builder = new ReturningBuilder(ofObject);
+        public ReturningClause(SObjectType ofObject) {
+            builder = new ReturningClausesBuilder(ofObject);
         }
 
-        public QReturning with(SObjectField field) {
+        public IReturning with(SObjectField field) {
             builder.fields.with(field);
             return this;
         }
 
-        public QReturning with(SObjectField field1, SObjectField field2) {
+        public IReturning with(SObjectField field1, SObjectField field2) {
             return with(field1).with(field2);
         }
 
-        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3) {
+        public IReturning with(SObjectField field1, SObjectField field2, SObjectField field3) {
             return with(field1, field2).with(field3);
         }
 
-        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4) {
+        public IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4) {
             return with(field1, field2, field3).with(field4);
         }
 
-        public QReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5) {
+        public IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5) {
             return with(field1, field2, field3, field4).with(field5);
         }
 
-        public QReturning with(List<SObjectField> fields) {
+        public IReturning with(List<SObjectField> fields) {
             builder.fields.with(fields);
             return this;
         }
 
-        public QReturning whereAre(FilterGroup filterGroup) {
+        public IReturning whereAre(IFilterGroup filterGroup) {
             builder.conditions.add(filterGroup);
             return this;
         }
 
-        public QReturning whereAre(Filter filter) {
+        public IReturning whereAre(IFilter filter) {
             builder.conditions.add(filter);
             return this;
         }
 
-        public QReturning usingListView(String listView) {
+        public IReturning usingListView(String listView) {
             builder.listView.set(listView);
             return this;
         }
 
-        public QReturning setLimit(Integer amount) {
+        public IReturning setLimit(Integer amount) {
             builder.returningLimit.set(amount);
             return this;
         }
 
-        public QReturning offset(Integer startingRow) {
+        public IReturning offset(Integer startingRow) {
             builder.returningOffset.offset(startingRow);
             return this;
         }
@@ -428,55 +423,55 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class ReturningBuilder implements QueryClause {
-        private List<QueryClause> clauses = new QueryClause[5];
+    private class ReturningClausesBuilder implements QueryClause {
+        private List<QueryClause> clauses = new QueryClause[6];
 
-        public ReturningBuilder(SObjectType ofObject) {
-            clauses.set(0, new ROfObject(ofObject));
+        public ReturningClausesBuilder(SObjectType ofObject) {
+            clauses.set(0, new ReturningObject(ofObject));
         }
 
-        public RFields fields {
+        public ReturningFields fields {
             get {
                 if (clauses[1] == null) {
-                    clauses.set(1, new RFields());
+                    clauses.set(1, new ReturningFields());
                 }
-                return (RFields) clauses[1];
+                return (ReturningFields) clauses[1];
             }
         }
 
-        public QMainFilterGroup conditions {
+        public ReturningMainFilterGroup conditions {
             get {
                 if (clauses[2] == null) {
-                    clauses.set(2, new QMainFilterGroup());
+                    clauses.set(2, new ReturningMainFilterGroup());
                 }
-                return (QMainFilterGroup) clauses[2];
+                return (ReturningMainFilterGroup) clauses[2];
             }
         }
 
-        public RListView listView {
+        public ReturningListView listView {
             get {
                 if (clauses[3] == null) {
-                    clauses.set(3, new RListView());
+                    clauses.set(3, new ReturningListView());
                 }
-                return (RListView) clauses[3];
+                return (ReturningListView) clauses[3];
             }
         }
 
-        public SoslLimit returningLimit {
+        public LimitClause returningLimit {
             get {
-                if (clauses[2] == null) {
-                    clauses.set(2, new SoslLimit());
+                if (clauses[4] == null) {
+                    clauses.set(4, new LimitClause());
                 }
-                return (SoslLimit) clauses[2];
+                return (LimitClause) clauses[4];
             }
         }
 
-        public ROffset returningOffset {
+        public ReturningOffset returningOffset {
             get {
-                if (clauses[3] == null) {
-                    clauses.set(3, new ROffset());
+                if (clauses[5] == null) {
+                    clauses.set(5, new ReturningOffset());
                 }
-                return (ROffset) clauses[3];
+                return (ReturningOffset) clauses[5];
             }
         }
 
@@ -494,10 +489,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class ROfObject implements QueryClause {
+    private class ReturningObject implements QueryClause {
         private String ofObject;
 
-        public ROfObject(SObjectType ofObject) {
+        public ReturningObject(SObjectType ofObject) {
             this.ofObject = ofObject.getDescribe().getName();
         }
 
@@ -506,15 +501,15 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class RFields implements QueryClause {
+    private class ReturningFields implements QueryClause {
         private Set<String> fields = new Set<String>();
 
-        public RFields with(SObjectField field) {
+        public ReturningFields with(SObjectField field) {
             fields.add(field.getDescribe().getName());
             return this;
         }
 
-        public RFields with(List<SObjectField> fields) {
+        public ReturningFields with(List<SObjectField> fields) {
             for (SObjectField field : fields) {
                 with(field);
             }
@@ -526,7 +521,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class RListView implements QueryClause {
+    private class ReturningListView implements QueryClause {
         private String listViewName;
 
         public void set(String listViewName) {
@@ -538,7 +533,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class SoslLimit implements QueryClause {
+    private class LimitClause implements QueryClause {
         private Integer amount;
 
         public void set(Integer amount) {
@@ -550,7 +545,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class ROffset implements QueryClause {
+    private class ReturningOffset implements QueryClause {
         private Integer offset;
 
         public void offset(Integer offset) {
@@ -562,15 +557,15 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class SoslWiths implements QueryClause {
-        private List<SoslWith> withs = new List<SoslWith>();
+    private class WithClauses implements QueryClause {
+        private List<WithClause> withs = new List<WithClause>();
 
-        public SoslWith newWith() {
-            withs.add(new SoslWith());
+        public WithClause newWith() {
+            withs.add(new WithClause());
             return withs.get(withs.size() - 1);
         }
 
-        public void add(SoslWith with) {
+        public void add(WithClause with) {
             withs.add(with);
         }
 
@@ -579,7 +574,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class SoslWith implements QueryClause {
+    private class WithClause implements QueryClause {
         private String with;
 
         public void withDivision(String division) {
@@ -623,28 +618,28 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    public interface FilterClause {
+    public interface IFilterClause {
         Boolean isEmpty();
     }
 
-    private virtual class QFilterGroup implements FilterGroup {
-        private List<FilterClause> queryConditions = new List<FilterClause>();
+    private virtual class FilterGroupClause implements IFilterGroup {
+        private List<IFilterClause> queryConditions = new List<IFilterClause>();
         private String order;
         private String connector = 'AND';
 
-        public FilterGroup add(FilterGroup filterGroup) {
+        public IFilterGroup add(IFilterGroup filterGroup) {
             return add(new QFilterGroupAdapter(filterGroup));
         }
 
-        public FilterGroup add(Filter filter) {
+        public IFilterGroup add(IFilter filter) {
             return add(new QFilterAdapter(filter));
         }
 
-        public FilterGroup add(String dynamicCondition) {
+        public IFilterGroup add(String dynamicCondition) {
             return add(new QStringAdapter(dynamicCondition));
         }
 
-        public FilterGroup add(FilterClause condition) {
+        public IFilterGroup add(IFilterClause condition) {
             if (condition.isEmpty()) {
                 return this;
             }
@@ -652,12 +647,12 @@ public virtual inherited sharing class SOSL implements Searchable {
             return this;
         }
 
-        public FilterGroup anyConditionMatching() {
+        public IFilterGroup anyConditionMatching() {
             connector = 'OR';
             return this;
         }
 
-        public FilterGroup conditionLogic(String order) {
+        public IFilterGroup conditionLogic(String order) {
             this.order = order;
             return this;
         }
@@ -714,7 +709,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QMainFilterGroup extends QFilterGroup implements QueryClause {
+    private class ReturningMainFilterGroup extends FilterGroupClause implements QueryClause {
         public override String toString() {
             if (!hasValues()) {
                 return '';
@@ -724,10 +719,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QFilterGroupAdapter implements FilterClause {
-        private FilterGroup filterGroup;
+    private class QFilterGroupAdapter implements IFilterClause {
+        private IFilterGroup filterGroup;
 
-        public QFilterGroupAdapter(FilterGroup filterGroup) {
+        public QFilterGroupAdapter(IFilterGroup filterGroup) {
             this.filterGroup = filterGroup;
         }
 
@@ -740,10 +735,10 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QFilterAdapter implements FilterClause {
-        private Filter filter;
+    private class QFilterAdapter implements IFilterClause {
+        private IFilter filter;
 
-        public QFilterAdapter(Filter filter) {
+        public QFilterAdapter(IFilter filter) {
             this.filter = filter;
         }
 
@@ -756,7 +751,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QStringAdapter implements FilterClause {
+    private class QStringAdapter implements IFilterClause {
         private String conditionString;
 
         public QStringAdapter(String dynamicCondition) {
@@ -772,7 +767,7 @@ public virtual inherited sharing class SOSL implements Searchable {
         }
     }
 
-    private class QFilter implements Filter {
+    private class FilterClause implements IFilter, QueryClause {
         private final List<DisplayType> TYPES_WITHOUT_BINDING = new List<DisplayType>{ DisplayType.DateTime };
 
         private String field;
@@ -781,90 +776,90 @@ public virtual inherited sharing class SOSL implements Searchable {
         private DisplayType fieldType;
         private Boolean skipBinding = false;
 
-        public Filter id() {
+        public IFilter id() {
             return with('Id');
         }
 
-        public Filter recordType() {
+        public IFilter recordType() {
             return with('RecordType.DeveloperName');
         }
 
-        public Filter name() {
+        public IFilter name() {
             return with('Name');
         }
 
-        public Filter with(SObjectField field) {
+        public IFilter with(SObjectField field) {
             skipBinding = TYPES_WITHOUT_BINDING.contains(field.getDescribe().getType());
             return with(field.getDescribe().getName());
         }
 
-        public Filter with(String relationshipName, SObjectField field) {
+        public IFilter with(String relationshipName, SObjectField field) {
             skipBinding = TYPES_WITHOUT_BINDING.contains(field.getDescribe().getType());
             return with(relationshipName + '.' + field);
         }
 
-        public Filter with(String field) {
+        public IFilter with(String field) {
             this.field = field;
             return this;
         }
 
-        public Filter isNull() {
+        public IFilter isNull() {
             return equal(null);
         }
 
-        public Filter isNotNull() {
+        public IFilter isNotNull() {
             return notEqual(null);
         }
 
-        public Filter isTrue() {
+        public IFilter isTrue() {
             return equal(true);
         }
 
-        public Filter isFalse() {
+        public IFilter isFalse() {
             return equal(false);
         }
 
-        public Filter equal(Object value) {
+        public IFilter equal(Object value) {
             return set('=', value);
         }
 
-        public Filter notEqual(Object value) {
+        public IFilter notEqual(Object value) {
             return set('!=', value);
         }
 
-        public Filter lessThan(Object value) {
+        public IFilter lessThan(Object value) {
             return set('<', value);
         }
 
-        public Filter greaterThan(Object value) {
+        public IFilter greaterThan(Object value) {
             return set('>', value);
         }
 
-        public Filter lessOrEqual(Object value) {
+        public IFilter lessOrEqual(Object value) {
             return set('<=', value);
         }
 
-        public Filter greaterOrEqual(Object value) {
+        public IFilter greaterOrEqual(Object value) {
             return set('>=', value);
         }
 
-        public Filter containsSome(List<String> values) {
+        public IFilter containsSome(List<String> values) {
             return set('LIKE', values);
         }
 
-        public Filter contains(String value) {
+        public IFilter contains(String value) {
             return contains('%', formattedString(value), '%');
         }
 
-        public Filter endsWith(String value) {
+        public IFilter endsWith(String value) {
             return contains('%', formattedString(value), '');
         }
 
-        public Filter startsWith(String value) {
+        public IFilter startsWith(String value) {
             return contains('', formattedString(value), '%');
         }
 
-        public Filter contains(String prefix, String value, String suffix) {
+        public IFilter contains(String prefix, String value, String suffix) {
             return set('LIKE', prefix + formattedString(value) + suffix);
         }
 
@@ -872,39 +867,39 @@ public virtual inherited sharing class SOSL implements Searchable {
             return value == null ? value : String.escapeSingleQuotes(value.trim());
         }
 
-        public Filter isIn(Iterable<Object> iterable) {
+        public IFilter isIn(Iterable<Object> iterable) {
             return set('IN', iterable);
         }
 
-        public Filter notIn(Iterable<Object> iterable) {
+        public IFilter notIn(Iterable<Object> iterable) {
             return set('NOT IN', iterable);
         }
 
-        public Filter includesAll(Iterable<String> iterable) {
+        public IFilter includesAll(Iterable<String> iterable) {
             // Bind expressions can't be used with other clauses, such as INCLUDES.
             skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
-        public Filter includesSome(Iterable<String> iterable) {
+        public IFilter includesSome(Iterable<String> iterable) {
             // Bind expressions can't be used with other clauses, such as INCLUDES.
             skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
-        public Filter excludesAll(Iterable<String> iterable) {
+        public IFilter excludesAll(Iterable<String> iterable) {
             // Bind expressions can't be used with other clauses, such as EXCLUDES.
             skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
-        public Filter excludesSome(Iterable<String> iterable) {
+        public IFilter excludesSome(Iterable<String> iterable) {
             // Bind expressions can't be used with other clauses, such as EXCLUDES.
             skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
-        private Filter set(String comperator, Object value) {
+        private IFilter set(String comperator, Object value) {
             this.value = value;
             this.comperator = comperator;
             return this;
@@ -914,7 +909,7 @@ public virtual inherited sharing class SOSL implements Searchable {
             return String.isNotEmpty(field);
         }
 
-        public Filter ignoreWhen(Boolean logicExpression) {
+        public IFilter ignoreWhen(Boolean logicExpression) {
             if (logicExpression) {
                 // Set field as empty to meet hasValue and ignore condition
                 with('');
