@@ -110,6 +110,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         IFilter equal(Object value);
         IFilter equal(String value);
         IFilter notEqual(Object value);
+        IFilter notEqual(String value);
         IFilter lessThan(Object value);
         IFilter greaterThan(Object value);
         IFilter lessOrEqual(Object value);
@@ -802,7 +803,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter isNotNull() {
-            return notEqual(null);
+            return set('!=', null);
         }
 
         public IFilter isTrue() {
@@ -818,11 +819,15 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter equal(String value) {
-            return set('=', '\'' + value + '\'');
+            return  set('=', '\'' + value + '\'');
         }
 
         public IFilter notEqual(Object value) {
             return set('!=', value);
+        }
+
+        public IFilter notEqual(String value) {
+            return set('!=', '\'' + value + '\'');
         }
 
         public IFilter lessThan(Object value) {
@@ -862,7 +867,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         private String formattedString(String value) {
-            return value == null ? value : value;//String.escapeSingleQuotes(value.trim());
+            return value == null ? value : String.escapeSingleQuotes(value.trim());
         }
 
         public IFilter isIn(Iterable<Object> iterable) {

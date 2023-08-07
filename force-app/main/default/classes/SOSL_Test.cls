@@ -174,7 +174,7 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void id() {
+    static void filterId() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -189,7 +189,7 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void recordType() {
+    static void filterRecordType() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -204,7 +204,7 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void name() {
+    static void filterName() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -219,7 +219,7 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void with() {
+    static void filterWith() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -231,5 +231,215 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = \'IT\')', sosl.toString());
+    }
+
+    @IsTest
+    static void filterWithRelated() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Contact.SObjectType)
+                    .with(Contact.Id, Contact.Name)
+                    .whereAre(SOSL.Filter.with('Account', Account.Industry).equal('IT'))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name WHERE Account.Industry = \'IT\')', sosl.toString());
+    }
+
+    @IsTest
+    static void filterWithString() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with('Industry').equal('IT'))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = \'IT\')', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIsNull() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).isNull())
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = null)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIsNotNull() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).isNotNull())
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry != null)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIsTrue() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.IsDeleted).isTrue())
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE IsDeleted = true)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIsFalse() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.IsDeleted).isFalse())
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE IsDeleted = false)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterEqualInteger() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).equal(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees = 10)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterEqualString() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Name).equal('My Account'))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = \'My Account\')', sosl.toString());
+    }
+
+    @IsTest
+    static void filterNotEqualInteger() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).notEqual(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees != 10)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterNotEqualString() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Name).notEqual('My Account'))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name != \'My Account\')', sosl.toString());
+    }
+
+    @IsTest
+    static void filterLessThan() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).lessThan(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees < 10)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterGreaterThan() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).greaterThan(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees > 10)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterLessOrEqual() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).lessOrEqual(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees <= 10)', sosl.toString());
+    }
+
+    @IsTest
+    static void filterGreaterOrEqual() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees >= 10)', sosl.toString());
     }
 }
