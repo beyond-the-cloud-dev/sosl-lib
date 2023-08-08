@@ -122,8 +122,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         IFilter contains(String prefix, String value, String suffix);
         IFilter isIn(Iterable<Object> iterable);
         IFilter isIn(List<Object> inList);
+        IFilter isIn(List<String> inList);
         IFilter notIn(Iterable<Object> iterable);
         IFilter notIn(List<Object> inList);
+        IFilter notIn(List<String> inList);
         IFilter includesAll(Iterable<String> values);
         IFilter includesSome(Iterable<String> values);
         IFilter excludesAll(Iterable<String> values);
@@ -246,7 +248,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
     }
 
     private class SearchableBuilder implements QueryClause {
-        private List<QueryClause> clauses = new QueryClause[4];
+        private List<QueryClause> clauses = new QueryClause[5];
 
         public SearchableBuilder(String searchValue) {
             clauses.set(0, new FindClause(searchValue));
@@ -565,7 +567,13 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public override String toString() {
-            return String.join(withs, ' ');
+            List<String> withString = new List<String>();
+
+            for (WithClause with : withs) {
+                withString.add(with.toString());
+            }
+
+            return String.join(withString, ' ');
         }
     }
 
@@ -847,7 +855,11 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter containsSome(List<String> values) {
-            return set('LIKE', values);
+            List<String> valuesWithQuote = new List<String>();
+            for (String value : values) {
+                valuesWithQuote.add('\'' + value + '\'');
+            }
+            return set('LIKE', valuesWithQuote);
         }
 
         public IFilter contains(String value) {
@@ -863,7 +875,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter contains(String prefix, String value, String suffix) {
-            return set('LIKE', prefix + formattedString(value) + suffix);
+            return set('LIKE', '\'' + prefix + formattedString(value) + suffix + '\'');
         }
 
         private String formattedString(String value) {
@@ -874,8 +886,24 @@ public virtual inherited sharing class SOSL implements ISearchable {
             return set('IN', iterable);
         }
 
+        public IFilter isIn(List<String> iterable) {
+            List<String> valuesWithQuote = new List<String>();
+            for (String value : iterable) {
+                valuesWithQuote.add('\'' + value + '\'');
+            }
+            return set('IN', valuesWithQuote);
+        }
+
         public IFilter notIn(Iterable<Object> iterable) {
             return set('NOT IN', iterable);
+        }
+
+        public IFilter notIn(List<String> iterable) {
+            List<String> valuesWithQuote = new List<String>();
+            for (String value : iterable) {
+                valuesWithQuote.add('\'' + value + '\'');
+            }
+            return set('NOT IN', valuesWithQuote);
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
