@@ -695,9 +695,9 @@ private class SOSL_Test {
             .returning(
                 SOSL.Returning(Account.SObjectType)
             )
-            .withNetworkEqual('NetworkId');
+            .withNetworkEqual('0013V00000WNCwCQAX');
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK = \'NetworkId\'', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK = \'0013V00000WNCwCQAX\'', sosl.toString());
     }
 }
