@@ -74,9 +74,12 @@ public virtual inherited sharing class SOSL implements ISearchable {
         // USING LISTVIEW
         IReturning usingListView(String listView);
         // ORDER BY
-        // IReturning orderBy(SObjectField field);
-        // IReturning sortDesc();
-        // IReturning nullsLast();
+        IReturning orderBy(String field);
+        IReturning orderBy(String field, String direction);
+        IReturning orderBy(SObjectField field);
+        IReturning orderBy(String relationshipName, SObjectField field);
+        IReturning sortDesc();
+        IReturning nullsLast();
         // LIMIT
         IReturning setLimit(Integer amount);
         // OFFSET
@@ -429,6 +432,36 @@ public virtual inherited sharing class SOSL implements ISearchable {
             return this;
         }
 
+        public IReturning orderBy(String field) {
+            builder.orderBys.newOrderBy().with(field);
+            return this;
+        }
+
+        public IReturning orderBy(String field, String direction) {
+            builder.orderBys.newOrderBy().with(field).sortingOrder(direction);
+            return this;
+        }
+
+        public IReturning orderBy(SObjectField field) {
+            builder.orderBys.newOrderBy().with(field);
+            return this;
+        }
+
+        public IReturning orderBy(String relationshipName, SObjectField field) {
+            builder.orderBys.newOrderBy().with(relationshipName, field);
+            return this;
+        }
+
+        public IReturning sortDesc() {
+            builder.latestOrderBy.sortDesc();
+            return this;
+        }
+
+        public IReturning nullsLast() {
+            builder.latestOrderBy.nullsLast();
+            return this;
+        }
+
         public IReturning setLimit(Integer amount) {
             builder.returningLimit.set(amount);
             return this;
@@ -446,7 +479,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
 
     private class SoslReturningClausesBuilder implements QueryClause {
         private String ofObject;
-        private List<QueryClause> clauses = new QueryClause[6];
+        private List<QueryClause> clauses = new QueryClause[7];
 
         public SoslReturningClausesBuilder(SObjectType ofObject) {
             this.ofObject = ofObject.getDescribe().getName();
@@ -479,21 +512,36 @@ public virtual inherited sharing class SOSL implements ISearchable {
             }
         }
 
-        public SoslLimitClause returningLimit {
+        public ReturningOrderBy latestOrderBy {
+            get {
+                return orderBys.recentOrderBy();
+            }
+        }
+
+        public ReturningOrderBys orderBys {
             get {
                 if (clauses[4] == null) {
-                    clauses.set(4, new SoslLimitClause());
+                    clauses.set(4, new ReturningOrderBys());
                 }
-                return (SoslLimitClause) clauses[4];
+                return (ReturningOrderBys) clauses[4];
+            }
+        }
+
+        public SoslLimitClause returningLimit {
+            get {
+                if (clauses[5] == null) {
+                    clauses.set(5, new SoslLimitClause());
+                }
+                return (SoslLimitClause) clauses[5];
             }
         }
 
         public ReturningOffset returningOffset {
             get {
-                if (clauses[5] == null) {
-                    clauses.set(5, new ReturningOffset());
+                if (clauses[6] == null) {
+                    clauses.set(6, new ReturningOffset());
                 }
-                return (ReturningOffset) clauses[5];
+                return (ReturningOffset) clauses[6];
             }
         }
 
@@ -544,6 +592,65 @@ public virtual inherited sharing class SOSL implements ISearchable {
 
         public override String toString() {
             return 'USING LISTVIEW = ' + listViewName;
+        }
+    }
+
+    private class ReturningOrderBys implements QueryClause {
+        public List<ReturningOrderBy> orderBys = new List<ReturningOrderBy>();
+
+        public ReturningOrderBy newOrderBy() {
+            orderBys.add(new ReturningOrderBy());
+            return recentOrderBy();
+        }
+
+        public ReturningOrderBy recentOrderBy() {
+            return orderBys.get(orderBys.size() - 1);
+        }
+
+        public override String toString() {
+            List<String> orderFields = new List<String>();
+
+            for (ReturningOrderBy orderBy : orderBys) {
+                orderFields.add(orderBy.toString());
+            }
+
+            return 'ORDER BY ' + String.join(orderFields, ', ');
+        }
+    }
+
+    private class ReturningOrderBy implements QueryClause {
+        private String orderField;
+        private String sortingOrder = 'ASC';
+        private String nullsOrder = 'FIRST';
+
+        public ReturningOrderBy with(SObjectField field) {
+            return with(field.getDescribe().getName());
+        }
+
+        public ReturningOrderBy with(String relationshipName, SObjectField field) {
+            return with(relationshipName + '.' + field);
+        }
+
+        public ReturningOrderBy with(String field) {
+            orderField = field;
+            return this;
+        }
+
+        public void sortDesc() {
+            sortingOrder('DESC');
+        }
+
+        public ReturningOrderBy sortingOrder(String direction) {
+            sortingOrder = direction;
+            return this;
+        }
+
+        public void nullsLast() {
+            nullsOrder = 'LAST';
+        }
+
+        public override String toString() {
+            return orderField + ' ' + sortingOrder + ' NULLS ' + nullsOrder;
         }
     }
 
