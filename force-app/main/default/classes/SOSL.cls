@@ -597,6 +597,27 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public void withNetworkIn(Iterable<Id> networkIds) {
+            List<Id> networkIdsWithQuotes = new List<Id>();
+            // for (Id networkId : networkIds) {
+            //     networkIdsWithQuotes.add(' \'' + networkId + '\'');
+            // }
+            // Iterable<Id> networkIds = new List<Id>{'0013V00000WNCwCQAX'};
+            // System.debug(LoggingLevel.DEBUG, ': ' + networkIds.iterator());
+            // Iterator i=networkIds.iterator();
+
+            // System.debug(LoggingLevel.DEBUG, ': ' + i.next());
+
+            // while(networkIds.hasNext()){
+            //     system.debug(networkIds.next());
+            //  }
+            //  for (Iterator i=networkIds.iterator(); i.hasNext(); ) {
+            //     i.next();
+            //  }
+
+            //  for (Integer i = 0 ; i < networkIds.size() ; i++) {
+            //     networkIdsWithQuotes.add(' \'' + networkIds[i] + '\'');
+            //  }
+
             with = 'NETWORK IN (' + String.join(networkIds, ', ') + ')';
         }
 
