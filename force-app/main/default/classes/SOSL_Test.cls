@@ -631,6 +631,113 @@ private class SOSL_Test {
     }
 
     @IsTest
+    static void returningUsingListView() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .usingListView('Recent')
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name USING LISTVIEW = Recent)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderByStringField() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .orderBy('Name')
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name ASC NULLS FIRST)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderByStringFieldAndDirection() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .orderBy('Name', 'DESC')
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name DESC NULLS FIRST)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderBy() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .orderBy(Account.Name)
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name ASC NULLS FIRST)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderByRelatedField() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Contact.SObjectType)
+                    .with(Contact.Id, Contact.Name)
+                    .orderBy('Account', Account.Name)
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name ORDER BY Account.Name ASC NULLS FIRST)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderByWithSortDesc() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .orderBy(Account.Name)
+                    .sortDesc()
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name DESC NULLS FIRST)', sosl.toString());
+    }
+
+    @IsTest
+    static void returningOrderByWithNullsLast() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .orderBy(Account.Name)
+                    .nullsLast()
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name ASC NULLS LAST)', sosl.toString());
+    }
+
+    @IsTest
     static void returningSetLimit() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
