@@ -332,7 +332,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public override String toString() {
-            return 'FIND \'' + searchValue + '\'';
+            return 'FIND ' + quote(searchValue);
         }
     }
 
@@ -682,7 +682,7 @@ public inherited sharing class SOSL implements ISearchable {
         private List<String> withs = new List<String>();
 
         public void withDivision(String division) {
-            add('DIVISION = \'' + division + '\'');
+            add('DIVISION = ' + quote(division));
         }
 
         public void withHighlight() {
@@ -690,11 +690,11 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public void withSnippet(String snippet) {
-            add('SNIPPET = \'' + snippet + '\'');
+            add('SNIPPET = ' + quote(snippet));
         }
 
         public void withNetworkEqual(Id networkid) {
-            add('NETWORK = \'' + networkid + '\'');
+            add('NETWORK = ' + quote(networkid));
         }
 
         public void withNetworkIn(Set<Id> networkIds) {
@@ -702,21 +702,15 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public void withNetworkIn(List<Id> networkIds) {
-            List<Id> networkIdsWithQuotes = new List<Id>();
-
-            for (Id networkId : networkIds) {
-                networkIdsWithQuotes.add(' \'' + networkId + '\'');
-            }
-
-            add('NETWORK IN (' + String.join(networkIds, ', ') + ')');
+            add('NETWORK IN (' + String.join(quote(networkIds), ', ') + ')');
         }
 
         public void withPriceBookId(Id priceBookId) {
-            add('PricebookId = \'' + priceBookId + '\'');
+            add('PricebookId = ' + quote(priceBookId));
         }
 
         public void withMetadata(String metadata) {
-            add('METADATA = \'' + metadata + '\'');
+            add('METADATA = ' + quote(metadata));
         }
 
         public void withSpellCorrection() {
@@ -937,7 +931,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter equal(String value) {
-            return  set('=', '\'' + value + '\'');
+            return  set('=', quote(value));
         }
 
         public IFilter notEqual(Object value) {
@@ -945,7 +939,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter notEqual(String value) {
-            return set('!=', '\'' + value + '\'');
+            return set('!=', quote(value));
         }
 
         public IFilter lessThan(Object value) {
@@ -965,11 +959,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter containsSome(List<String> values) {
-            List<String> valuesWithQuote = new List<String>();
-            for (String value : values) {
-                valuesWithQuote.add('\'' + value + '\'');
-            }
-            return set('LIKE', valuesWithQuote);
+            return set('LIKE', quote(values));
         }
 
         public IFilter contains(String value) {
@@ -985,7 +975,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter contains(String prefix, String value, String suffix) {
-            return set('LIKE', '\'' + prefix + formattedString(value) + suffix + '\'');
+            return set('LIKE', quote(prefix + formattedString(value) + suffix));
         }
 
         private String formattedString(String value) {
@@ -997,11 +987,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter isIn(List<String> iterable) {
-            List<String> valuesWithQuote = new List<String>();
-            for (String value : iterable) {
-                valuesWithQuote.add('\'' + value + '\'');
-            }
-            return set('IN', valuesWithQuote);
+            return set('IN', quote(iterable));
         }
 
         public IFilter notIn(Iterable<Object> iterable) {
@@ -1009,27 +995,23 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter notIn(List<String> iterable) {
-            List<String> valuesWithQuote = new List<String>();
-            for (String value : iterable) {
-                valuesWithQuote.add('\'' + value + '\'');
-            }
-            return set('NOT IN', valuesWithQuote);
+            return set('NOT IN', quote(iterable));
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
-            return set('INCLUDES', '(\'' + String.join(iterable, ';') + '\')');
+            return set('INCLUDES', quote(String.join(iterable, ';')));
         }
 
         public IFilter includesSome(Iterable<String> iterable) {
-            return set('INCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
+            return set('INCLUDES', quote(String.join(iterable, '\', \'')));
         }
 
         public IFilter excludesAll(Iterable<String> iterable) {
-            return set('EXCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
+            return set('EXCLUDES', quote(String.join(iterable, '\', \'')));
         }
 
         public IFilter excludesSome(Iterable<String> iterable) {
-            return set('EXCLUDES', '(\'' + String.join(iterable, ';') + '\')');
+            return set('EXCLUDES', quote(String.join(iterable, ';')));
         }
 
         private IFilter set(String comperator, Object value) {
@@ -1108,5 +1090,19 @@ public inherited sharing class SOSL implements ISearchable {
         public List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
         }
+    }
+
+    private static List<String> quote(List<String> values) {
+        List<String> quotedValues = new List<String>();
+
+        for (String value : values) {
+            quotedValues.add(quote(value));
+        }
+
+        return quotedValues;
+    }
+
+    private static String quote(String value) {
+        return '\'' + value + '\'';
     }
 }

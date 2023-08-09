@@ -899,12 +899,12 @@ private class SOSL_Test {
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
             .returning(
-                SOSL.Returning(KnowledgeArticleVersion.SObjectType)
+                SOSL.Returning(Account.SObjectType)
             )
             .updateViewStat();
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING KnowledgeArticleVersion UPDATE VIEWSTAT', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account UPDATE VIEWSTAT', sosl.toString());
     }
 
     @IsTest
@@ -913,11 +913,11 @@ private class SOSL_Test {
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
             .returning(
-                SOSL.Returning(KnowledgeArticleVersion.SObjectType)
+                SOSL.Returning(Account.SObjectType)
             )
             .updateTracking();
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING KnowledgeArticleVersion UPDATE TRACKING', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account UPDATE TRACKING', sosl.toString());
     }
 }
