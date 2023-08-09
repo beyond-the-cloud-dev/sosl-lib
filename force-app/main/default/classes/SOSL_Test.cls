@@ -11,6 +11,7 @@
 @IsTest
 private class SOSL_Test {
     private static final String SEARCH_TEXT = 'SearchText';
+    private static final String FAKE_ID = '0013V00000WNCwCQAX';
 
     @IsTest
     static void soslFind() {
@@ -695,9 +696,79 @@ private class SOSL_Test {
             .returning(
                 SOSL.Returning(Account.SObjectType)
             )
-            .withNetworkEqual('0013V00000WNCwCQAX');
+            .withNetworkEqual(FAKE_ID);
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK = \'0013V00000WNCwCQAX\'', sosl.toString());
+    }
+
+    // @IsTest
+    // static void soslWithNetworkIn() {
+    //     // Test
+    //     SOSL sosl = SOSL.find(SEARCH_TEXT)
+    //         .inAllFields()
+    //         .returning(
+    //             SOSL.Returning(Account.SObjectType)
+    //         )
+    //         .withNetworkIn(new List<Id>{ FAKE_ID });
+
+    //     // Verify
+    //     Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK IN (\'0013V00000WNCwCQAX\')', sosl.toString());
+    // }
+
+    @IsTest
+    static void soslWithPriceBookId() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withPriceBookId(FAKE_ID);
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH PricebookId = \'0013V00000WNCwCQAX\'', sosl.toString());
+    }
+
+    @IsTest
+    static void soslWithMetadata() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withMetadata('LABELS');
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH METADATA = \'LABELS\'', sosl.toString());
+    }
+
+    @IsTest
+    static void soslWithSpellCorrection() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withSpellCorrection();
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH SPELL_CORRECTION', sosl.toString());
+    }
+
+    @IsTest
+    static void soslWithoutSpellCorrection() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withoutSpellCorrection();
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH SPELL_CORRECTION = false', sosl.toString());
     }
 }
