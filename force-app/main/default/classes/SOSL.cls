@@ -13,7 +13,7 @@
  * - ExcessiveParameterList - Make methods similar to native SOQL
 **/
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
-public virtual inherited sharing class SOSL implements ISearchable {
+public inherited sharing class SOSL implements ISearchable {
 
     public static IReturning Returning(SObjectType ofObject) {
         return new SoslReturningClause(ofObject);
@@ -21,13 +21,13 @@ public virtual inherited sharing class SOSL implements ISearchable {
 
     public static IFilterGroup FilterGroup {
         get {
-            return new FilterGroupClause();
+            return new SoslFilterGroupClause();
         }
     }
 
     public static IFilter Filter {
         get {
-            return new FilterClause();
+            return new SoslFilterClause();
         }
     }
 
@@ -757,21 +757,21 @@ public virtual inherited sharing class SOSL implements ISearchable {
         Boolean isEmpty();
     }
 
-    private virtual class FilterGroupClause implements IFilterGroup {
+    private virtual class SoslFilterGroupClause implements IFilterGroup {
         private List<IFilterClause> queryConditions = new List<IFilterClause>();
         private String order;
         private String connector = 'AND';
 
         public IFilterGroup add(IFilterGroup filterGroup) {
-            return add(new QFilterGroupAdapter(filterGroup));
+            return add(new SoslFilterGroupAdapter(filterGroup));
         }
 
         public IFilterGroup add(IFilter filter) {
-            return add(new QFilterAdapter(filter));
+            return add(new SoslFilterAdapter(filter));
         }
 
         public IFilterGroup add(String dynamicCondition) {
-            return add(new QStringAdapter(dynamicCondition));
+            return add(new SoslStringAdapter(dynamicCondition));
         }
 
         public IFilterGroup add(IFilterClause condition) {
@@ -828,7 +828,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class ReturningMainFilterGroup extends FilterGroupClause implements QueryClause {
+    private class ReturningMainFilterGroup extends SoslFilterGroupClause implements QueryClause {
         public override String toString() {
             if (!hasValues()) {
                 return '';
@@ -838,10 +838,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class QFilterGroupAdapter implements IFilterClause {
+    private class SoslFilterGroupAdapter implements IFilterClause {
         private IFilterGroup filterGroup;
 
-        public QFilterGroupAdapter(IFilterGroup filterGroup) {
+        public SoslFilterGroupAdapter(IFilterGroup filterGroup) {
             this.filterGroup = filterGroup;
         }
 
@@ -854,10 +854,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class QFilterAdapter implements IFilterClause {
+    private class SoslFilterAdapter implements IFilterClause {
         private IFilter filter;
 
-        public QFilterAdapter(IFilter filter) {
+        public SoslFilterAdapter(IFilter filter) {
             this.filter = filter;
         }
 
@@ -870,10 +870,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class QStringAdapter implements IFilterClause {
+    private class SoslStringAdapter implements IFilterClause {
         private String conditionString;
 
-        public QStringAdapter(String dynamicCondition) {
+        public SoslStringAdapter(String dynamicCondition) {
             conditionString = dynamicCondition;
         }
 
@@ -886,14 +886,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class FilterClause implements IFilter, QueryClause {
-        private final List<DisplayType> TYPES_WITHOUT_BINDING = new List<DisplayType>{ DisplayType.DateTime };
-
+    private class SoslFilterClause implements IFilter, QueryClause {
         private String field;
         private String comperator;
         private Object value;
-        private DisplayType fieldType;
-        private Boolean skipBinding = false;
 
         public IFilter id() {
             return with('Id');
@@ -908,12 +904,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter with(SObjectField field) {
-            skipBinding = TYPES_WITHOUT_BINDING.contains(field.getDescribe().getType());
             return with(field.getDescribe().getName());
         }
 
         public IFilter with(String relationshipName, SObjectField field) {
-            skipBinding = TYPES_WITHOUT_BINDING.contains(field.getDescribe().getType());
             return with(relationshipName + '.' + field);
         }
 
@@ -1023,26 +1017,18 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
-            // Bind expressions can't be used with other clauses, such as INCLUDES.
-            skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
         public IFilter includesSome(Iterable<String> iterable) {
-            // Bind expressions can't be used with other clauses, such as INCLUDES.
-            skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesAll(Iterable<String> iterable) {
-            // Bind expressions can't be used with other clauses, such as EXCLUDES.
-            skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesSome(Iterable<String> iterable) {
-            // Bind expressions can't be used with other clauses, such as EXCLUDES.
-            skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
