@@ -43,9 +43,8 @@ public inherited sharing class SOSL implements ISearchable {
         // RETURNING
         ISearchable returning(IReturning returning);
         // WITH
-        // withDataCategory
         ISearchable withDivision(String division);
-        ISearchable withSnippet(String snippet);
+        ISearchable withSnippet(Integer targetLength);
         ISearchable withNetworkEqual(Id networkId);
         ISearchable withNetworkIn(List<Id> networkIds);
         ISearchable withNetworkIn(Set<Id> networkIds);
@@ -188,8 +187,6 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
-    // public SOSL withDataCategory() Inner Class here
-
     public SOSL withDivision(String division) {
         builder.soslWiths.withDivision(division);
         return this;
@@ -225,8 +222,8 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
-    public SOSL withSnippet(String snippet) {
-        builder.soslWiths.withSnippet(snippet);
+    public SOSL withSnippet(Integer targetLength) {
+        builder.soslWiths.withSnippet(targetLength);
         return this;
     }
 
@@ -689,8 +686,8 @@ public inherited sharing class SOSL implements ISearchable {
             add('HIGHLIGHT');
         }
 
-        public void withSnippet(String snippet) {
-            add('SNIPPET = ' + quote(snippet));
+        public void withSnippet(Integer targetLength) {
+            add('SNIPPET (target_length=' + targetLength + ')');
         }
 
         public void withNetworkEqual(Id networkid) {
@@ -1061,10 +1058,6 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public List<List<SObject>> execute(String query) {
-            // if (mock.hasMock(mockId)) {
-            //     return mock.getSObjectsMock(mockId);
-            // }
-
             return sharingExecutor.search(query, accessMode);
         }
 

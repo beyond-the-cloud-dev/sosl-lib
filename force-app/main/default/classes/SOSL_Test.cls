@@ -781,19 +781,19 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH DIVISION = \'Global\'', sosl.toString());
     }
 
-    // @IsTest
-    // static void soslWithSnippet() {
-    //     // Test
-    //     SOSL sosl = SOSL.find(SEARCH_TEXT)
-    //         .inAllFields()
-    //         .returning(
-    //             SOSL.Returning(Account.SObjectType)
-    //         )
-    //         .withSnippet('Global');
+    @IsTest
+    static void soslWithSnippet() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withSnippet(120);
 
-    //     // Verify
-    //     Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH DIVISION = \'Global\'', sosl.toString());
-    // }
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH SNIPPET (target_length=120)', sosl.toString());
+    }
 
     @IsTest
     static void soslWithNetworkIdEqual() {
