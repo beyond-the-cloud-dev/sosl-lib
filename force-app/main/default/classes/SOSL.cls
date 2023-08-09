@@ -16,7 +16,7 @@
 public virtual inherited sharing class SOSL implements ISearchable {
 
     public static IReturning Returning(SObjectType ofObject) {
-        return new ReturningClause(ofObject);
+        return new SoslReturningClause(ofObject);
     }
 
     public static IFilterGroup FilterGroup {
@@ -47,7 +47,8 @@ public virtual inherited sharing class SOSL implements ISearchable {
         ISearchable withDivision(String division);
         ISearchable withSnippet(String snippet);
         ISearchable withNetworkEqual(Id networkId);
-        ISearchable withNetworkIn(Iterable<Id> networkIds);
+        ISearchable withNetworkIn(List<Id> networkIds);
+        ISearchable withNetworkIn(Set<Id> networkIds);
         ISearchable withPriceBookId(Id priceBookId);
         ISearchable withMetadata(String metadata);
         ISearchable withSpellCorrection();
@@ -187,55 +188,62 @@ public virtual inherited sharing class SOSL implements ISearchable {
     // public SOSL withDataCategory() Inner Class here
 
     public SOSL withDivision(String division) {
-        builder.soslWiths.newWith().withDivision(division);
+        builder.soslWiths.withDivision(division);
         return this;
     }
 
     public SOSL withHighlight() {
-        builder.soslWiths.newWith().withHighlight();
+        builder.soslWiths.withHighlight();
         return this;
     }
 
     public SOSL withMetadata(String metadata) {
-        builder.soslWiths.newWith().withMetadata(metadata);
+        builder.soslWiths.withMetadata(metadata);
         return this;
     }
 
     public SOSL withNetworkEqual(Id networkId) {
-        builder.soslWiths.newWith().withNetworkEqual(networkid);
+        builder.soslWiths.withNetworkEqual(networkid);
         return this;
     }
 
-    public SOSL withNetworkIn(Iterable<Id> networkIds) {
-        builder.soslWiths.newWith().withNetworkIn(networkIds);
+    public SOSL withNetworkIn(List<Id> networkIds) {
+        builder.soslWiths.withNetworkIn(networkIds);
+        return this;
+    }
+
+    public SOSL withNetworkIn(Set<Id> networkIds) {
+        builder.soslWiths.withNetworkIn(networkIds);
         return this;
     }
 
     public SOSL withPriceBookId(Id priceBookId) {
-        builder.soslWiths.newWith().withPriceBookId(priceBookId);
+        builder.soslWiths.withPriceBookId(priceBookId);
         return this;
     }
 
     public SOSL withSnippet(String snippet) {
-        builder.soslWiths.newWith().withSnippet(snippet);
+        builder.soslWiths.withSnippet(snippet);
         return this;
     }
 
     public SOSL withSpellCorrection() {
-        builder.soslWiths.newWith().withSpellCorrection();
+        builder.soslWiths.withSpellCorrection();
         return this;
     }
 
     public SOSL withoutSpellCorrection() {
-        builder.soslWiths.newWith().withoutSpellCorrection();
+        builder.soslWiths.withoutSpellCorrection();
         return this;
     }
 
     public SOSL updateViewStat() {
+        builder.soslUpdates.updateViewStat();
         return this;
     }
 
     public SOSL updateTracking() {
+        builder.soslUpdates.updateTracking();
         return this;
     }
 
@@ -248,45 +256,54 @@ public virtual inherited sharing class SOSL implements ISearchable {
     }
 
     private class SearchableBuilder implements QueryClause {
-        private List<QueryClause> clauses = new QueryClause[5];
+        private List<QueryClause> clauses = new QueryClause[6];
 
         public SearchableBuilder(String searchValue) {
-            clauses.set(0, new FindClause(searchValue));
+            clauses.set(0, new SoslFindClause(searchValue));
         }
 
-        public SearchClause soslSearchGroup {
+        public SoslSearchClause soslSearchGroup {
             get {
                 if (clauses[1] == null) {
-                    clauses.set(1, new SearchClause());
+                    clauses.set(1, new SoslSearchClause());
                 }
-                return (SearchClause) clauses[1];
+                return (SoslSearchClause) clauses[1];
             }
         }
 
-        public ReturningClauses soslReturnings {
+        public SoslReturningClauses soslReturnings {
             get {
                 if (clauses[2] == null) {
-                    clauses.set(2, new ReturningClauses());
+                    clauses.set(2, new SoslReturningClauses());
                 }
-                return (ReturningClauses) clauses[2];
+                return (SoslReturningClauses) clauses[2];
             }
         }
 
-        public LimitClause soslLimit {
+        public SoslLimitClause soslLimit {
             get {
                 if (clauses[3] == null) {
-                    clauses.set(3, new LimitClause());
+                    clauses.set(3, new SoslLimitClause());
                 }
-                return (LimitClause) clauses[3];
+                return (SoslLimitClause) clauses[3];
             }
         }
 
-        public WithClauses soslWiths {
+        public SoslWithClauses soslWiths {
             get {
                 if (clauses[4] == null) {
-                    clauses.set(4, new WithClauses());
+                    clauses.set(4, new SoslWithClauses());
                 }
-                return (WithClauses) clauses[4];
+                return (SoslWithClauses) clauses[4];
+            }
+        }
+
+        public SoslUpdateClauses soslUpdates {
+            get {
+                if (clauses[5] == null) {
+                    clauses.set(5, new SoslUpdateClauses());
+                }
+                return (SoslUpdateClauses) clauses[5];
             }
         }
 
@@ -304,10 +321,10 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class FindClause implements QueryClause {
+    private class SoslFindClause implements QueryClause {
         private String searchValue;
 
-        public FindClause(String searchValue) {
+        public SoslFindClause(String searchValue) {
             this.searchValue = searchValue;
         }
 
@@ -316,7 +333,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class SearchClause implements QueryClause {
+    private class SoslSearchClause implements QueryClause {
         private String searchGroup;
 
         public void inAllFields(){
@@ -344,7 +361,7 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class ReturningClauses implements QueryClause {
+    private class SoslReturningClauses implements QueryClause {
         private List<IReturning> returnings = new List<IReturning>();
 
         public void add(IReturning returning) {
@@ -362,13 +379,13 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class ReturningClause implements QueryClause, IReturning {
+    private class SoslReturningClause implements QueryClause, IReturning {
         private Integer amount;
 
-        private ReturningClausesBuilder builder;
+        private SoslReturningClausesBuilder builder;
 
-        public ReturningClause(SObjectType ofObject) {
-            builder = new ReturningClausesBuilder(ofObject);
+        public SoslReturningClause(SObjectType ofObject) {
+            builder = new SoslReturningClausesBuilder(ofObject);
         }
 
         public IReturning with(SObjectField field) {
@@ -427,11 +444,11 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class ReturningClausesBuilder implements QueryClause {
+    private class SoslReturningClausesBuilder implements QueryClause {
         private String ofObject;
         private List<QueryClause> clauses = new QueryClause[6];
 
-        public ReturningClausesBuilder(SObjectType ofObject) {
+        public SoslReturningClausesBuilder(SObjectType ofObject) {
             this.ofObject = ofObject.getDescribe().getName();
         }
 
@@ -462,12 +479,12 @@ public virtual inherited sharing class SOSL implements ISearchable {
             }
         }
 
-        public LimitClause returningLimit {
+        public SoslLimitClause returningLimit {
             get {
                 if (clauses[4] == null) {
-                    clauses.set(4, new LimitClause());
+                    clauses.set(4, new SoslLimitClause());
                 }
-                return (LimitClause) clauses[4];
+                return (SoslLimitClause) clauses[4];
             }
         }
 
@@ -530,18 +547,6 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class LimitClause implements QueryClause {
-        private Integer amount;
-
-        public void set(Integer amount) {
-           this.amount = amount;
-        }
-
-        public override String toString() {
-            return 'LIMIT ' + amount;
-        }
-    }
-
     private class ReturningOffset implements QueryClause {
         private Integer offset;
 
@@ -554,91 +559,90 @@ public virtual inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private class WithClauses implements QueryClause {
-        private List<WithClause> withs = new List<WithClause>();
+    private class SoslLimitClause implements QueryClause {
+        private Integer amount;
 
-        public WithClause newWith() {
-            withs.add(new WithClause());
-            return withs.get(withs.size() - 1);
-        }
-
-        public void add(WithClause with) {
-            withs.add(with);
+        public void set(Integer amount) {
+           this.amount = amount;
         }
 
         public override String toString() {
-            List<String> withString = new List<String>();
-
-            for (WithClause with : withs) {
-                withString.add(with.toString());
-            }
-
-            return String.join(withString, ' ');
+            return 'LIMIT ' + amount;
         }
     }
 
-    private class WithClause implements QueryClause {
-        private String with;
+    private class SoslWithClauses implements QueryClause {
+        private List<String> withs = new List<String>();
 
         public void withDivision(String division) {
-            with = 'DIVISION = \'' + division + '\'';
+            add('DIVISION = \'' + division + '\'');
         }
 
         public void withHighlight() {
-            with = 'HIGHLIGHT';
+            add('HIGHLIGHT');
         }
 
         public void withSnippet(String snippet) {
-            with = 'SNIPPET = \'' + snippet + '\'';
+            add('SNIPPET = \'' + snippet + '\'');
         }
 
         public void withNetworkEqual(Id networkid) {
-            with = 'NETWORK = \'' + networkid + '\'';
+            add('NETWORK = \'' + networkid + '\'');
         }
 
-        public void withNetworkIn(Iterable<Id> networkIds) {
+        public void withNetworkIn(Set<Id> networkIds) {
+            withNetworkIn(new List<Id>(networkIds));
+        }
+
+        public void withNetworkIn(List<Id> networkIds) {
             List<Id> networkIdsWithQuotes = new List<Id>();
-            // for (Id networkId : networkIds) {
-            //     networkIdsWithQuotes.add(' \'' + networkId + '\'');
-            // }
-            // Iterable<Id> networkIds = new List<Id>{'0013V00000WNCwCQAX'};
-            // System.debug(LoggingLevel.DEBUG, ': ' + networkIds.iterator());
-            // Iterator i=networkIds.iterator();
 
-            // System.debug(LoggingLevel.DEBUG, ': ' + i.next());
+            for (Id networkId : networkIds) {
+                networkIdsWithQuotes.add(' \'' + networkId + '\'');
+            }
 
-            // while(networkIds.hasNext()){
-            //     system.debug(networkIds.next());
-            //  }
-            //  for (Iterator i=networkIds.iterator(); i.hasNext(); ) {
-            //     i.next();
-            //  }
-
-            //  for (Integer i = 0 ; i < networkIds.size() ; i++) {
-            //     networkIdsWithQuotes.add(' \'' + networkIds[i] + '\'');
-            //  }
-
-            with = 'NETWORK IN (' + String.join(networkIds, ', ') + ')';
+            add('NETWORK IN (' + String.join(networkIds, ', ') + ')');
         }
 
         public void withPriceBookId(Id priceBookId) {
-            with = 'PricebookId = \'' + priceBookId + '\'';
+            add('PricebookId = \'' + priceBookId + '\'');
         }
 
         public void withMetadata(String metadata) {
-            with = 'METADATA = \'' + metadata + '\'';
+            add('METADATA = \'' + metadata + '\'');
         }
 
         public void withSpellCorrection() {
-            with = 'SPELL_CORRECTION';
+            add('SPELL_CORRECTION');
         }
 
         public void withoutSpellCorrection() {
-            with = 'SPELL_CORRECTION = false';
+            add('SPELL_CORRECTION = false');
+        }
+
+        public void add(String withClause) {
+            withs.add('WITH ' + withClause);
         }
 
         public override String toString() {
-            return 'WITH ' + with;
+            return String.join(withs, ' ');
+        }
+    }
+
+    public class SoslUpdateClauses implements QueryClause {
+        private List<String> updateClauses = new List<String>();
+
+
+        public void updateViewStat() {
+            updateClauses.add('VIEWSTAT');
+        }
+
+        public void updateTracking() {
+            updateClauses.add('TRACKING');
+        }
+
+        public override String toString() {
+            return 'UPDATE ' + String.join(updateClauses, ' ');
         }
     }
 
@@ -689,47 +693,31 @@ public virtual inherited sharing class SOSL implements ISearchable {
             return '(' + buildNested() + ')';
         }
 
-        private void setDefaultOrderWhenEmpty() {
+        private void setDefaultOrderWhenNotSpecified() {
             if (String.isNotEmpty(order)) {
                 return;
             }
 
             List<String> defaultOrder = new List<String>();
 
-            for (Integer i = 1; i <= queryConditions.size(); i++) {
-                defaultOrder.add(String.valueOf(i));
+            for (Integer i = 0; i < queryConditions.size(); i++) {
+                defaultOrder.add(String.valueOf(i + 1));
             }
 
-            order = String.join(defaultOrder, ' ' + connector + ' '); // e.g (1 AND 2 AND 3)
+            order = String.join(defaultOrder, ' ' + connector + ' ');
         }
 
         public String buildNested() {
-            setDefaultOrderWhenEmpty();
+            setDefaultOrderWhenNotSpecified(); // e.g (0 AND 1 AND 2)
+            addSpecialCharactersToOrder(); // e.g ({0} AND ({1} AND {2}))
 
-            String conditions = applySpecialCharactersToOrder(); // e.g (*1* AND (*2* OR *3*))
+            return String.format(order, queryConditions);
+        }
 
+        private void addSpecialCharactersToOrder() {
             for (Integer i = 0; i < queryConditions.size(); i++) {
-                conditions = conditions.replace(
-                    conditionNumberWithSpecialCharacters(i + 1), // e.g *1*
-                    queryConditions.get(i).toString()
-                );
+                order = order.replace(String.valueOf(i + 1), '{' + i + '}');
             }
-
-            return conditions;
-        }
-
-        private String applySpecialCharactersToOrder() {
-            String orderWithSpecialCharacters = order;
-
-            for (Integer i = 1; i <= queryConditions.size(); i++) {
-                orderWithSpecialCharacters = orderWithSpecialCharacters.replace(String.valueOf(i), conditionNumberWithSpecialCharacters(i));
-            }
-
-            return orderWithSpecialCharacters; // e.g (*1* AND (*2* OR *3*))
-        }
-
-        private String conditionNumberWithSpecialCharacters(Integer conditionNumber) {
-            return '*' + conditionNumber + '*';
         }
     }
 
