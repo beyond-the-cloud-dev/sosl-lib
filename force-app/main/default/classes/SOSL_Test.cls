@@ -771,4 +771,46 @@ private class SOSL_Test {
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH SPELL_CORRECTION = false', sosl.toString());
     }
+
+    @IsTest
+    static void soslLimit() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .setLimit(200);
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account LIMIT 200', sosl.toString());
+    }
+
+    @IsTest
+    static void soslUpdateViewStat() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(KnowledgeArticleVersion.SObjectType)
+            )
+            .updateViewStat();
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING KnowledgeArticleVersion UPDATE VIEWSTAT', sosl.toString());
+    }
+
+    @IsTest
+    static void soslUpdatetTracking() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(KnowledgeArticleVersion.SObjectType)
+            )
+            .updateTracking();
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING KnowledgeArticleVersion UPDATE TRACKING', sosl.toString());
+    }
 }
