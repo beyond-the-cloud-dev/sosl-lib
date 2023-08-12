@@ -920,4 +920,99 @@ private class SOSL_Test {
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account UPDATE TRACKING', sosl.toString());
     }
+
+    @IsTest
+    static void toSearchListInheritedSharing() {
+        // Test
+        List<List<SObject>> searchList = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .toSearchList();
+
+        // Verify
+        Assert.areEqual(0, searchList[0].size());
+    }
+
+    @IsTest
+    static void toSearchResultInheritedSharing() {
+        // Test
+        Search.SearchResults searchResults = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withSnippet(120)
+            .toSearchResult();
+
+        // Verify
+        Assert.areEqual(0, searchResults.get('Account').size());
+    }
+
+    @IsTest
+    static void toSearchListWithSharing() {
+        // Test
+        List<List<SObject>> searchList = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .withSharing()
+            .toSearchList();
+
+        // Verify
+        Assert.areEqual(0, searchList[0].size());
+    }
+
+    @IsTest
+    static void toSearchResultWithSharing() {
+        // Test
+        Search.SearchResults searchResults = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .withSharing()
+            .withSnippet(120)
+            .toSearchResult();
+
+        // Verify
+        Assert.areEqual(0, searchResults.get('Account').size());
+    }
+
+    @IsTest
+    static void toSearchListWithoutSharing() {
+        // Test
+        List<List<SObject>> searchList = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .withoutSharing()
+            .toSearchList();
+
+        // Verify
+        Assert.areEqual(0, searchList[0].size());
+    }
+
+    @IsTest
+    static void toSearchResultWithoutSharing() {
+        // Test
+        Search.SearchResults searchResults = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .withoutSharing()
+            .withSnippet(120)
+            .toSearchResult();
+
+        // Verify
+        Assert.areEqual(0, searchResults.get('Account').size());
+    }
 }

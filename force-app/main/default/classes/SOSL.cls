@@ -57,6 +57,16 @@ public inherited sharing class SOSL implements ISearchable {
         // UPDATE
         ISearchable updateViewStat();
         ISearchable updateTracking();
+        // FIELD-LEVEL SECURITY
+        ISearchable systemMode();
+        // SHARING MODE
+        ISearchable withSharing();
+        ISearchable withoutSharing();
+        // DEBUGGING
+        ISearchable preview();
+        // RESULT
+        List<List<SObject>> toSearchList();
+        Search.SearchResults toSearchResult();
     }
 
     public interface IReturning {
@@ -247,8 +257,36 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
+    public ISearchable systemMode() {
+        executor.systemMode();
+        return this;
+    }
+
+    public ISearchable withSharing() {
+        executor.withSharing();
+        return this;
+    }
+
+    public ISearchable withoutSharing() {
+        executor.withoutSharing();
+        return this;
+    }
+
     public override String toString() {
         return builder.toString();
+    }
+
+    public SOSL preview() {
+        System.debug(LoggingLevel.ERROR, '\n\n============ SOSL Preview ============\n' + toString() + '\n=======================================\n');
+        return this;
+    }
+
+    public List<List<SObject>> toSearchList() {
+        return executor.search(builder.toString());
+    }
+
+    public Search.SearchResults toSearchResult() {
+        return executor.find(builder.toString());
     }
 
     public interface QueryClause {
@@ -1057,19 +1095,27 @@ public inherited sharing class SOSL implements ISearchable {
             mockId = id;
         }
 
-        public List<List<SObject>> execute(String query) {
+        public List<List<SObject>> search(String query) {
             return sharingExecutor.search(query, accessMode);
         }
 
+        public Search.SearchResults find(String query) {
+            return sharingExecutor.find(query, accessMode);
+        }
     }
 
     private interface DatabaseSearch {
         List<List<SObject>> search(String query, AccessLevel accessLevel);
+        Search.SearchResults find(String query, AccessLevel accessLevel);
     }
 
     private inherited sharing class InheritedSharing implements DatabaseSearch {
         public List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
+        }
+
+        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+            return Search.find(query, accessLevel);
         }
     }
 
@@ -1077,11 +1123,19 @@ public inherited sharing class SOSL implements ISearchable {
         public List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
         }
+
+        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+            return Search.find(query, accessLevel);
+        }
     }
 
     private with sharing class WithSharing implements DatabaseSearch {
         public List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
+        }
+
+        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+            return Search.find(query, accessLevel);
         }
     }
 
