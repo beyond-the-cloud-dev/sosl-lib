@@ -4,11 +4,11 @@ sidebar_position: 13
 
 # MOCKING
 
-Mock SOQL results in Unit Tests.
+Mock SOSL results in Unit Tests.
 
 You need to mock external objects.
 
-> In Apex tests, use dynamic SOQL to query external objects. Tests that perform static SOQL queries of external objects fail. ~ Salesforce
+> In Apex tests, use dynamic SOSL to query external objects. Tests that perform static SOSL queries of external objects fail. ~ Salesforce
 
 ## Mock Single Record
 
@@ -20,14 +20,14 @@ public with sharing class ExampleController {
     public static List<Account> getAccountByName(String accountName) {
         return SOQL_Account.query()
             .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOQL.Filter.name().contains(accountName))
+            .whereAre(SOSL.Filter.name().contains(accountName))
             .mockId('ExampleController.getAccountByName')
             .toObject();
     }
 }
 ```
 
-Pass single SObject record to SOQL class, and use mock ID to target query to be mocked.
+Pass single SObject record to SOSL class, and use mock ID to target query to be mocked.
 
 ```apex
 @IsTest
@@ -36,7 +36,7 @@ public class ExampleControllerTest {
 
     @IsTest
     static void getAccountByName() {
-        SOQL.setMock('ExampleController.getAccountByName', new Account(Name = TEST_ACCOUNT_NAME));
+        SOSL.setMock('ExampleController.getAccountByName', new Account(Name = TEST_ACCOUNT_NAME));
 
         Test.startTest();
         Account result = (Account) ExampleController.getAccountByName(TEST_ACCOUNT_NAME);
@@ -59,16 +59,16 @@ public with sharing class ExampleController {
     public static List<Account> getPartnerAccounts(String accountName) {
         return SOQL_Account.query()
             .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.name().contains(accountName))
-                .add(SOQL.Filter.recordType().equal('Partner'))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.name().contains(accountName))
+                .add(SOSL.Filter.recordType().equal('Partner'))
             )
             .mockId('ExampleController.getPartnerAccounts')
             .toList();
     }
 }
 ```
-Pass List of SObject records to SOQL class, and use mock ID to target query to be mocked.
+Pass List of SObject records to SOSL class, and use mock ID to target query to be mocked.
 
 ```apex
 @IsTest
@@ -81,7 +81,7 @@ public class ExampleControllerTest {
             new Account(Name = 'MyAccount 2')
         };
 
-        SOQL.setMock('ExampleController.getPartnerAccounts', accounts);
+        SOSL.setMock('ExampleController.getPartnerAccounts', accounts);
 
         Test.startTest();
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -104,16 +104,16 @@ public with sharing class ExampleController {
     public static List<Account> getPartnerAccountsCount(String accountName) {
         return SOQL_Account.query()
             .count()
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.name().contains(accountName))
-                .add(SOQL.Filter.recordType().equal('Partner'))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.name().contains(accountName))
+                .add(SOSL.Filter.recordType().equal('Partner'))
             )
             .mockId('ExampleController.getPartnerAccountsCount')
             .toInteger();
     }
 }
 ```
-Pass Integer value to SOQL class, and use mock ID to target query to be mocked.
+Pass Integer value to SOSL class, and use mock ID to target query to be mocked.
 
 ```apex
 @IsTest
@@ -122,7 +122,7 @@ public class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccountsCount() {
-        SOQL.setMock('ExampleController.getPartnerAccountsCount', TEST_VALUE);
+        SOSL.setMock('ExampleController.getPartnerAccountsCount', TEST_VALUE);
 
         Test.startTest();
         Integer result = ExampleController.getPartnerAccounts('MyAccount');
@@ -145,9 +145,9 @@ public with sharing class ExampleController {
     public static List<Account> getPartnerAccounts(String accountName) {
         return SOQL_Account.query()
             .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.name().contains(accountName))
-                .add(SOQL.Filter.recordType().equal('Partner'))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.name().contains(accountName))
+                .add(SOSL.Filter.recordType().equal('Partner'))
             )
             .mockId('ExampleController.getPartnerAccounts')
             .toList();
@@ -163,7 +163,7 @@ public class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccounts() {
-        SOQL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'MyAccounts'));
+        SOSL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'MyAccounts'));
 
         Test.startTest();
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -183,10 +183,10 @@ Set mocking ID in Query declaration.
 ```
 public without sharing class AccountsController {
     public static List<Account> getAccountsWithContacts() {
-        return SOQL.of(Account.SObjectType)
+        return SOSL.of(Account.SObjectType)
             .with(Account.Name)
             .with(
-                SOQL.SubQuery.of('Contacts')
+                SOSL.SubQuery.of('Contacts')
                     .with(Contact.Id, Contact.Name, Contact.AccountId, Contact.Email)
             )
             .mockId('AccountsController.getAccountsWithContacts')
@@ -208,7 +208,7 @@ static void getAccountsWithContacts() {
     List<Account> accounts;
 
     Test.startTest();
-    SOQL.setMock('AccountsController.getAccountsWithContacts', mocks);
+    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
     accounts = AccountsController.getAccountsWithContacts();
     Test.stopTest();
 
@@ -242,7 +242,7 @@ static void getAccountsWithContacts() {
     List<Account> accounts;
 
     Test.startTest();
-    SOQL.setMock('AccountsController.getAccountsWithContacts', mocks);
+    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
     accounts = AccountsController.getAccountsWithContacts();
     Test.stopTest();
 

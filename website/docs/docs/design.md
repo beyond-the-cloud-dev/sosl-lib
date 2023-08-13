@@ -7,9 +7,9 @@ sidebar_position: 40
 
 ## Single class
 
-SOQL Lib is a single-class solution.
+SOSL Lib is a single-class solution.
 
-You don't need to think about dependencies; everything you need is stored in [SOQL.cls](https://github.com/beyond-the-cloud-dev/soql-lib/blob/main/force-app/main/default/classes/SOQL.cls). The `SOQL.cls` only takes around 1500 lines of code.
+You don't need to think about dependencies; everything you need is stored in [SOSL.cls](https://github.com/beyond-the-cloud-dev/sosl-lib/blob/main/force-app/main/default/classes/SOSL.cls). The `SOSL.cls` only takes around 1500 lines of code.
 
 Different clauses are encapsulated in small, inner classes.
 All crucial information is kept at the top of the class, so developers can use it even without reading the documentation.
@@ -46,7 +46,7 @@ public interface Selector {
 
 public interface Queryable {
     Queryable of(SObjectType ofObject);
-    Queryable of(String ofObject); // Dynamic SOQL
+    Queryable of(String ofObject); // Dynamic SOSL
 
     Queryable with(SObjectField field);
     Queryable with(SObjectField field1, SObjectField field2);
@@ -54,7 +54,7 @@ public interface Queryable {
     Queryable with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
     Queryable with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
     Queryable with(List<SObjectField> fields); // For more than 5 fields
-    Queryable with(String fields); // Dynamic SOQL
+    Queryable with(String fields); // Dynamic SOSL
     Queryable with(SObjectField field, String alias); // Only aggregate expressions use field aliasing
     Queryable with(String relationshipName, SObjectField field);
     Queryable with(String relationshipName, SObjectField field1, SObjectField field2);
@@ -62,7 +62,7 @@ public interface Queryable {
     Queryable with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
     Queryable with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
     Queryable with(String relationshipName, List<SObjectField> fields); // For more than 5 fields
-    Queryable with(SubQuery subQuery); // SOQL.SubQuery
+    Queryable with(SubQuery subQuery); // SOSL.SubQuery
 
     Queryable count();
     Queryable count(SObjectField field);
@@ -75,8 +75,8 @@ public interface Queryable {
     Queryable myTeamTerritoryScope();
     Queryable teamScope();
 
-    Queryable whereAre(FilterGroup filterGroup); // SOQL.FilterGroup
-    Queryable whereAre(Filter filter); // SOQL.Filter
+    Queryable whereAre(FilterGroup filterGroup); // SOSL.FilterGroup
+    Queryable whereAre(Filter filter); // SOSL.Filter
     Queryable whereAre(String conditions); // Conditions to evaluate
 
     Queryable groupBy(SObjectField field);
@@ -126,7 +126,7 @@ public interface Queryable {
     Database.QueryLocator toQueryLocator();
 }
 
-public interface SubQuery { // SOQL.SubQuery
+public interface SubQuery { // SOSL.SubQuery
     SubQuery of(String ofObject);
 
     SubQuery with(SObjectField field);
@@ -136,10 +136,10 @@ public interface SubQuery { // SOQL.SubQuery
     SubQuery with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
     SubQuery with(List<SObjectField> fields); // For more than 5 fields
     SubQuery with(String relationshipName, List<SObjectField> fields);
-    SubQuery with(SubQuery subQuery); // SOQL.SubQuery
+    SubQuery with(SubQuery subQuery); // SOSL.SubQuery
 
-    SubQuery whereAre(FilterGroup filterGroup); // SOQL.FilterGroup
-    SubQuery whereAre(Filter filter); // SOQL.Filter
+    SubQuery whereAre(FilterGroup filterGroup); // SOSL.FilterGroup
+    SubQuery whereAre(Filter filter); // SOSL.Filter
 
     SubQuery orderBy(SObjectField field);
     SubQuery orderBy(String relationshipName, SObjectField field);
@@ -154,9 +154,9 @@ public interface SubQuery { // SOQL.SubQuery
     SubQuery forView();
 }
 
-public interface FilterGroup { // SOQL.FilterGroup
-    FilterGroup add(FilterGroup filterGroup); // SOQL.FilterGroup
-    FilterGroup add(Filter filter); // SOQL.Filter
+public interface FilterGroup { // SOSL.FilterGroup
+    FilterGroup add(FilterGroup filterGroup); // SOSL.FilterGroup
+    FilterGroup add(Filter filter); // SOSL.Filter
     FilterGroup add(String dynamicCondition); // Pass condition as String
 
     FilterGroup anyConditionMatching(); // All group filters will be join by OR
@@ -165,7 +165,7 @@ public interface FilterGroup { // SOQL.FilterGroup
     Boolean hasValues();
 }
 
-public interface Filter { // SOQL.Filter
+public interface Filter { // SOSL.Filter
     Filter id();
     Filter recordType();
     Filter name();
@@ -190,10 +190,10 @@ public interface Filter { // SOQL.Filter
     Filter contains(String prefix, String value, String suffix); // custom LIKE
     Filter isIn(Iterable<Object> iterable); // IN :inList or inSet
     Filter isIn(List<Object> inList); // IN :inList
-    Filter isIn(InnerJoin joinQuery); // SOQL.InnerJoin
+    Filter isIn(InnerJoin joinQuery); // SOSL.InnerJoin
     Filter notIn(Iterable<Object> iterable); // NOT IN :inList or inSet
     Filter notIn(List<Object> inList); // NOT IN :inList
-    Filter notIn(InnerJoin joinQuery); // SOQL.InnerJoin
+    Filter notIn(InnerJoin joinQuery); // SOSL.InnerJoin
     Filter includesAll(Iterable<String> values); // join with ;
     Filter includesSome(Iterable<String> values); // join with ,
     Filter excludesAll(Iterable<String> values); // join with ,
@@ -204,13 +204,13 @@ public interface Filter { // SOQL.Filter
     Boolean hasValue();
 }
 
-public interface InnerJoin { // SOQL.InnerJoin
+public interface InnerJoin { // SOSL.InnerJoin
     InnerJoin of(SObjectType ofObject);
 
     InnerJoin with(SObjectField field);
 
-    InnerJoin whereAre(FilterGroup filterGroup); // SOQL.FilterGroup
-    InnerJoin whereAre(Filter filter); // SOQL.Filter
+    InnerJoin whereAre(FilterGroup filterGroup); // SOSL.FilterGroup
+    InnerJoin whereAre(Filter filter); // SOSL.Filter
 }
 
 @TestVisible
@@ -231,31 +231,31 @@ private static void setCountMock(String mockId, Integer amount) {
 
 ## Functional Programming
 
-SOQL Lib uses the concept called [Apex Functional Programming](https://www.apexfp.org/).
+SOSL Lib uses the concept called [Apex Functional Programming](https://www.apexfp.org/).
 
-You can see an example of it with `SOQL.SubQuery`, `SOQL.FilterGroup`, `SOQL.Filter` and `SOQL.InnerJoin`.
+You can see an example of it with `SOSL.SubQuery`, `SOSL.FilterGroup`, `SOSL.Filter` and `SOSL.InnerJoin`.
 Those classes encapsulate the logic, and only necessary methods are exposed via interfaces.
 
 ```apex
-Queryable whereAre(FilterGroup filterGroup); // SOQL.FilterGroup
-Queryable whereAre(Filter filter); // SOQL.Filter
+Queryable whereAre(FilterGroup filterGroup); // SOSL.FilterGroup
+Queryable whereAre(Filter filter); // SOSL.Filter
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
      .with(Account.Id, Account.Name);
-     .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.id().equal(accountId))
-        .add(SOQL.Filter.with(Account.Name).contains(accountName))
+     .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.id().equal(accountId))
+        .add(SOSL.Filter.with(Account.Name).contains(accountName))
         .anyConditionMatching() // OR
       )
      .toList();
 ```
 
-## Return Concrete SOQL instance
+## Return Concrete SOSL instance
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -281,7 +281,7 @@ public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selecto
 }
 ```
 
-As you can see, the method `byRecordType(String rt)` returns an instance of `SOQL_Account` instead of `List<SObject>` or `Object`. Why is that? You can adjust the query to your needs and add more SOQL clauses without duplicating the code.
+As you can see, the method `byRecordType(String rt)` returns an instance of `SOQL_Account` instead of `List<SObject>` or `Object`. Why is that? You can adjust the query to your needs and add more SOSL clauses without duplicating the code.
 
 ```apex
 SOQL_Account.query()

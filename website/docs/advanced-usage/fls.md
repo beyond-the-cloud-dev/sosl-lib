@@ -19,7 +19,7 @@ none (by default) | `USER_MODE` | enforced
 `USER_MODE` is a enabled by default. It means that **the object permissions, field-level security**, as well as sharing rules, **are enforced**.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -49,7 +49,7 @@ public without sharing class ExampleController {
 Developer can disable `USER_MODE` and enable `SYSTEM_MODE` using `.systemMode()` method.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -79,7 +79,7 @@ You may encounter situations where you need object and field-level security but 
 To achieve this, use `.systemMode()`, `.withoutSharing()` and `.stripInaccessible()`.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }

@@ -5,79 +5,57 @@ sidebar_position: 10
 
 # Getting Started
 
-Read about the SOQL Lib in [blog post](https://beyondthecloud.dev/blog/soql-lib).
+The SOSL Lib provides functional constructs for SOSL queries in Apex.
 
-![Deploy to Scratch Org and run tests](https://github.com/beyond-the-cloud-dev/soql-lib/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/beyond-the-cloud-dev/soql-lib/branch/main/graph/badge.svg)](https://codecov.io/gh/beyond-the-cloud-dev/soql-lib)
-
-The SOQL Lib provides functional constructs for SOQL queries in Apex.
+For more details, please refer to the [documentation](https://sosl.beyondthecloud.dev/).
 
 ## Examples
 
 ```apex
-// SELECT Id FROM Account
-List<Account> accounts = SOQL.of(Account.SObjectType).toList();
+// FIND 'Company' RETURNING Account
+List<List<SObject>> searchResults = SOSL.find('Company')
+    .returning(SOSL.Returning(Account.SObject))
+    .toSearchList();
 ```
 
 ```apex
-// SELECT Id, Name, Industry FROM Account
-List<Account> accounts = SOQL.of(Account.SObjectType)
-   .with(Account.Id, Account.Name, Account.Industry)
-   .toList();
+// FIND 'Company' RETURNING Account(Id, Name ORDER BY Name)
+List<List<SObject>> searchResults = SOSL.find('Company')
+    .returning(
+        SOSL.Returning(Account.SObject)
+            .with(Account.Id, Account.Name)
+            .orderBy(Account.Name)
+    )
+    .toSearchList();
 ```
 
-## Selector
 
-```apex
-public inherited sharing class SOQL_Contact extends SOQL implements SOQL.Selector {
-    public static SOQL_Contact query() {
-        return new SOQL_Contact();
-    }
+## Deploy to Salesforce
 
-    private SOQL_Contact() {
-        super(Contact.SObjectType);
-        // default settings
-        with(Contact.Id, Contact.Name, Contact.AccountId)
-            .systemMode()
-            .withoutSharing();
-    }
+TBC
 
-    public SOQL_Contact byRecordType(String rt) {
-        whereAre(Filter.recordType().equal(rt));
-        return this;
-    }
+## Documentation
 
-    public SOQL_Contact byAccountId(Id accountId) {
-        whereAre(Filter.with(Contact.AccountId).equal(accountId));
-        return this;
-    }
-}
-```
+[SOSL Lib documentation](https://sosl.beyondthecloud.dev/)
 
-```apex
-public with sharing class ExampleController {
-    @AuraEnabled
-    public static List<Contact> getAccountContacts(Id accountId) {
-        return SOQL_Contact.query()
-            .byRecordType('Partner')
-            .byAccountId(accountId)
-            .with(Contact.Email)
-            .toList();
-    }
-}
-```
+## Features
 
-## Benefits
+Read about the features in the [documentation](https://sosl.beyondthecloud.dev/docs/basic-features).
 
-1. **Additional level of abstraction** - The selector layer is an additional level of abstraction that gives you the possibility to control the execution of SOQL.
-2. **Mocking** - Selector classes give a possibility to mock return values in unit tests.
-    - Mock external objects (__x) - External objects cannot be inserted in unit tests. You need to mock them.
-    - Mock custom metadata - Custom metadata cannot be inserted in unit tests unless the developer uses the Metadata API. Mock can be a solution.
-3. **Control field-level security** - The best practice is to execute SOQLs `WITH USER_MODE` to enforce field-level security and object permissions of the running user. The selector layer can apply `WITH USER_MODE` by default to all of the queries, so the developer does not need to care about it. Developers can also add `WITH SYSTEM_MODE` to all SOQLs from a specific selector.
-4. **Control sharings rules** - The selector allows to execute of different methods in the same class in different sharing modes.
-5. **Avoid duplicates** - Generic SQOLs like `getById`, and `getByRecordType` can be stored in the selector class.
-6. **Default configuration** - The selector class can provide default SOQL configuration like default fields, FLS settings, and sharing rules.
-7. **Mocking** - The selector class has built in Mocking functionality that provides ability to dynamically return data in test execution
+1. **Dynamic SOSL**
+2. **Control FLS**
+- 2.1 **User Mode**
+- 2.2 **System Mode**
+- 2.3 **stripInaccessible**
+3. **Control Sharings Mode**
+- 3.1 **with sharing**
+- 3.2 **without sharing**
+- 3.3 **inherited sharing**
+4. **Mocking**
+- 4.1 **Mock list of records**
+5. **Dynamic conditions**
+
+----
 
 ## License notes
 

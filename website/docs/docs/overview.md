@@ -10,37 +10,37 @@ sidebar_position: 20
    - Huge classes are hard to manage.
    - A lot of merge conflicts.
    - Problems with methods naming.
-2. **Build SOQL inline in a place of need** - Business-specific SOQLs should be built inline via `SOQL` builder in a place of need.
+2. **Build SOSL inline in a place of need** - Business-specific SOQLs should be built inline via `SOSL` builder in a place of need.
    - Most of the queries on the project are case-specific and are not generic. There is no need to keep them in the Selector class.
-3. **Build SOQL dynamically via builder** - Developers should be able to adjust queries with specific fields, conditions, and other SOQL clauses.
-4. **Do not spend time on selector methods naming** - It can be difficult to find a proper name for a method that builds a query. The selector class contains methods like `selectByFieldAAndFieldBWithDescOrder`. It can be avoided by building SOQL inline in a place of need.
+3. **Build SOSL dynamically via builder** - Developers should be able to adjust queries with specific fields, conditions, and other SOSL clauses.
+4. **Do not spend time on selector methods naming** - It can be difficult to find a proper name for a method that builds a query. The selector class contains methods like `selectByFieldAAndFieldBWithDescOrder`. It can be avoided by building SOSL inline in a place of need.
 5. **Control FLS and sharing settings** - Selector should allow to control Field Level Security and sharing settings by simple methods like `.systemMode()`, `.withSharing()`, `.withoutSharing()`.
 6. **Auto binding** - The selector should be able to bind variables dynamically without additional effort from the developer side.
 7. **Mock results in Unit Tests** - The selector should allow mocking data in unit tests.
 
 ## Concepts
 
-SOQL Library consist of:
+SOSL Library consist of:
 
-- `SOQL Builder`
-- `SOQL Selector`
+- `SOSL Builder`
+- `SOSL Selector`
 
-## SOQL Builder
+## SOSL Builder
 
-SOQL Builder allows to build query dynamically and execute it.
+SOSL Builder allows to build query dynamically and execute it.
 
 ```apex
 // SELECT Id, Name, Industry FROM Account
-List<Account> accounts = SOQL.of(Account.SObjectType)
+List<Account> accounts = SOSL.of(Account.SObjectType)
    .with(Account.Id, Account.Name, Account.Industry)
    .toList();
 ```
 
-## SOQL Selector
+## SOSL Selector
 
-> A selector layer contains code responsible for querying records from the database. Although you can place SOQL queries in other layers, a few things can happen as the complexity of your code grows. ~ Salesforce
+> A selector layer contains code responsible for querying records from the database. Although you can place SOSL queries in other layers, a few things can happen as the complexity of your code grows. ~ Salesforce
 
-**SOQL Lib provides the whole new concept for Selectors usage.**
+**SOSL Lib provides the whole new concept for Selectors usage.**
 
 ### Old Approach
 
@@ -59,7 +59,7 @@ List<Account> accounts = SOQL.of(Account.SObjectType)
 
 ### New Approach
 
-The SOQL Lib has a slightly different approach.
+The SOSL Lib has a slightly different approach.
 
 **Assumption**:
 
@@ -67,6 +67,6 @@ Most of the SOQLs on the project are **one-time** queries executed for specific 
 
 **Solution**:
 1. **Small Selector Classes** - Selector class should be small and contains ONLY query base configuration (fields, sharing settings) and very generic methods (`byId`, `byRecordType`)
-2. **Build SOQL inline in a place of need** - Business-specific SOQLs should be built inline via the SOQL builder in the place of need.
+2. **Build SOSL inline in a place of need** - Business-specific SOQLs should be built inline via the SOSL builder in the place of need.
 3. **Do not spend time on selector methods naming** - Queries are created inline, so there's no need to find a name.
 4. **Keep Selector Strengths** - Set default Selector configuration (default fields, sharing settings), keep generic methods.

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2023 BeyondTheCloud.Dev
- * Licensed under the MIT License (https://github.com/beyond-the-cloud-dev/soql-lib/blob/main/LICENSE)
+ * Licensed under the MIT License (https://github.com/beyond-the-cloud-dev/sosl-lib/blob/main/LICENSE)
  *
  * PMD False Positives:
  * - ExcessivePublicCount: It is a library class and exposes all necessary methods to construct a query
@@ -10,7 +10,7 @@
  * - PropertyNamingConventions: It was intentional to make the lib more fluent and readable
  * - FieldDeclarationsShouldBeAtStart: Developer who uses lib should see what's important at start
  * - ApexDoc: Variable names are self-documented.
- * - ExcessiveParameterList - Make methods similar to native SOQL
+ * - ExcessiveParameterList - Make methods similar to native SOSL
 **/
 @SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.CognitiveComplexity, PMD.PropertyNamingConventions, PMD.FieldDeclarationsShouldBeAtStart, PMD.ApexDoc, PMD.ExcessiveParameterList')
 public inherited sharing class SOSL implements ISearchable {

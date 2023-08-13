@@ -4,13 +4,13 @@ sidebar_position: 30
 
 # Basic Features
 
-## Dynamic SOQL
+## Dynamic SOSL
 
-The `SOQL.cls` class provides methods for building SOQL clauses dynamically.
+The `SOSL.cls` class provides methods for building SOSL clauses dynamically.
 
 ```apex
 // SELECT Id FROM Account LIMIT 100
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .setLimit(100)
     .toList();
@@ -23,9 +23,9 @@ All variables used in the `WHERE` condition are automatically binded.
 
 ```apex
 // SELECT Id, Name FROM Account WHERE Name = :v1
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
-    .whereAre(SOQL.Filter.with(Account.Name).contains('Test'))
+    .whereAre(SOSL.Filter.with(Account.Name).contains('Test'))
     .toList();
 ```
 
@@ -56,7 +56,7 @@ Developers can change the mode to `AccessLevel.SYSTEM_MODE` by using the `.syste
 
 ```apex
 // SELECT Id FROM Account - skip FLS
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .systemMode()
     .toList();
@@ -78,7 +78,7 @@ Developer can skip FLS by adding `.systemMode()` and `.withSharing()`.
 
 ```apex
 // Query executed in without sharing
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .systemMode()
     .withSharing()
@@ -91,7 +91,7 @@ Developer can control sharing rules by adding `.systemMode()` (record sharing ru
 
 ```apex
 // Query executed in with sharing
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .systemMode()
     .withoutSharing()
@@ -104,7 +104,7 @@ Developer can control sharing rules by adding `.systemMode()` (record sharing ru
 
 ```apex
 // Query executed in inherited sharing
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .systemMode()
     .toList();
@@ -113,7 +113,7 @@ SOQL.of(Account.SObjectType)
 ## Mocking
 
 Mocking provides a way to substitute records from a Database with some prepared data. Data can be prepared in form of SObject records and lists in Apex code or Static Resource `.csv` file.
-Mocked queries won't make any SOQL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOQL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
+Mocked queries won't make any SOSL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
 
 ```apex
 public with sharing class ExampleController {
@@ -121,9 +121,9 @@ public with sharing class ExampleController {
     public static List<Account> getPartnerAccounts(String accountName) {
         return SOQL_Account.query()
             .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.name().contains(accountName))
-                .add(SOQL.Filter.recordType().equal('Partner'))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.name().contains(accountName))
+                .add(SOSL.Filter.recordType().equal('Partner'))
             )
             .mockId('ExampleController.getPartnerAccounts')
             .toList();
@@ -131,7 +131,7 @@ public with sharing class ExampleController {
 }
 ```
 
-Then in test simply pass data you want to get from Selector to `SOQL.setMock(id, data)` method. Acceptable formats are: `List<SObject>` or `SObject`. Then during execution Selector will return desired data.
+Then in test simply pass data you want to get from Selector to `SOSL.setMock(id, data)` method. Acceptable formats are: `List<SObject>` or `SObject`. Then during execution Selector will return desired data.
 
 ### List of records
 
@@ -146,7 +146,7 @@ private class ExampleControllerTest {
             new Account(Name = 'MyAccount 2')
         };
 
-        SOQL.setMock('ExampleController.getPartnerAccounts', accounts);
+        SOSL.setMock('ExampleController.getPartnerAccounts', accounts);
 
         // Test
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -164,7 +164,7 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccount() {
-        SOQL.setMock('ExampleController.getPartnerAccount', new Account(Name = 'MyAccount 1'));
+        SOSL.setMock('ExampleController.getPartnerAccount', new Account(Name = 'MyAccount 1'));
 
         // Test
         Account result = (Account) ExampleController.getPartnerAccounts('MyAccount');
@@ -182,7 +182,7 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccounts() {
-        SOQL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'ProjectAccounts'));
+        SOSL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'ProjectAccounts'));
 
         // Test
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -200,9 +200,9 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccountsCount() {
-        SOQL.setCountMock('mockingQuery', 2);
+        SOSL.setCountMock('mockingQuery', 2);
 
-        Integer result = SOQL.of(Account.sObjectType).count().mockId('mockingQuery').toInteger();
+        Integer result = SOSL.of(Account.sObjectType).count().mockId('mockingQuery').toInteger();
 
         Assert.areEqual(2, result);
     }
@@ -214,7 +214,7 @@ private class ExampleControllerTest {
 Generic SOQLs can be keep in selector class.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -252,10 +252,10 @@ public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selecto
 
 ## Default configuration
 
-The selector class can provide default SOQL configuration like default fields, FLS settings, and sharing rules that will be applied to all queries.
+The selector class can provide default SOSL configuration like default fields, FLS settings, and sharing rules that will be applied to all queries.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -283,31 +283,31 @@ Ignore condition when logic expression evaluate to true.
 
 String accountName = '';
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.BillingCity).equal('Krakow'))
-        .add(SOQL.Filter.name().contains(accountName).ignoreWhen(String.isEmpty(accountName)))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.BillingCity).equal('Krakow'))
+        .add(SOSL.Filter.name().contains(accountName).ignoreWhen(String.isEmpty(accountName)))
     ).toList();
 ```
 
 **Filter Group**
 
-Create [SOQL.FilterGroup](../api/soql-filters-group.md) and assign conditions dynamically based on your own criteria.
+Create [SOSL.FilterGroup](../api/sosl-filters-group.md) and assign conditions dynamically based on your own criteria.
 
 ```apex
 public List<Account> getAccounts() {
-    SOQL.FilterGroup filterGroup;
+    SOSL.FilterGroup filterGroup;
 
     if (UserInfo.getUserType() == 'PowerPartner')
-        filterGroup = SOQL.FilterGroup
-            .add(SOQL.Filter.with(Account.Name).equal('Test'));
-            .add(SOQL.Filter.with(Account.BillingCity).equal('Krakow'));
+        filterGroup = SOSL.FilterGroup
+            .add(SOSL.Filter.with(Account.Name).equal('Test'));
+            .add(SOSL.Filter.with(Account.BillingCity).equal('Krakow'));
     } else {
-        filterGroup = SOQL.FilterGroup
-            .add(SOQL.Filter.with(Account.Name).equal('Other Test'));
+        filterGroup = SOSL.FilterGroup
+            .add(SOSL.Filter.with(Account.Name).equal('Other Test'));
     }
 
-    return SOQL.of(Account.SObjectType)
+    return SOSL.of(Account.SObjectType)
         .whereAre(filterGroup)
         .toList();
 }
