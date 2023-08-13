@@ -49,8 +49,8 @@ $RECYCLE.BIN/
 # Local environment variables
 .env
 
-# SOQL Query Results
-**/scripts/soql/query-results
+# SOSL Query Results
+**/scripts/sosl/query-results
 
 #Private keys
 *.key

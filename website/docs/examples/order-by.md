@@ -12,7 +12,7 @@ FROM Account
 ORDER BY Industry DESC NULLS FIRST, Id ASC NULLS FIRST
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }

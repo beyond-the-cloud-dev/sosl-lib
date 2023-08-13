@@ -76,8 +76,8 @@ FROM Account
 WHERE Id = :accountId
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.id().equal(accountId))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.id().equal(accountId))
     .toList();
 ```
 
@@ -99,8 +99,8 @@ FROM Account
 WHERE RecordType.DeveloperName = 'Partner'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.recordType().equal('Partner'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.recordType().equal('Partner'))
     .toList();
 ```
 
@@ -122,8 +122,8 @@ FROM Account
 WHERE Name = 'My Account'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.name().equal('My Account'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.name().equal('My Account'))
     .toList();
 ```
 
@@ -145,8 +145,8 @@ FROM Account
 WHERE Name = 'My Account'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.name().equal('My Account'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.name().equal('My Account'))
     .toList();
 ```
 
@@ -168,8 +168,8 @@ FROM Account
 WHERE Name = 'My Account'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with('Name').equal('My Account'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with('Name').equal('My Account'))
     .toList();
 ```
 
@@ -191,8 +191,8 @@ FROM Contact
 WHERE Account.Name = 'My Account'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with('Account', Account.Name).equal('My Account'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with('Account', Account.Name).equal('My Account'))
     .toList();
 ```
 
@@ -216,8 +216,8 @@ FROM Account
 WHERE Account.Industry = NULL
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Industry).isNull())
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Industry).isNull())
     .toList();
 ```
 
@@ -239,8 +239,8 @@ FROM Account
 WHERE Account.Industry != NULL
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Industry).isNotNull())
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Industry).isNotNull())
     .toList();
 ```
 
@@ -262,8 +262,8 @@ FROM Account
 WHERE Account.IsDeleted = TRUE
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.IsDeleted).isTrue())
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.IsDeleted).isTrue())
     .toList();
 ```
 
@@ -285,8 +285,8 @@ FROM Account
 WHERE Account.IsDeleted != NULL
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.IsDeleted).isFalse())
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.IsDeleted).isFalse())
     .toList();
 ```
 
@@ -313,16 +313,16 @@ SELECT Id FROM Account WHERE IsDeleted = true
 ```
 
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().equal('My Account'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().equal('My Account'))
     .toList();
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).equal(10))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).equal(10))
     .toList();
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.IsDeleted).equal(true))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.IsDeleted).equal(true))
     .toList();
 ```
 
@@ -348,16 +348,16 @@ SELECT Id FROM Account WHERE NumberOfEmployees != 10
 SELECT Id FROM Account WHERE IsDeleted != true
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().notEqual('My Account'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().notEqual('My Account'))
     .toList();
 
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).notEqual(10))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).notEqual(10))
     .toList();
 
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.IsDeleted).notEqual(true))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.IsDeleted).notEqual(true))
     .toList();
 ```
 
@@ -379,8 +379,8 @@ FROM Account
 WHERE NumberOfEmployees < 10
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).lessThan(10))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).lessThan(10))
     .toList();
 ```
 
@@ -402,8 +402,8 @@ FROM Account
 WHERE NumberOfEmployees > 10
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).greaterThan(10))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).greaterThan(10))
     toList();
 ```
 
@@ -425,8 +425,8 @@ FROM Account
 WHERE NumberOfEmployees <= 10
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).lessOrEqual(10))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).lessOrEqual(10))
     .toList();
 ```
 
@@ -448,8 +448,8 @@ FROM Account
 WHERE NumberOfEmployees >= 10
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
     .toList();
 ```
 
@@ -473,8 +473,8 @@ WHERE Name LIKE ('My', 'Acc')
 ```apex
 List<String> names = new List<String>{ 'Acc', 'My' };
 
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().containsSome(names))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().containsSome(names))
     .toList();
 ```
 
@@ -497,12 +497,12 @@ FROM Account
 WHERE Name = '%My%'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().contains('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().contains('My'))
     .toList();
 
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().contains('_', 'My', '%'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().contains('_', 'My', '%'))
     .toList();
 ```
 
@@ -525,12 +525,12 @@ FROM Account
 WHERE NOT Name LIKE '%My%'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().notContains('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().notContains('My'))
     .toList();
 
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().notContains('_', 'My', '%'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().notContains('_', 'My', '%'))
     .toList();
 ```
 
@@ -552,8 +552,8 @@ FROM Account
 WHERE Name = '%My'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().endsWith('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().endsWith('My'))
     .toList();
 ```
 
@@ -575,8 +575,8 @@ FROM Account
 WHERE NOT Name LIKE '%My'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().notEndsWith('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().notEndsWith('My'))
     .toList();
 ```
 
@@ -598,8 +598,8 @@ FROM Account
 WHERE Name = 'My%'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().startsWith('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().startsWith('My'))
     .toList();
 ```
 
@@ -621,8 +621,8 @@ FROM Account
 WHERE NOT Name LIKE 'My%'
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.name().notStartsWith('My'))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.name().notStartsWith('My'))
     .toList();
 ```
 
@@ -644,8 +644,8 @@ FROM Account
 WHERE Id IN :accountIds
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Id).isIn(accountIds))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Id).isIn(accountIds))
     .toList();
 ```
 
@@ -667,8 +667,8 @@ FROM Account
 WHERE Id NOT IN :accountIds
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Id).notIn(accountIds))
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Id).notIn(accountIds))
     .toList();
 ```
 
@@ -695,11 +695,11 @@ WHERE Id IN (
 )
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Id).isIn(
-        SOQL.InnerJoin.of(Contact.SObjectType)
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Id).isIn(
+        SOSL.InnerJoin.of(Contact.SObjectType)
             .with(Contact.AccountId)
-            .whereAre(SOQL.Filter.with(Contact.Name).equal('My Contact'))
+            .whereAre(SOSL.Filter.with(Contact.Name).equal('My Contact'))
     )).toList();
 ```
 
@@ -725,11 +725,11 @@ WHERE Id NOT IN (
 )
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Id).notIn(
-        SOQL.InnerJoin.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Id).notIn(
+        SOSL.InnerJoin.of(Contact.SObjectType)
             .with(Contact.AccountId)
-            .whereAre(SOQL.Filter.with(Contact.Name).equal('My Contact'))
+            .whereAre(SOSL.Filter.with(Contact.Name).equal('My Contact'))
     )).toList();
 ```
 
@@ -756,9 +756,9 @@ WHERE Roles INCLUDES ('Business User;Decision Maker')
 ```apex
 List<String> roles = new List<String>{ 'Business User', 'Decision Maker' };
 
-SOQL builder = SOQL.of(AccountContactRelation.SObjectType)
+SOSL builder = SOSL.of(AccountContactRelation.SObjectType)
     .with(AccountContactRelation.Id)
-    .whereAre(SOQL.Filter.with(AccountContactRelation.Roles).includesAll(roles));
+    .whereAre(SOSL.Filter.with(AccountContactRelation.Roles).includesAll(roles));
  ```
 
 ### includesSome
@@ -782,9 +782,9 @@ WHERE Roles INCLUDES ('Business User', 'Decision Maker')
 ```apex
 List<String> roles = new List<String>{ 'Business User', 'Decision Maker' };
 
-SOQL builder = SOQL.of(AccountContactRelation.SObjectType)
+SOSL builder = SOSL.of(AccountContactRelation.SObjectType)
     .with(AccountContactRelation.Id)
-    .whereAre(SOQL.Filter.with(AccountContactRelation.Roles).includesSome(roles));
+    .whereAre(SOSL.Filter.with(AccountContactRelation.Roles).includesSome(roles));
  ```
 
 ### excludesAll
@@ -808,9 +808,9 @@ WHERE Roles EXCLUDES ('Business User', 'Decision Maker')
 ```apex
 List<String> roles = new List<String>{ 'Business User', 'Decision Maker' };
 
-SOQL builder = SOQL.of(AccountContactRelation.SObjectType)
+SOSL builder = SOSL.of(AccountContactRelation.SObjectType)
     .with(AccountContactRelation.Id)
-    .whereAre(SOQL.Filter.with(AccountContactRelation.Roles).excludesAll(roles));
+    .whereAre(SOSL.Filter.with(AccountContactRelation.Roles).excludesAll(roles));
  ```
 
 ### excludesSome
@@ -834,9 +834,9 @@ WHERE Roles EXCLUDES ('Business User;Decision Maker')
 ```apex
 List<String> roles = new List<String>{ 'Business User', 'Decision Maker' };
 
-SOQL builder = SOQL.of(AccountContactRelation.SObjectType)
+SOSL builder = SOSL.of(AccountContactRelation.SObjectType)
     .with(AccountContactRelation.Id)
-    .whereAre(SOQL.Filter.with(AccountContactRelation.Roles).excludesSome(roles));
+    .whereAre(SOSL.Filter.with(AccountContactRelation.Roles).excludesSome(roles));
  ```
 
 ## ADDITIONAL
@@ -845,7 +845,7 @@ SOQL builder = SOQL.of(AccountContactRelation.SObjectType)
 
 [Date Literals](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_dateformats.htm)
 
-SOQL Lib automatically binds all variables; however, Date Literals cannot be binded.
+SOSL Lib automatically binds all variables; however, Date Literals cannot be binded.
 To skip binding for Date Literals, add `asDateLiteral()` to your `Filter`.
 
 **Signature**
@@ -864,8 +864,8 @@ WHERE CreatedDate > 'LAST_90_DAYS'
 ```apex
 String accountName = '';
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.CreatedDate).greaterThan('LAST_90_DAYS').asDateLiteral());
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.CreatedDate).greaterThan('LAST_90_DAYS').asDateLiteral());
     .toList();
 ```
 
@@ -873,7 +873,7 @@ SOQL.of(Account.SObjectType)
 
 Condition will be removed when logic expression will evaluate to true.
 
-Note! It does not work when [SOQL.FilterGroup.conditionLogic()](./soql-filters-group.md#conditionlogic) was used.
+Note! It does not work when [SOSL.FilterGroup.conditionLogic()](./sosl-filters-group.md#conditionlogic) was used.
 
 **Signature**
 
@@ -891,10 +891,10 @@ WHERE BillingCity = 'Krakow'
 ```apex
 String accountName = '';
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.BillingCity).equal('Krakow'))
-        .add(SOQL.Filter.name().contains(accountName).ignoreWhen(String.isEmpty(accountName)))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.BillingCity).equal('Krakow'))
+        .add(SOSL.Filter.name().contains(accountName).ignoreWhen(String.isEmpty(accountName)))
     )
     .toList();
 ```

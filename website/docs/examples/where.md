@@ -4,7 +4,7 @@ sidebar_position: 6
 
 # WHERE
 
-Use [SOQL.FilterGroup](../api/soql-filters-group.md) and Use [SOQL.Filter](../api/soql-filter.md) to build your `WHERE` clause.
+Use [SOSL.FilterGroup](../api/sosl-filters-group.md) and Use [SOSL.Filter](../api/sosl-filter.md) to build your `WHERE` clause.
 
 Define basic filters in your Selector class.
 
@@ -14,7 +14,7 @@ FROM Account
 WHERE Id = :accountId OR Name LIKE :'%' + accountName + '%'
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -56,9 +56,9 @@ public with sharing class MyController {
     @AuraEnabled
     public static List<Account> getByIdOrName(Id accountId, String accountName) {
         return SOQL_Account.query()
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.id().equal(accountId))
-                .add(SOQL.Filter.name().contains(accountName))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.id().equal(accountId))
+                .add(SOSL.Filter.name().contains(accountName))
                 .anyConditionMatching() // OR
             )
             .toList();
@@ -75,11 +75,11 @@ WHERE (Name = 'My Account' AND NumberOfEmployees >= 10)
 OR (Name = 'My Account' AND Industry = 'IT')
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.name().equal('My Account'))
-        .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.name().equal('My Account'))
+        .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
         .conditionLogic('(1 AND 2) OR (1 AND 3)')
     ).toList();
 ```
@@ -97,13 +97,13 @@ WHERE
 
 ```apex
 // build conditions on fly
-SOQL.FilterGroup group = SOQL.FilterGroup
-    .add(SOQL.Filter.name().equal('My Account'))
-    .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10));
+SOSL.FilterGroup group = SOSL.FilterGroup
+    .add(SOSL.Filter.name().equal('My Account'))
+    .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10));
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
         .add(group)
     ).toList();
 ```

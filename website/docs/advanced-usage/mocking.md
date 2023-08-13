@@ -6,7 +6,7 @@ sidebar_position: 3
 
 
 Mocking provides a way to substitute records from a Database with some prepared data. Data can be prepared in form of SObject records and lists in Apex code or Static Resource `.csv` file.
-Mocked queries won't make any SOQL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOQL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
+Mocked queries won't make any SOSL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
 
 ```apex
 public with sharing class ExampleController {
@@ -14,9 +14,9 @@ public with sharing class ExampleController {
     public static List<Account> getPartnerAccounts(String accountName) {
         return SOQL_Account.query()
             .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOQL.FilterGroup
-                .add(SOQL.Filter.name().contains(accountName))
-                .add(SOQL.Filter.recordType().equal('Partner'))
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.name().contains(accountName))
+                .add(SOSL.Filter.recordType().equal('Partner'))
             )
             .mockId('ExampleController.getPartnerAccounts')
             .toList();
@@ -24,7 +24,7 @@ public with sharing class ExampleController {
 }
 ```
 
-Then in test simply pass data you want to get from Selector to `SOQL.setMock(id, data)` method. Acceptable formats are: `List<SObject>` or `SObject`. Then during execution Selector will return desired data.
+Then in test simply pass data you want to get from Selector to `SOSL.setMock(id, data)` method. Acceptable formats are: `List<SObject>` or `SObject`. Then during execution Selector will return desired data.
 
 ### List of records
 
@@ -39,7 +39,7 @@ private class ExampleControllerTest {
             new Account(Name = 'MyAccount 2')
         };
 
-        SOQL.setMock('ExampleController.getPartnerAccounts', accounts);
+        SOSL.setMock('ExampleController.getPartnerAccounts', accounts);
 
         // Test
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -57,7 +57,7 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccount() {
-        SOQL.setMock('ExampleController.getPartnerAccount', new Account(Name = 'MyAccount 1'));
+        SOSL.setMock('ExampleController.getPartnerAccount', new Account(Name = 'MyAccount 1'));
 
         // Test
         Account result = (Account) ExampleController.getPartnerAccounts('MyAccount');
@@ -75,7 +75,7 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccounts() {
-        SOQL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'ProjectAccounts'));
+        SOSL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'ProjectAccounts'));
 
         // Test
         List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
@@ -93,9 +93,9 @@ private class ExampleControllerTest {
 
     @IsTest
     static void getPartnerAccountsCount() {
-        SOQL.setCountMock('mockingQuery', 2);
+        SOSL.setCountMock('mockingQuery', 2);
 
-        Integer result = SOQL.of(Account.sObjectType).count().mockId('mockingQuery').toInteger();
+        Integer result = SOSL.of(Account.sObjectType).count().mockId('mockingQuery').toInteger();
 
         Assert.areEqual(2, result);
     }
@@ -105,7 +105,7 @@ private class ExampleControllerTest {
 ### Sub-Query
 
 To mock a sub-query we need to use deserialization mechanism. There are two approaches, using JSON string or Serialization/Deserialization.
-Then after deserialization to desired SObjectType, pass the data to SOQL by calling `.setMock` method.
+Then after deserialization to desired SObjectType, pass the data to SOSL by calling `.setMock` method.
 
 
 _Using JSON String_
@@ -123,7 +123,7 @@ static void getAccountsWithContacts() {
     List<Account> accounts;
 
     Test.startTest();
-    SOQL.setMock('AccountsController.getAccountsWithContacts', mocks);
+    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
     accounts = AccountsController.getAccountsWithContacts();
     Test.stopTest();
 
@@ -159,7 +159,7 @@ static void getAccountsWithContacts() {
     List<Account> accounts;
 
     Test.startTest();
-    SOQL.setMock('AccountsController.getAccountsWithContacts', mocks);
+    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
     accounts = AccountsController.getAccountsWithContacts();
     Test.stopTest();
 

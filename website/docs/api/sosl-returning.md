@@ -2,13 +2,13 @@
 sidebar_position: 2
 ---
 
-# SubQuery
+# Returning
 
 Construct sub-query with provided API.
 
 ## Methods
 
-The following are methods for `SubQuery`.
+The following are methods for `Returning`.
 
 [**INIT**](#init)
 
@@ -73,8 +73,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts'))
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts'))
     .toList();
 ```
 
@@ -109,8 +109,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .with(Contact.Id, Contact.Name)
     )
     .toList();
@@ -135,8 +135,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .with(new List<SObjectField>{
             Contact.Id,
             Contact.Name,
@@ -167,8 +167,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .with('CreatedBy', new List<SObjectField>{
             User.Id, User.Name
         })
@@ -179,14 +179,14 @@ SOQL.of(Account.SObjectType)
 ## SUB-QUERY
 ### with subquery
 
-[Query Five Levels of Parent-to-Child Relationships in SOQL Queries](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql_5level.htm&release=244&type=5)
+[Query Five Levels of Parent-to-Child Relationships in SOSL Queries](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql_5level.htm&release=244&type=5)
 
-> Use SOQL to query several relationship types.
+> Use SOSL to query several relationship types.
 
 **Signature**
 
 ```apex
-SubQuery with(SOQL.SubQuery subQuery)
+SubQuery with(SOSL.SubQuery subQuery)
 ```
 
 **Example**
@@ -199,10 +199,10 @@ SELECT Name, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .with(Contact.LastName)
-        .with(SOQL.SubQuery.of('Assets')
+        .with(SOSL.SubQuery.of('Assets')
             .with(Asset.AssetLevel)
         )
     ).toList();
@@ -211,7 +211,7 @@ SOQL.of(Account.SObjectType)
 ## WHERE
 ### whereAre
 
-For more details check [`SOQL.FilterGroup`](soql-filters-group.md) and [`SOQL.Filter`](soql-filter.md)
+For more details check [`SOSL.FilterGroup`](sosl-filters-group.md) and [`SOSL.Filter`](sosl-filter.md)
 
 **Signature**
 
@@ -229,11 +229,11 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
-        .whereAre(SOQL.FilterGroup
-            .add(SOQL.Filter.with(Contact.Id).equal(contactId))
-            .add(SOQL.Filter.with(Contact.Name).contains('John'))
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
+        .whereAre(SOSL.FilterGroup
+            .add(SOSL.Filter.with(Contact.Id).equal(contactId))
+            .add(SOSL.Filter.with(Contact.Name).contains('John'))
             .conditionLogic('1 OR 2')
         )
     )
@@ -259,8 +259,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .orderBy(Contact.Name)
     )
     .toList();
@@ -268,7 +268,7 @@ SOQL.of(Account.SObjectType)
 
 ### orderBy related
 
-Order SOQL query by parent field.
+Order SOSL query by parent field.
 
 **Signature**
 
@@ -286,8 +286,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .orderBy('CreatedBy', User.Name)
     )
     .toList();
@@ -313,8 +313,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .orderBy(Contact.Name)
         .sortDesc()
     )
@@ -341,8 +341,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .orderBy(Contact.Name)
         .nullsLast()
     )
@@ -369,8 +369,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .setLimit(100)
     )
     .toList();
@@ -395,8 +395,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .offset(10)
     )
     .toList();
@@ -422,8 +422,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .forReference()
     )
     .toList();
@@ -447,8 +447,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .forView()
     )
     .toList();

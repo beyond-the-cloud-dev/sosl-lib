@@ -13,15 +13,15 @@ sidebar_position: 15
 
 ### Deploy via Button
 
-Click the button below to deploy SOQL Lib to your environment.
+Click the button below to deploy SOSL Lib to your environment.
 
-<button href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=soql-lib&ref=main">
+<button href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
     Deploy to Salesforce
 </button>
 
 ### Copy and Deploy
 
-Or just copy [`SOQL.cls`](https://github.com/beyond-the-cloud-dev/soql-lib/blob/main/force-app/main/default/classes/SOQL.cls) and [`SOQL_Test.cls`](https://github.com/beyond-the-cloud-dev/soql-lib/blob/main/force-app/main/default/classes/SOQL_Test.cls) and deploy them to your environment.
+Or just copy [`SOSL.cls`](https://github.com/beyond-the-cloud-dev/sosl-lib/blob/main/force-app/main/default/classes/SOSL.cls) and [`SOSL_Test.cls`](https://github.com/beyond-the-cloud-dev/sosl-lib/blob/main/force-app/main/default/classes/SOSL_Test.cls) and deploy them to your environment.
 
 ## Build Your Selector
 

@@ -25,7 +25,7 @@ The following are methods for `FilterGroup`.
 ### add
 
 Allows to add multiple conditions.
-Add a [`SOQL.Filter`](soql-filter.md) or [`SOQL.FilterGroup`](soql-filters-group.md) or `String`.
+Add a [`SOSL.Filter`](sosl-filter.md) or [`SOSL.FilterGroup`](sosl-filters-group.md) or `String`.
 
 **Signature**
 
@@ -48,31 +48,31 @@ WHERE
 
 ```apex
 // build conditions on fly
-SOQL.FilterGroup group = SOQL.FilterGroup
-    .add(SOQL.Filter.name().equal('My Account'))
-    .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10));
+SOSL.FilterGroup group = SOSL.FilterGroup
+    .add(SOSL.Filter.name().equal('My Account'))
+    .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10));
 
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
         .add(group)
     ).toList();
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
-        .add(SOQL.Filter.name().equal('My Account'))
-        .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
+        .add(SOSL.Filter.name().equal('My Account'))
+        .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
     ).toList();
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
-        .add(SOQL.Filter.name().equal('My Account'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
+        .add(SOSL.Filter.name().equal('My Account'))
         .add('NumberOfEmployees >= 10')
     ).toList();
 ```
@@ -80,7 +80,7 @@ SOQL.of(Account.SObjectType)
 ## ORDER
 ### conditionLogic
 
-Set conditions order for SOQL query.
+Set conditions order for SOSL query.
 When not specify all conditions will be with `AND`.
 
 **Signature**
@@ -98,11 +98,11 @@ WHERE (Name = 'My Account' AND NumberOfEmployees >= 10)
 OR (Name = 'My Account' AND Industry = 'IT')
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Name).equal('My Account'))
-        .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
-        .add(SOQL.Filter.with(Account.Industry).equal('IT'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Name).equal('My Account'))
+        .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
         .conditionLogic('(1 AND 2) OR (1 AND 3)')
     ).toList();
 ```
@@ -128,10 +128,10 @@ WHERE Name = 'My Account' OR NumberOfEmployees >= 10
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Name).equal('My Account'))
-        .add(SOQL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Name).equal('My Account'))
+        .add(SOSL.Filter.with(Account.NumberOfEmployees).greaterOrEqual(10))
         .anyConditionMatching()
     ).toList();
 ```

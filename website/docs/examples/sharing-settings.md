@@ -11,7 +11,7 @@ Control sharing rules behavior.
 You can control sharing rules only in `.systemMode()`.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }

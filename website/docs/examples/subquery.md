@@ -12,7 +12,7 @@ SELECT Id, Name, (
 ) FROM Account
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -27,16 +27,16 @@ public with sharing class MyController {
 
     public static List<Account> getAccountsWithContacts() {
         return SOQL_Account.query()
-            .with(SOQL.SubQuery.of('Contacts')
+            .with(SOSL.SubQuery.of('Contacts')
                 .with(Contact.Id, Contact.Name)
             ).toList();
     }
 }
 ```
 
-SOQL supports relationship queries that traverse up to five levels of parent-child records.
+SOSL supports relationship queries that traverse up to five levels of parent-child records.
 
-[Query Five Levels of Parent-to-Child Relationships in SOQL Queries](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql_5level.htm&release=244&type=5)
+[Query Five Levels of Parent-to-Child Relationships in SOSL Queries](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql_5level.htm&release=244&type=5)
 
 ```sql
 SELECT Name, (
@@ -46,7 +46,7 @@ SELECT Name, (
 ) FROM Account
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -61,9 +61,9 @@ public with sharing class MyController {
 
     public static List<Account> getAccountsWithContactsAndTheirAssets() {
         return SOQL_Account.query()
-            .with(SOQL.SubQuery.of('Contacts')
+            .with(SOSL.SubQuery.of('Contacts')
                 .with(Contact.LastName)
-                .with(SOQL.SubQuery.of('Assets')
+                .with(SOSL.SubQuery.of('Assets')
                     .with(Asset.AssetLevel)
                 )
             ).toList();

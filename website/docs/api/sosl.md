@@ -2,13 +2,13 @@
 sidebar_position: 1
 ---
 
-# SOQL
+# SOSL
 
 The lib main class for query construction.
 
 ## Methods
 
-The following are methods for `SOQL`.
+The following are methods for `SOSL`.
 
 [**INIT**](#init)
 
@@ -127,13 +127,13 @@ The following are methods for `SOQL`.
 ## INIT
 ### of
 
-Conctructs an `SOQL`.
+Conctructs an `SOSL`.
 
 **Signature**
 
 ```apex
-SOQL of(SObjectType ofObject)
-SOQL of(String ofObject)
+SOSL of(SObjectType ofObject)
+SOSL of(String ofObject)
 ```
 
 **Example**
@@ -142,10 +142,10 @@ SOQL of(String ofObject)
 SELECT Id FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType).toList();
+SOSL.of(Account.SObjectType).toList();
 
 String ofObject = 'Account';
-SOQL.of(ofObject).toList();
+SOSL.of(ofObject).toList();
 ```
 
 ## SELECT
@@ -155,19 +155,19 @@ SOQL.of(ofObject).toList();
 **Signature**
 
 ```apex
-SOQL with(SObjectField field)
+SOSL with(SObjectField field)
 ```
 ```apex
-SOQL with(SObjectField field1, SObjectField field2);
+SOSL with(SObjectField field1, SObjectField field2);
 ```
 ```apex
-SOQL with(SObjectField field1, SObjectField field2, SObjectField field3);
+SOSL with(SObjectField field1, SObjectField field2, SObjectField field3);
 ```
 ```apex
-SOQL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
+SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
 ```
 ```apex
-SOQL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
 ```
 
 **Example**
@@ -177,11 +177,11 @@ SELECT Id, Name
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id, Account.Name)
     .toList();
 
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(Account.Id)
     .with(Account.Name)
     .toList();
@@ -198,7 +198,7 @@ Use for more than 5 fields.
 **Signature**
 
 ```apex
-SOQL with(List<SObjectField> fields)
+SOSL with(List<SObjectField> fields)
 ```
 
 **Example**
@@ -208,7 +208,7 @@ SELECT Id, Name, Industry, AccountNumber, AnnualRevenue, BillingCity
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with(new List<SObjectField>{
         Account.Id,
         Account.Name,
@@ -226,7 +226,7 @@ SOQL.of(Account.SObjectType)
 **Signature**
 
 ```apex
-SOQL with(String fields)
+SOSL with(String fields)
 ```
 
 **Example**
@@ -236,7 +236,7 @@ SELECT Id, Name, Industry
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with('Id, Name, Industry')
     .toList();
 ```
@@ -248,19 +248,19 @@ Allows to add parent field to a query.
 **Signature**
 
 ```apex
-SOQL with(String relationshipName, SObjectField field)
+SOSL with(String relationshipName, SObjectField field)
 ```
 ```apex
-SOQL with(String relationshipName, SObjectField field1, SObjectField field2);
+SOSL with(String relationshipName, SObjectField field1, SObjectField field2);
 ```
 ```apex
-SOQL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3);
+SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3);
 ```
 ```apex
-SOQL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
+SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
 ```
 ```apex
-SOQL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
 ```
 
 **Example**
@@ -270,11 +270,11 @@ SELECT CreatedBy.Name
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with('CreatedBy', User.Name)
     .toList();
 
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with('CreatedBy', User.Id, User.Name, User.Phone)
     .toList();
 ```
@@ -290,7 +290,7 @@ Use for more than 5 parent fields.
 **Signature**
 
 ```apex
-SOQL with(String relationshipName, List<SObjectField> fields)
+SOSL with(String relationshipName, List<SObjectField> fields)
 ```
 
 **Example**
@@ -306,7 +306,7 @@ SELECT
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .with('CreatedBy', new List<SObjectField>{
         User.Id,
         User.Name,
@@ -323,14 +323,14 @@ SOQL.of(Account.SObjectType)
 
 [Using Relationship Queries](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_using.htm)
 
-> Use SOQL to query several relationship types.
+> Use SOSL to query several relationship types.
 
-For more details check [`SOQL.SubQuery`](soql-sub.md) class.
+For more details check [`SOSL.SubQuery`](sosl-returning.md) class.
 
 **Signature**
 
 ```apex
-SOQL with(SOQL.SubQuery subQuery)
+SOSL with(SOSL.SubQuery subQuery)
 ```
 
 **Example**
@@ -342,8 +342,8 @@ SELECT Id, (
 ) FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .with(SOQL.SubQuery.of('Contacts')
+SOSL.of(Account.SObjectType)
+    .with(SOSL.SubQuery.of('Contacts')
         .with(Contact.Id, Contact.Name)
     ).toList();
 ```
@@ -361,7 +361,7 @@ SOQL.of(Account.SObjectType)
 **Signature**
 
 ```apex
-SOQL count()
+SOSL count()
 ```
 
 **Example**
@@ -371,7 +371,7 @@ SELECT COUNT()
 FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .count()
     .toInteger();
 ```
@@ -395,7 +395,7 @@ SELECT COUNT(Id), COUNT(CampaignId)
 FROM Opportunity
 ```
 ```apex
- SOQL.of(Opportunity.SObjectType)
+ SOSL.of(Opportunity.SObjectType)
     .count(Opportunity.Id)
     .count(Opportunity.CampaignId)
     .toAggregated();
@@ -419,7 +419,7 @@ You can still specify additional fields, but they should be placed after the COU
 SELECT COUNT(Name) names FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .count(Account.Name, 'names')
     .toAggregated();
 ```
@@ -435,7 +435,7 @@ SOQL.of(Account.SObjectType)
 **Signature**
 
 ```apex
-SOQL delegatedScope()
+SOSL delegatedScope()
 ```
 
 **Example**
@@ -446,7 +446,7 @@ FROM Task
 USING SCOPE DELEGATED
 ```
 ```apex
-SOQL.of(Task.SObjectType)
+SOSL.of(Task.SObjectType)
     .delegatedScope()
     .toList();
 ```
@@ -458,7 +458,7 @@ SOQL.of(Task.SObjectType)
 **Signature**
 
 ```apex
-SOQL mineScope()
+SOSL mineScope()
 ```
 
 **Example**
@@ -469,7 +469,7 @@ FROM Task
 USING SCOPE MINE
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .mineScope()
     .toList();
 ```
@@ -481,7 +481,7 @@ SOQL.of(Account.SObjectType)
 **Signature**
 
 ```apex
-SOQL mineAndMyGroupsScope()
+SOSL mineAndMyGroupsScope()
 ```
 
 **Example**
@@ -492,7 +492,7 @@ FROM Task
 USING SCOPE MINE_AND_MY_GROUPS
 ```
 ```apex
-SOQL.of(ProcessInstanceWorkItem.SObjectType)
+SOSL.of(ProcessInstanceWorkItem.SObjectType)
     .mineAndMyGroupsScope()
     .toList();
 ```
@@ -504,7 +504,7 @@ SOQL.of(ProcessInstanceWorkItem.SObjectType)
 **Signature**
 
 ```apex
-SOQL myTerritoryScope()
+SOSL myTerritoryScope()
 ```
 
 **Example**
@@ -515,7 +515,7 @@ FROM Opportunity
 USING SCOPE MY_TERRITORY
 ```
 ```apex
-SOQL.of(Opportunity.SObjectType)
+SOSL.of(Opportunity.SObjectType)
     .myTerritoryScope()
     .toList();
 ```
@@ -527,7 +527,7 @@ SOQL.of(Opportunity.SObjectType)
 **Signature**
 
 ```apex
-SOQL myTeamTerritoryScope()
+SOSL myTeamTerritoryScope()
 ```
 
 **Example**
@@ -538,7 +538,7 @@ FROM Opportunity
 USING SCOPE MY_TEAM_TERRITORY
 ```
 ```apex
-SOQL.of(Opportunity.SObjectType)
+SOSL.of(Opportunity.SObjectType)
     .myTeamTerritoryScope()
     .toList();
 ```
@@ -550,7 +550,7 @@ SOQL.of(Opportunity.SObjectType)
 **Signature**
 
 ```apex
-SOQL teamScope()
+SOSL teamScope()
 ```
 
 **Example**
@@ -559,7 +559,7 @@ SOQL teamScope()
 SELECT Id FROM Account USING SCOPE TEAM
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .teamScope()
     .toList();
 ```
@@ -570,14 +570,14 @@ SOQL.of(Account.SObjectType)
 
 [WHERE](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_conditionexpression.htm)
 
-> The condition expression in a `WHERE` clause of a SOQL query includes one or more field expressions. You can specify multiple field expressions in a condition expression by using logical operators.
+> The condition expression in a `WHERE` clause of a SOSL query includes one or more field expressions. You can specify multiple field expressions in a condition expression by using logical operators.
 
-For more details check [`SOQL.FilterGroup`](soql-filters-group.md) and [`SOQL.Filter`](soql-filter.md)
+For more details check [`SOSL.FilterGroup`](sosl-filters-group.md) and [`SOSL.Filter`](sosl-filter.md)
 
 **Signature**
 
 ```apex
-SOQL whereAre(FilterClause conditions)
+SOSL whereAre(FilterClause conditions)
 ```
 
 **Example**
@@ -588,10 +588,10 @@ FROM Account
 WHERE Id = :accountId OR Name = '%MyAccount%'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.FilterGroup
-        .add(SOQL.Filter.with(Account.Id).equal(accountId))
-        .add(SOQL.Filter.with(Account.Name).contains('MyAccount'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.FilterGroup
+        .add(SOSL.Filter.with(Account.Id).equal(accountId))
+        .add(SOSL.Filter.with(Account.Name).contains('MyAccount'))
         .conditionLogic('1 OR 2')
     ).toList();
 ```
@@ -603,7 +603,7 @@ Execute conditions passed as String.
 **Signature**
 
 ```apex
-SOQL whereAre(String conditions)
+SOSL whereAre(String conditions)
 ```
 
 **Example**
@@ -614,19 +614,19 @@ FROM Account
 WHERE NumberOfEmployees >=10 AND NumberOfEmployees <= 20
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .whereAre('NumberOfEmployees >=10 AND NumberOfEmployees <= 20')
     .toList();
 ```
 
 ### conditionLogic
 
-Set conditions order for SOQL query. When not specify all conditions will be with `AND`.
+Set conditions order for SOSL query. When not specify all conditions will be with `AND`.
 
 **Signature**
 
 ```apex
-SOQL conditionLogic(String order)
+SOSL conditionLogic(String order)
 ```
 
 **Example**
@@ -637,9 +637,9 @@ FROM Account
 WHERE Name = 'Test' AND BillingCity = 'Krakow'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Name).equal('Test'))
-    .whereAre(SOQL.Filter.with(Account.BillingCity).equal('Krakow'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Name).equal('Test'))
+    .whereAre(SOSL.Filter.with(Account.BillingCity).equal('Krakow'))
     .conditionLogic('1 OR 2')
     .toList();
 ```
@@ -653,7 +653,7 @@ To change the default condition logic, you can utilize the `anyConditionMatching
 **Signature**
 
 ```apex
-SOQL anyConditionMatching()
+SOSL anyConditionMatching()
 ```
 
 **Example**
@@ -664,9 +664,9 @@ FROM Account
 WHERE Name = 'Test' AND BillingCity = 'Krakow'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
-    .whereAre(SOQL.Filter.with(Account.Name).equal('Test'))
-    .whereAre(SOQL.Filter.with(Account.BillingCity).equal('Krakow'))
+SOSL.of(Account.SObjectType)
+    .whereAre(SOSL.Filter.with(Account.Name).equal('Test'))
+    .whereAre(SOSL.Filter.with(Account.BillingCity).equal('Krakow'))
     .anyConditionMatching()
     .toList();
 ```
@@ -676,12 +676,12 @@ SOQL.of(Account.SObjectType)
 [GROUP BY](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm)
 ### groupBy
 
-> You can use the `GROUP BY` option in a SOQL query to avoid iterating through individual query results. That is, you specify a group of records instead of processing many individual records.
+> You can use the `GROUP BY` option in a SOSL query to avoid iterating through individual query results. That is, you specify a group of records instead of processing many individual records.
 
 **Signature**
 
 ```apex
-SOQL groupBy(SObjectField field)
+SOSL groupBy(SObjectField field)
 ```
 
 **Example**
@@ -692,7 +692,7 @@ FROM Lead
 GROUP BY LeadSource
 ```
 ```apex
-SOQL.of(Lead.SObjectType)
+SOSL.of(Lead.SObjectType)
     .with(Lead.LeadSource)
     .groupBy(Lead.LeadSource)
     .toAggregated();
@@ -703,7 +703,7 @@ SOQL.of(Lead.SObjectType)
 **Signature**
 
 ```apex
-SOQL groupByRollup(SObjectField field)
+SOSL groupByRollup(SObjectField field)
 ```
 
 **Example**
@@ -727,14 +727,14 @@ QS.of(Lead.SObjectType)
 
 ### orderBy
 
-> Use the optional `ORDER BY` in a `SELECT` statement of a SOQL query to control the order of the query results.
+> Use the optional `ORDER BY` in a `SELECT` statement of a SOSL query to control the order of the query results.
 
 **Signature**
 
 ```apex
-SOQL orderBy(SObjectField field)
-SOQL orderBy(String field)
-SOQL orderBy(String field, String direction)
+SOSL orderBy(SObjectField field)
+SOSL orderBy(String field)
+SOSL orderBy(String field, String direction)
 ```
 
 **Example**
@@ -745,29 +745,29 @@ FROM Account
 ORDER BY Name DESC
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .orderBy(Account.Name)
     .sortDesc()
     .toList();
 
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .orderBy('Name')
     .sortDesc()
     .toList();
 
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .orderBy('Name', 'DESC')
     .toList();
 ```
 
 ### orderBy related
 
-Order SOQL query by parent field.
+Order SOSL query by parent field.
 
 **Signature**
 
 ```apex
-SOQL orderBy(String relationshipName, SObjectField field)
+SOSL orderBy(String relationshipName, SObjectField field)
 ```
 
 **Example**
@@ -778,7 +778,7 @@ FROM Contact
 ORDER BY Account.Name
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
     .orderBy('Account', Account.Name)
     .toList();
 ```
@@ -790,7 +790,7 @@ Default order is ascending (`ASC`).
 **Signature**
 
 ```apex
-SOQL sortDesc()
+SOSL sortDesc()
 ```
 
 **Example**
@@ -801,7 +801,7 @@ FROM Account
 ORDER BY Name DESC
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .orderBy(Account.Name)
     .sortDesc()
     .toList();
@@ -814,7 +814,7 @@ By default, null values are sorted first (`NULLS FIRST`).
 **Signature**
 
 ```apex
-SOQL nullsLast()
+SOSL nullsLast()
 ```
 
 **Example**
@@ -825,7 +825,7 @@ FROM Account
 ORDER BY Name NULLS LAST
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .orderBy(Account.Industry)
     .nullsLast()
     .toList();
@@ -836,12 +836,12 @@ SOQL.of(Account.SObjectType)
 
 - [LIMIT](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_limit.htm)
 
-> `LIMIT` is an optional clause that can be added to a `SELECT` statement of a SOQL query to specify the maximum number of rows to return.
+> `LIMIT` is an optional clause that can be added to a `SELECT` statement of a SOSL query to specify the maximum number of rows to return.
 
 **Signature**
 
 ```apex
-SOQL setLimit(Integer amount)
+SOSL setLimit(Integer amount)
 ```
 
 **Example**
@@ -852,7 +852,7 @@ FROM Account
 LIMIT 100
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .setLimit(100)
     .toList();
 ```
@@ -862,12 +862,12 @@ SOQL.of(Account.SObjectType)
 
 - [OFFSET](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_offset.htm)
 
-> When expecting many records in a query’s results, you can display the results in multiple pages by using the `OFFSET` clause on a SOQL query.
+> When expecting many records in a query’s results, you can display the results in multiple pages by using the `OFFSET` clause on a SOSL query.
 
 **Signature**
 
 ```apex
-SOQL offset(Integer startingRow)
+SOSL offset(Integer startingRow)
 ```
 
 **Example**
@@ -878,7 +878,7 @@ FROM Account
 OFFSET 10
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .setOffset(10)
     .toList();
 ```
@@ -894,7 +894,7 @@ SOQL.of(Account.SObjectType)
 **Signature**
 
 ```apex
-SOQL forReference()
+SOSL forReference()
 ```
 
 **Example**
@@ -905,7 +905,7 @@ FROM Contact
 FOR REFERENCE
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
     .forReference()
     .toList();
 ```
@@ -917,7 +917,7 @@ SOQL.of(Contact.SObjectType)
 **Signature**
 
 ```apex
-SOQL forView()
+SOSL forView()
 ```
 
 **Example**
@@ -928,7 +928,7 @@ FROM Contact
 FOR VIEW
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
     .forView()
     .toList();
 ```
@@ -940,7 +940,7 @@ SOQL.of(Contact.SObjectType)
 **Signature**
 
 ```apex
-SOQL forUpdate()
+SOSL forUpdate()
 ```
 
 **Example**
@@ -951,19 +951,19 @@ FROM Contact
 FOR UPDATE
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
     .forUpdate()
     .toList();
 ```
 
 ### allRows
 
-> SOQL statements can use the ALL ROWS keywords to query all records in an organization, including deleted records and archived activities.
+> SOSL statements can use the ALL ROWS keywords to query all records in an organization, including deleted records and archived activities.
 
 **Signature**
 
 ```apex
-SOQL allRows()
+SOSL allRows()
 ```
 
 **Example**
@@ -974,7 +974,7 @@ FROM Contact
 ALL ROWS
 ```
 ```apex
-SOQL.of(Contact.SObjectType)
+SOSL.of(Contact.SObjectType)
     .count()
     .allRows()
     .toList();
@@ -995,13 +995,13 @@ More details you can find in [here](../advanced-usage/fls.md)
 **Signature**
 
 ```apex
-SOQL systemMode()
+SOSL systemMode()
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .systemMode()
     .toList();
 ```
@@ -1015,12 +1015,12 @@ Read more about `stripInaccessible` in [advanced](../advanced-usage/fls.md#strip
 **Signature**
 
 ```apex
-SOQL stripInaccessible()
-SOQL stripInaccessible(AccessType accessType)
+SOSL stripInaccessible()
+SOSL stripInaccessible(AccessType accessType)
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .systemMode()
     .withoutSharing()
     .stripInaccessible()
@@ -1042,13 +1042,13 @@ Execute query `with sharing`.
 **Signature**
 
 ```apex
-SOQL withSharing()
+SOSL withSharing()
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .systemMode()
     .withSharing()
     .toList();
@@ -1063,13 +1063,13 @@ Execute query `without sharing`.
 **Signature**
 
 ```apex
-SOQL withoutSharing()
+SOSL withoutSharing()
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .systemMode()
     .withoutSharing()
     .toList();
@@ -1084,18 +1084,18 @@ Query needs unique id that allows for mocking.
 **Signature**
 
 ```apex
-SOQL mockId(String queryIdentifier)
+SOSL mockId(String queryIdentifier)
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .mockId('MyQuery')
     .toList();
 
 // In Unit Test
-SOQL.setMock('MyQuery', new List<Account>{
+SOSL.setMock('MyQuery', new List<Account>{
     new Account(Name = 'MyAccount 1'),
     new Account(Name = 'MyAccount 2')
 });
@@ -1106,18 +1106,18 @@ SOQL.setMock('MyQuery', new List<Account>{
 **Signature**
 
 ```apex
-SOQL setMock(String mockId, SObject record)
+SOSL setMock(String mockId, SObject record)
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.sObjectType)
+SOSL.of(Account.sObjectType)
     .mockId('MyQuery')
     .toList();
 
 // In Unit Test
-SOQL.setMock('MyQuery', new Account(Name = 'MyAccount 1'));
+SOSL.setMock('MyQuery', new Account(Name = 'MyAccount 1'));
 ```
 
 ### list mock
@@ -1125,18 +1125,18 @@ SOQL.setMock('MyQuery', new Account(Name = 'MyAccount 1'));
 **Signature**
 
 ```apex
-SOQL setMock(String mockId, List<SObject> records)
+SOSL setMock(String mockId, List<SObject> records)
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.sObjectType)
+SOSL.of(Account.sObjectType)
     .mockId('MyQuery')
     .toList();
 
 // In Unit Test
-SOQL.setMock('MyQuery', new List<Account>{
+SOSL.setMock('MyQuery', new List<Account>{
     new Account(Name = 'MyAccount 1'),
     new Account(Name = 'MyAccount 2')
 });
@@ -1147,19 +1147,19 @@ SOQL.setMock('MyQuery', new List<Account>{
 **Signature**
 
 ```apex
-SOQL setCountMock(String mockId, Integer amount)
+SOSL setCountMock(String mockId, Integer amount)
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.sObjectType)
+SOSL.of(Account.sObjectType)
     .mockId('MyQuery')
     .count()
     .toInteger();
 
 // In Unit Test
-SOQL.setMock('MyQuery', 5);
+SOSL.setMock('MyQuery', 5);
 ```
 
 ## DEBUGGING
@@ -1168,13 +1168,13 @@ SOQL.setMock('MyQuery', 5);
 **Signature**
 
 ```apex
-SOQL preview()
+SOSL preview()
 ```
 
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .preview()
     .toList();
 ```
@@ -1198,7 +1198,7 @@ WHERE ((Id = :v1 OR Name LIKE :v2))
 
 ## PREDEFINIED
 
-For all predefined methods SOQL instance is returned so you can still adjust query before execution.
+For all predefined methods SOSL instance is returned so you can still adjust query before execution.
 Add additional fields with [`.with`](#select).
 
 ### byId
@@ -1206,11 +1206,11 @@ Add additional fields with [`.with`](#select).
 **Signature**
 
 ```apex
-SOQL byId(Id recordId)
+SOSL byId(Id recordId)
 ```
 
 ```apex
-SOQL byId(SObject record)
+SOSL byId(SObject record)
 ```
 
 **Example**
@@ -1221,13 +1221,13 @@ FROM Account
 WHERE Id = '1234'
 ```
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .byId('1234')
     .toObject();
 ```
 ```apex
 Account account = [SELECT Id FROM Account LIMIT 1];
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .byId(account)
     .toList();
 ```
@@ -1238,11 +1238,11 @@ SOQL.of(Account.SObjectType)
 
 
 ```apex
-SOQL byIds(Iterable<Id> recordIds)
+SOSL byIds(Iterable<Id> recordIds)
 ```
 
 ```apex
-SOQL byIds(List<SObject> records)
+SOSL byIds(List<SObject> records)
 ```
 
 **Example**
@@ -1254,20 +1254,20 @@ WHERE Id IN ('1234')
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .byIds(new Set<Id>{ '1234' })
     .toList();
 ```
 
 ```apex
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .byIds(new List<Id>{ '1234' })
     .toList();
 ```
 
 ```apex
 List<Account> accounts = [SELECT Id FROM Account];
-SOQL.of(Account.SObjectType)
+SOSL.of(Account.SObjectType)
     .byIds(accounts)
     .toList();
 ```
@@ -1283,7 +1283,7 @@ Boolean doExist()
 **Example**
 
 ```apex
-Boolean isRecordExist = SOQL.of(Account.SObjectType).byId('1234').doExist();
+Boolean isRecordExist = SOSL.of(Account.SObjectType).byId('1234').doExist();
 ```
 
 ### toValueOf
@@ -1300,7 +1300,7 @@ Object toValueOf(SObjectField fieldToExtract)
 **Example**
 
 ```apex
-String accountName = (String) SOQL.of(Account.SObjectType).byId('1234').toValueOf(Account.Name)
+String accountName = (String) SOSL.of(Account.SObjectType).byId('1234').toValueOf(Account.Name)
 ```
 
 ### toValuesOf
@@ -1308,7 +1308,7 @@ String accountName = (String) SOQL.of(Account.SObjectType).byId('1234').toValueO
 Extract field values from query result.
 Field will be automatically added to the query fields.
 
-SOQL Lib is using [Building a KeySet from any field](https://salesforce.stackexchange.com/questions/393308/get-a-list-of-one-column-from-a-soql-result) approach to get only one field.
+SOSL Lib is using [Building a KeySet from any field](https://salesforce.stackexchange.com/questions/393308/get-a-list-of-one-column-from-a-sosl-result) approach to get only one field.
 
 Note! It does not work with Custom Metadata.
 
@@ -1321,7 +1321,7 @@ Set<String> toValuesOf(SObjectField fieldToExtract)
 **Example**
 
 ```apex
-Set<String> accountNames = SOQL.of(Account.SObjectType).byId('1234').toValuesOf(Account.Name)
+Set<String> accountNames = SOSL.of(Account.SObjectType).byId('1234').toValuesOf(Account.Name)
 ```
 
 ### toInteger
@@ -1338,7 +1338,7 @@ Integer toInteger()
 SELECT COUNT() FROM Account
 ```
 ```apex
-SOQL.of(Account.SObjectType).count().toInteger();
+SOSL.of(Account.SObjectType).count().toInteger();
 ```
 
 ### toObject
@@ -1356,7 +1356,7 @@ sObject toObject()
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType).toObject();
+SOSL.of(Account.SObjectType).toObject();
 ```
 
 ### toList
@@ -1370,7 +1370,7 @@ List<sObject> toList()
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType).toList();
+SOSL.of(Account.SObjectType).toList();
 ```
 
 ### toAggregated
@@ -1391,7 +1391,7 @@ GROUP BY LeadSource
 ```
 
 ```apex
-SOQL.of(Lead.SObjectType)
+SOSL.of(Lead.SObjectType)
     .with(Lead.LeadSource)
     .groupBy(Lead.LeadSource)
     .toAggregated()
@@ -1408,7 +1408,7 @@ Map<Id, SObject> toMap()
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType).toMap();
+SOSL.of(Account.SObjectType).toMap();
 ```
 
 ### toQueryLocator
@@ -1422,5 +1422,5 @@ Database.QueryLocator toQueryLocator()
 **Example**
 
 ```apex
-SOQL.of(Account.SObjectType).toQueryLocator();
+SOSL.of(Account.SObjectType).toQueryLocator();
 ```

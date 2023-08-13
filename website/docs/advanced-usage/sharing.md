@@ -20,7 +20,7 @@ none (by default) | `USER_MODE` | `with sharing`
 `USER_MODE` is a enabled by default. It means that the object permissions, field-level security and **sharing rules are enforced**.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -52,7 +52,7 @@ Developers can control the sharing mode (`inherited sharing`, `with sharing`, an
 **NOTE!** To make it work, always set `inherited sharing` in your selector class.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -80,7 +80,7 @@ public without sharing class ExampleController {
 You can force the sharing mode for all of your queries.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -110,7 +110,7 @@ public with sharing class ExampleController {
 You can force the sharing mode for all of your queries.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }

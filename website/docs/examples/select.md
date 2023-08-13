@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # SELECT
 
-Specify fields that will be retrieved via query. Check [SOQL API - SELECT](../api/soql.md#select).
+Specify fields that will be retrieved via query. Check [SOSL API - SELECT](../api/sosl.md#select).
 
 ## Fields
 
@@ -15,7 +15,7 @@ SELECT Id, Name, BillingCity, BillingState, BillingStreet
 FROM Account
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -45,7 +45,7 @@ SELECT Id, Name, CreatedBy.Id, CreatedBy.Name
 FROM Account
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
@@ -74,7 +74,7 @@ SELECT COUNT() FROM Account
 SELECT COUNT(Name) names FROM Account
 ```
 ```apex
-public inherited sharing class SOQL_Account extends SOQL implements SOQL.Selector {
+public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
     public static SOQL_Account query() {
         return new SOQL_Account();
     }
