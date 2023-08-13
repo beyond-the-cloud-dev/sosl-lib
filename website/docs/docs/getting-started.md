@@ -9,6 +9,9 @@ The SOSL Lib provides functional constructs for SOSL queries in Apex.
 
 For more details, please refer to the [documentation](https://sosl.beyondthecloud.dev/).
 
+![Deploy to Scratch Org and run tests](https://github.com/beyond-the-cloud-dev/sosl-lib/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/beyond-the-cloud-dev/sosl-lib/branch/main/graph/badge.svg)](https://codecov.io/gh/beyond-the-cloud-dev/sosl-lib)
+
 ## Examples
 
 ```apex
@@ -32,7 +35,9 @@ List<List<SObject>> searchResults = SOSL.find('Company')
 
 ## Deploy to Salesforce
 
-TBC
+<button href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
+    Deploy to Salesforce
+</button>
 
 ## Documentation
 
