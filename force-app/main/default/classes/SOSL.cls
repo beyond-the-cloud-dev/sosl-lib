@@ -985,7 +985,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter containsSome(List<String> values) {
-            return set('LIKE', quote(values));
+            return set('LIKE', '(\'' + String.join(values, '\'') + '\')');
         }
 
         public IFilter contains(String value) {
@@ -1013,7 +1013,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter isIn(List<String> iterable) {
-            return set('IN', quote(iterable));
+            return set('IN', '(\'' + String.join(iterable, '\'') + '\')');
         }
 
         public IFilter notIn(Iterable<Object> iterable) {
@@ -1021,7 +1021,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter notIn(List<String> iterable) {
-            return set('NOT IN', quote(iterable));
+            return set('NOT IN', '(\'' + String.join(iterable, '\'') + '\')');
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
@@ -1082,10 +1082,6 @@ public inherited sharing class SOSL implements ISearchable {
             accessMode = AccessLevel.SYSTEM_MODE;
         }
 
-        public void mockId(String id) {
-            mockId = id;
-        }
-
         public List<List<SObject>> search(String query) {
             return sharingExecutor.search(query, accessMode);
         }
@@ -1130,15 +1126,15 @@ public inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    private static List<String> quote(List<String> values) {
-        List<String> quotedValues = new List<String>();
+    // private static List<String> quote(List<String> values) {
+    //     List<String> quotedValues = new List<String>();
 
-        for (String value : values) {
-            quotedValues.add(quote(value));
-        }
+    //     for (String value : values) {
+    //         quotedValues.add(quote(value));
+    //     }
 
-        return quotedValues;
-    }
+    //     return quotedValues;
+    // }
 
     private static String quote(String value) {
         return '\'' + value + '\'';
