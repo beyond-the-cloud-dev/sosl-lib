@@ -1126,16 +1126,6 @@ public inherited sharing class SOSL implements ISearchable {
         }
     }
 
-    // private static List<String> quote(List<String> values) {
-    //     List<String> quotedValues = new List<String>();
-
-    //     for (String value : values) {
-    //         quotedValues.add(quote(value));
-    //     }
-
-    //     return quotedValues;
-    // }
-
     private static String quote(String value) {
         return '\'' + value + '\'';
     }
