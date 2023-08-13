@@ -175,6 +175,22 @@ private class SOSL_Test {
     }
 
     @IsTest
+    static void returningWithFieldsList() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(new List<SObjectField>{
+                        Account.Id, Account.Name, Account.Industry, Account.AccountSource, Account.BillingCity, Account.NumberOfEmployees
+                     })
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name, Industry, AccountSource, BillingCity, NumberOfEmployees)', sosl.toString());
+    }
+
+    @IsTest
     static void filterId() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
@@ -505,7 +521,7 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void filterIsIn() {
+    static void filterIsInListOfStrings() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -520,7 +536,22 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void filterNotIn() {
+    static void filterIsInListOfIntegers() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).isIn(new List<Integer>{ 10, 20, 30 }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees IN (10, 20, 30))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterNotInListOfStrings() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -532,6 +563,102 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry NOT IN (\'IT\'))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIsNotInListOfIntegers() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.NumberOfEmployees).notIn(new List<Integer>{ 10, 20, 30 }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees NOT IN (10, 20, 30))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIncludesAll() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).includesAll(new List<String>{ 'IT', 'Tech' }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry INCLUDES (\'IT;Tech\'))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIncludesSome() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).includesSome(new List<String>{ 'IT', 'Tech' }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry INCLUDES (\'IT\', \'Tech\'))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterExcludesAll() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).excludesAll(new List<String>{ 'IT', 'Tech' }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry EXCLUDES (\'IT\', \'Tech\'))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterExcludesSome() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.Filter.with(Account.Industry).excludesSome(new List<String>{ 'IT', 'Tech' }))
+            );
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry EXCLUDES (\'IT;Tech\'))', sosl.toString());
+    }
+
+    @IsTest
+    static void filterIgnoreWhen() {
+        // Setup
+        String accountName = '';
+
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.FilterGroup
+                        .add(SOSL.Filter.with(Account.Name).equal(accountName).ignoreWhen(String.isEmpty(accountName)))
+                        .add(SOSL.Filter.with(Account.Industry).equal('IT'))
+                    )
+            );
+
+         // Verify
+         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Industry = \'IT\'))', sosl.toString());
     }
 
     @IsTest
@@ -628,6 +755,35 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = \'MyAccount\' OR Industry = \'IT\'))', sosl.toString());
+    }
+
+    @isTest
+    static void filterGroupEmptyFilterGroup() {
+                // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+                    .whereAre(SOSL.FilterGroup)
+            );
+
+        // Verify
+         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name)', sosl.toString());
+    }
+
+    @isTest
+    static void filterGroupEmptyDynamicFilter() {
+                // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+                    .with(Account.Id, Account.Name)
+            );
+
+        // Verify
+         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name)', sosl.toString());
     }
 
     @IsTest
@@ -782,6 +938,20 @@ private class SOSL_Test {
     }
 
     @IsTest
+    static void soslWithHighlight() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withHighlight();
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH HIGHLIGHT', sosl.toString());
+    }
+
+    @IsTest
     static void soslWithSnippet() {
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
@@ -809,19 +979,33 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK = \'0013V00000WNCwCQAX\'', sosl.toString());
     }
 
-    // @IsTest
-    // static void soslWithNetworkIn() {
-    //     // Test
-    //     SOSL sosl = SOSL.find(SEARCH_TEXT)
-    //         .inAllFields()
-    //         .returning(
-    //             SOSL.Returning(Account.SObjectType)
-    //         )
-    //         .withNetworkIn(new List<Id>{ FAKE_ID });
+    @IsTest
+    static void soslWithNetworkInList() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withNetworkIn(new List<Id>{ FAKE_ID });
 
-    //     // Verify
-    //     Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK IN (\'0013V00000WNCwCQAX\')', sosl.toString());
-    // }
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK IN (\'0013V00000WNCwCQAX\')', sosl.toString());
+    }
+
+    @IsTest
+    static void soslWithNetworkInSet() {
+        // Test
+        SOSL sosl = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .withNetworkIn(new Set<Id>{ FAKE_ID });
+
+        // Verify
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account WITH NETWORK IN (\'0013V00000WNCwCQAX\')', sosl.toString());
+    }
 
     @IsTest
     static void soslWithPriceBookId() {
@@ -1014,5 +1198,16 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual(0, searchResults.get('Account').size());
+    }
+
+    @IsTest
+    static void preview() {
+        // Test
+        SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .preview();
     }
 }

@@ -44,10 +44,10 @@ public inherited sharing class SOSL implements ISearchable {
         ISearchable returning(IReturning returning);
         // WITH
         ISearchable withDivision(String division);
+        ISearchable withHighlight();
         ISearchable withSnippet(Integer targetLength);
         ISearchable withNetworkEqual(Id networkId);
-        ISearchable withNetworkIn(List<Id> networkIds);
-        ISearchable withNetworkIn(Set<Id> networkIds);
+        ISearchable withNetworkIn(Iterable<Id> networkIds);
         ISearchable withPriceBookId(Id priceBookId);
         ISearchable withMetadata(String metadata);
         ISearchable withSpellCorrection();
@@ -217,12 +217,7 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
-    public SOSL withNetworkIn(List<Id> networkIds) {
-        builder.soslWiths.withNetworkIn(networkIds);
-        return this;
-    }
-
-    public SOSL withNetworkIn(Set<Id> networkIds) {
+    public SOSL withNetworkIn(Iterable<Id> networkIds) {
         builder.soslWiths.withNetworkIn(networkIds);
         return this;
     }
@@ -732,12 +727,8 @@ public inherited sharing class SOSL implements ISearchable {
             add('NETWORK = ' + quote(networkid));
         }
 
-        public void withNetworkIn(Set<Id> networkIds) {
-            withNetworkIn(new List<Id>(networkIds));
-        }
-
-        public void withNetworkIn(List<Id> networkIds) {
-            add('NETWORK IN (' + String.join(quote(networkIds), ', ') + ')');
+        public void withNetworkIn(Iterable<Id> networkIds) {
+            add('NETWORK IN (\'' +  String.join(networkIds, '\', \'') + '\')');
         }
 
         public void withPriceBookId(Id priceBookId) {
@@ -1034,19 +1025,19 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
-            return set('INCLUDES', quote(String.join(iterable, ';')));
+            return set('INCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
         public IFilter includesSome(Iterable<String> iterable) {
-            return set('INCLUDES', quote(String.join(iterable, '\', \'')));
+            return set('INCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesAll(Iterable<String> iterable) {
-            return set('EXCLUDES', quote(String.join(iterable, '\', \'')));
+            return set('EXCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesSome(Iterable<String> iterable) {
-            return set('EXCLUDES', quote(String.join(iterable, ';')));
+            return set('EXCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
         private IFilter set(String comperator, Object value) {
