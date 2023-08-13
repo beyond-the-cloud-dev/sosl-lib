@@ -128,7 +128,7 @@ public inherited sharing class SOSL implements ISearchable {
         IFilter greaterThan(Object value);
         IFilter lessOrEqual(Object value);
         IFilter greaterOrEqual(Object value);
-        IFilter containsSome(List<String> values);
+        IFilter containsSome(Iterable<String> values);
         IFilter contains(String value);
         IFilter endsWith(String value);
         IFilter startsWith(String value);
@@ -984,7 +984,7 @@ public inherited sharing class SOSL implements ISearchable {
             return set('>=', value);
         }
 
-        public IFilter containsSome(List<String> values) {
+        public IFilter containsSome(Iterable<String> values) {
             return set('LIKE', '(\'' + String.join(values, '\'') + '\')');
         }
 
