@@ -10,418 +10,184 @@ The lib main class for query construction.
 
 The following are methods for `SOSL`.
 
-[**INIT**](#init)
+[**FIND**](#select)
 
-- [`of(SObjectType ofObject)`](#of)
-- [`of(String ofObject)`](#of)
+- [`find(String searchText)`](#find)
 
-[**SELECT**](#select)
+**IN**
 
-- [`with(SObjectField field)`](#with-fields)
-- [`with(SObjectField field1, SObjectField field2)`](#with-field1---field5)
-- [`with(SObjectField field1, SObjectField field2, SObjectField field3)`](#with-field1---field5)
-- [`with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4)`](#with-field1---field5)
-- [`with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5)`](#with-field1---field5)
-- [`with(List<SObjectField> fields)`](#with-fields)
-- [`with(String fields)`](#with-string-fields)
-- [`with(String relationshipName, SObjectField field)`](#with-related-field1---field5)
-- [`with(String relationshipName, SObjectField field1, SObjectField field2)`](#with-related-field1---field5)
-- [`with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3)`](#with-related-field1---field5)
-- [`with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4)`](#with-related-field1---field5)
-- [`with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5)`](#with-related-field1---field5)
-- [`with(String relationshipName, List<SObjectField> fields)`](#with-related-fields)
+- [`inAllFields()`](#inallfields)
+- [`inNameFields()`](#innamefields)
+- [`inEmailFields()`](#inemailfields)
+- [`inPhoneFields()`](#inphonefields)
+- [`inSidebarFields()`](#insidebarfields)
 
-[**COUNT**](#count)
+[**RETURNING**](#returning)
 
-- [`count()`](#count)
-- [`count(SObjectField field)`](#count-field)
-- [`count(SObjectField field, String alias)`](#count-with-alias)
+- [`returning(IReturning returning)`](#returning)
 
-[**SUBQUERY**](#sub-query)
+[**WITH**](#using-scope)
 
-- [`with(SubQuery subQuery)`](#with-subquery)
-
-[**USING SCOPE**](#using-scope)
-
-- [`delegatedScope()`](#delegatedscope)
-- [`mineScope()`](#minescope)
-- [`mineAndMyGroupsScope()`](#mineandmygroupsscope)
-- [`myTerritoryScope()`](#myterritoryscope)
-- [`myTeamTerritoryScope()`](#myteamterritoryscope)
-- [`teamScope()`](#teamscope)
-
-[**WHERE**](#where)
-
-- [`whereAre(FilterGroup filterGroup)`](#whereare)
-- [`whereAre(Filter filter)`](#whereare)
-- [conditionLogic(String order)](#conditionlogic)
-- [anyConditionMatching()](#anyconditionmatching);
-
-[**GROUP BY**](#group-by)
-
-- [`groupBy(SObjectField field)`](#group-by)
-- [`groupByRollup(SObjectField field)`](#groupbyrollup)
-
-[**ORDER BY**](#order-by)
-
-- [`orderBy(SObjectField field)`](#order-by)
-- [`orderBy(String field)`](#order-by)
-- [`orderBy(String field, String direction)`](#order-by)
-- [`orderBy(String relationshipName, SObjectField field)`](#orderby-related)
-- [`sordDesc()`](#sortdesc)
-- [`nullsLast()`](#nullslast)
+- [`withDivision(String division)`](#delegatedscope)
+- [`withHighlight()`](#delegatedscope)
+- [`withSnippet(Integer targetLength)`](#delegatedscope)
+- [`withNetworkEqual(Id networkId)`](#delegatedscope)
+- [`withNetworkIn(Iterable<Id> networkIds)`](#delegatedscope)
+- [`withPriceBookId(Id priceBookId)`](#delegatedscope)
+- [`withMetadata(String metadata)`](#delegatedscope)
+- [`withSpellCorrection()`](#delegatedscope)
+- [`withoutSpellCorrection()`](#delegatedscope)
 
 [**LIMIT**](#limit)
 
 - [`setLimit(Integer amount)`](#setlimit)
 
-[**OFFSET**](#offset)
+[**UPDATE**](#offset)
 
-- [`offset(Integer startingRow)`](#offset)
-
-[**FOR**](#for)
-
-- [`forReference()`](#forreference)
-- [`forView()`](#forview)
-- [`forUpdate()`](#forupdate)
-- [`allRows()`](#allrows)
+- [`updateViewStat()`](#offset)
+- [`updateTracking()`](#offset)
 
 [**FIELD-LEVEL SECURITY**](#field-level-security)
 
 - [`systemMode()`](#systemmode)
-- [`stripInaccessible()`](#stripinaccessible)
-- [`stripInaccessible(AccessType accessType)`](#stripinaccessible)
 
 [**SHARING MODE**](#sharing-mode)
 
 - [`withSharing()`](#withsharing)
 - [`withoutSharing()`](#withoutsharing)
 
-[**MOCKING**](#mocking)
-
-- [`mockId(String id)`](#mockid)
-
 [**DEBUGGING**](#debugging)
 
 - [`preview()`](#preview)
 
-[**PREDEFINIED**](#predefinied)
-
-- [`byId(SObject record)`](#byid)
-- [`byId(Id recordId)`](#byid)
-- [`byIds(Iterable<Id> recordIds)`](#byids)
-- [`byIds(List<SObject> records)`](#byids)
-
 [**RESULT**](#result)
 
-- [`doExist()`](#doexist)
-- [`toValueOf(SObjectField fieldToExtract)`](#tovalueof)
-- [`toValuesOf(SObjectField fieldToExtract)`](#tovaluesof)
-- [`toInteger()`](#tointeger)
-- [`toObject()`](#toobject)
-- [`toList()`](#tolist)
-- [`toAggregated()`](#toaggregated)
-- [`toMap()`](#tomap)
-- [`toQueryLocator()`](#toquerylocator)
+- [`toSearchList()`](#doexist)
+- [`toSearchResult`](#tovalueof)
 
-## INIT
-### of
-
-Conctructs an `SOSL`.
+## FIND
 
 **Signature**
 
 ```apex
-SOSL of(SObjectType ofObject)
-SOSL of(String ofObject)
+SOSL find(String searchText)
 ```
 
 **Example**
 
 ```sql
-SELECT Id FROM Account
+FIND 'MySearch' IN ALL FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType).toList();
-
-String ofObject = 'Account';
-SOSL.of(ofObject).toList();
+SOSL.find('MySearch').inAllFields().toSearchList();
 ```
 
-## SELECT
+## IN
 
-### with field1 - field5
+### inAllFields
 
 **Signature**
 
 ```apex
-SOSL with(SObjectField field)
-```
-```apex
-SOSL with(SObjectField field1, SObjectField field2);
-```
-```apex
-SOSL with(SObjectField field1, SObjectField field2, SObjectField field3);
-```
-```apex
-SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
-```
-```apex
-SOSL with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+SOSL inAllFields()
 ```
 
 **Example**
 
 ```sql
-SELECT Id, Name
-FROM Account
+FIND 'MySearch' IN ALL FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(Account.Id, Account.Name)
-    .toList();
-
-SOSL.of(Account.SObjectType)
-    .with(Account.Id)
-    .with(Account.Name)
-    .toList();
+SOSL.find('MySearch').inAllFields().toSearchList();
 ```
 
-### with fields
-
-[SELECT](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm)
-
-> `SELECT` statement that specifies the fields to query. The fieldList in the `SELECT` statement specifies the list of one or more fields, separated by commas, that you want to retrieve.
-
-Use for more than 5 fields.
+### inNameFields
 
 **Signature**
 
 ```apex
-SOSL with(List<SObjectField> fields)
+SOSL inNameFields()
 ```
 
 **Example**
 
 ```sql
-SELECT Id, Name, Industry, AccountNumber, AnnualRevenue, BillingCity
-FROM Account
+FIND 'MySearch' IN NAME FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(new List<SObjectField>{
-        Account.Id,
-        Account.Name,
-        Account.Industry,
-        Account.AccountNumber,
-        Account.AnnualRevenue,
-        Account.BillingCity
-    }).toList();
+SOSL.find('MySearch').inNameFields().toSearchList();
 ```
 
-### with string fields
-
-**NOTE!** With String Apex does not create reference to field. Use `SObjectField` whenever it possible. Method below should be only use for dynamic queries.
+### inEmailFields
 
 **Signature**
 
 ```apex
-SOSL with(String fields)
+SOSL inEmailFields()
 ```
 
 **Example**
 
 ```sql
-SELECT Id, Name, Industry
-FROM Account
+FIND 'MySearch' IN EMAIL FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with('Id, Name, Industry')
-    .toList();
+SOSL.find('MySearch').inEmailFields().toSearchList();
 ```
 
-### with related field1 - field5
-
-Allows to add parent field to a query.
+### inPhoneFields
 
 **Signature**
 
 ```apex
-SOSL with(String relationshipName, SObjectField field)
-```
-```apex
-SOSL with(String relationshipName, SObjectField field1, SObjectField field2);
-```
-```apex
-SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3);
-```
-```apex
-SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
-```
-```apex
-SOSL with(String relationshipName, SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+SOSL inPhoneFields()
 ```
 
 **Example**
 
 ```sql
-SELECT CreatedBy.Name
-FROM Account
+FIND 'MySearch' IN PHONE FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with('CreatedBy', User.Name)
-    .toList();
-
-SOSL.of(Account.SObjectType)
-    .with('CreatedBy', User.Id, User.Name, User.Phone)
-    .toList();
+SOSL.find('MySearch').inPhoneFields().toSearchList();
 ```
 
-### with related fields
-
-[SELECT](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm)
-
-Allows to add parent fields to a query.
-
-Use for more than 5 parent fields.
+### inSidebarFields
 
 **Signature**
 
 ```apex
-SOSL with(String relationshipName, List<SObjectField> fields)
+SOSL inSidebarFields()
 ```
 
 **Example**
 
 ```sql
-SELECT
-    CreatedBy.Id,
-    CreatedBy.Name,
-    CreatedBy.Phone,
-    CreatedBy.FirstName,
-    CreatedBy.LastName,
-    CreatedBy.Email
-FROM Account
+FIND 'MySearch' IN SIDEBAR FIELDS
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with('CreatedBy', new List<SObjectField>{
-        User.Id,
-        User.Name,
-        User.Phone,
-        User.FirstName,
-        User.LastName,
-        User.Email
-    }).toList();
+SOSL.find('MySearch').inSidebarFields().toSearchList();
 ```
 
-## SUB-QUERY
+## RETURNING
 
-### with subquery
-
-[Using Relationship Queries](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_using.htm)
-
-> Use SOSL to query several relationship types.
-
-For more details check [`SOSL.SubQuery`](sosl-returning.md) class.
+For more details check [RETURNING API](./sosl-returning.md).
 
 **Signature**
 
 ```apex
-SOSL with(SOSL.SubQuery subQuery)
+FIND 'MySearch' IN ALL FIELDS RETURNING Account
 ```
 
 **Example**
 
-```sql
-SELECT Id, (
-    SELECT Id, Name
-    FROM Contacts
-) FROM Account
-```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .with(Contact.Id, Contact.Name)
-    ).toList();
-```
-
-## COUNT-QUERY
-
-### count
-
-[COUNT()](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_count.htm#count_section_title)
-
-> `COUNT()` returns the number of rows that match the filtering conditions.
-
-**Note!** COUNT() must be the only element in the SELECT list, any other fields will be automatically removed.
-
-**Signature**
-
-```apex
-SOSL count()
-```
-
-**Example**
-
-```sql
-SELECT COUNT()
-FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .count()
-    .toInteger();
-```
-
-### count field
-
-**Signature**
-
-```apex
-count(SObjectField field)
-```
-
-**Note!** To avoid the `Field must be grouped or aggregated` error, any default fields will be automatically removed.
-
-You can still specify additional fields, but they should be placed after the COUNT() function in the SELECT statement.
-
-**Example**
-
-```sql
-SELECT COUNT(Id), COUNT(CampaignId)
-FROM Opportunity
-```
-```apex
- SOSL.of(Opportunity.SObjectType)
-    .count(Opportunity.Id)
-    .count(Opportunity.CampaignId)
-    .toAggregated();
-```
-
-### count with alias
-
-**Signature**
-
-```apex
-count(SObjectField field, String alias)
-```
-
-**Note!** To avoid the `Field must be grouped or aggregated` error, any default fields will be automatically removed.
-
-You can still specify additional fields, but they should be placed after the COUNT() function in the SELECT statement.
-
-**Example**
-
-```sql
-SELECT COUNT(Name) names FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .count(Account.Name, 'names')
-    .toAggregated();
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
+    .toSearchList();
 ```
 
 ## USING SCOPE
