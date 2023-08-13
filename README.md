@@ -1,6 +1,7 @@
 # SOSL Lib
 
-TBD
+![Deploy to Scratch Org and run tests](https://github.com/beyond-the-cloud-dev/sosl-lib/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/beyond-the-cloud-dev/sosl-lib/branch/main/graph/badge.svg)](https://codecov.io/gh/beyond-the-cloud-dev/sosl-lib)
 
 The SOSL Lib provides functional constructs for SOSL queries in Apex.
 
@@ -29,7 +30,10 @@ List<List<SObject>> searchResults = SOSL.find('Company')
 
 ## Deploy to Salesforce
 
-TBC
+<a href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
 
 ## Documentation
 
