@@ -1,13 +1,10 @@
-# SOQL Lib
+# SOSL Lib
 
-![Deploy to Scratch Org and run tests](https://github.com/beyond-the-cloud-dev/soql-lib/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/beyond-the-cloud-dev/soql-lib/branch/main/graph/badge.svg)](https://codecov.io/gh/beyond-the-cloud-dev/soql-lib)
+TBD
 
-The SOQL Lib provides functional constructs for SOQL queries in Apex.
+The SOSL Lib provides functional constructs for SOSL queries in Apex.
 
-For more details, please refer to the [documentation](https://soql-lib.vercel.app/).
-
-You may also find [this blog post](https://beyondthecloud.dev/blog/soql-lib) about SOQL Lib interesting.
+For more details, please refer to the [documentation](https://sosl.beyondthecloud.dev/).
 
 ## Examples
 
