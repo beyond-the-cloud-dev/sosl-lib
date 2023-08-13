@@ -76,7 +76,8 @@ SOSL find(String searchText)
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS
+FIND 'MySearch'
+IN ALL FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inAllFields().toSearchList();
@@ -95,7 +96,8 @@ SOSL inAllFields()
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS
+FIND 'MySearch'
+IN ALL FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inAllFields().toSearchList();
@@ -112,7 +114,8 @@ SOSL inNameFields()
 **Example**
 
 ```sql
-FIND 'MySearch' IN NAME FIELDS
+FIND 'MySearch'
+IN NAME FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inNameFields().toSearchList();
@@ -129,7 +132,8 @@ SOSL inEmailFields()
 **Example**
 
 ```sql
-FIND 'MySearch' IN EMAIL FIELDS
+FIND 'MySearch'
+IN EMAIL FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inEmailFields().toSearchList();
@@ -146,7 +150,8 @@ SOSL inPhoneFields()
 **Example**
 
 ```sql
-FIND 'MySearch' IN PHONE FIELDS
+FIND 'MySearch'
+IN PHONE FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inPhoneFields().toSearchList();
@@ -163,7 +168,8 @@ SOSL inSidebarFields()
 **Example**
 
 ```sql
-FIND 'MySearch' IN SIDEBAR FIELDS
+FIND 'MySearch'
+IN SIDEBAR FIELDS
 ```
 ```apex
 SOSL.find('MySearch').inSidebarFields().toSearchList();
@@ -176,7 +182,9 @@ For more details check [RETURNING API](./sosl-returning.md).
 **Signature**
 
 ```apex
-FIND 'MySearch' IN ALL FIELDS RETURNING Account
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
 ```
 
 **Example**
@@ -203,7 +211,10 @@ ISearchable withDivision(String division);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH DIVISION = 'Global'
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH DIVISION = 'Global'
 ```
 ```apex
 SOSL.find('MySearch')
@@ -224,7 +235,10 @@ ISearchable withHighlight();
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH HIGHTLIGHT
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH HIGHTLIGHT
 ```
 ```apex
 SOSL.find('MySearch')
@@ -245,7 +259,10 @@ ISearchable withSnippet(Integer targetLength);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH SNIPPET (target_length=120)
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH SNIPPET (target_length=120)
 ```
 ```apex
 SOSL.find('MySearch')
@@ -266,7 +283,10 @@ ISearchable withNetworkEqual(Id networkId);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH NETWORK = 'networkdId'
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH NETWORK = 'networkdId'
 ```
 ```apex
 SOSL.find('MySearch')
@@ -287,7 +307,10 @@ ISearchable withNetworkIn(Iterable<Id> networkIds);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH NETWORK IN ('networkdId')
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH NETWORK IN ('networkdId')
 ```
 ```apex
 SOSL.find('MySearch')
@@ -308,7 +331,10 @@ ISearchable withPriceBookId(Id priceBookId);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH PricebookId = 'pricebookId'
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH PricebookId = 'pricebookId'
 ```
 ```apex
 SOSL.find('MySearch')
@@ -329,7 +355,10 @@ ISearchable withMetadata(String metadata);
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH METADATA = 'LABELS'
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH METADATA = 'LABELS'
 ```
 ```apex
 SOSL.find('MySearch')
@@ -349,7 +378,10 @@ ISearchable withSpellCorrection();
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH SPELL_CORRECTION
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH SPELL_CORRECTION
 ```
 ```apex
 SOSL.find('MySearch')
@@ -370,7 +402,10 @@ ISearchable withoutSpellCorrection();
 **Example**
 
 ```sql
-FIND 'MySearch' IN ALL FIELDS RETURNING Account WITH SPELL_CORRECTION = false
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+WITH SPELL_CORRECTION = false
 ```
 ```apex
 SOSL.find('MySearch')
@@ -382,82 +417,31 @@ SOSL.find('MySearch')
     .toSearchList();
 ```
 
-
-## GROUP BY
-
-[GROUP BY](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm)
-### groupBy
-
-> You can use the `GROUP BY` option in a SOSL query to avoid iterating through individual query results. That is, you specify a group of records instead of processing many individual records.
-
-**Signature**
-
-```apex
-SOSL groupBy(SObjectField field)
-```
-
-**Example**
-
-```sql
-SELECT LeadSource
-FROM Lead
-GROUP BY LeadSource
-```
-```apex
-SOSL.of(Lead.SObjectType)
-    .with(Lead.LeadSource)
-    .groupBy(Lead.LeadSource)
-    .toAggregated();
-```
-
-### groupByRollup
-
-**Signature**
-
-```apex
-SOSL groupByRollup(SObjectField field)
-```
-
-**Example**
-
-```sql
-SELECT LeadSource, COUNT(Name) cnt
-FROM Lead
-GROUP BY ROLLUP(LeadSource)
-```
-```apex
-QS.of(Lead.SObjectType)
-    .with(Lead.LeadSource)
-    .count(Lead.Name, 'cnt')
-    .groupByRollup(Lead.LeadSource)
-    .toAggregated();
-```
-
-
 ## LIMIT
 ### setLimit
 
-- [LIMIT](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_limit.htm)
-
-> `LIMIT` is an optional clause that can be added to a `SELECT` statement of a SOSL query to specify the maximum number of rows to return.
-
 **Signature**
 
 ```apex
-SOSL setLimit(Integer amount)
+ISearchable setLimit(Integer amount);
 ```
 
 **Example**
 
 ```sql
-SELECT Id
-FROM Account
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
 LIMIT 100
 ```
 ```apex
-SOSL.of(Account.SObjectType)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
     .setLimit(100)
-    .toList();
+    .toSearchList();
 ```
 
 ## FIELD-LEVEL SECURITY
@@ -475,15 +459,19 @@ More details you can find in [here](../advanced-usage/fls.md)
 **Signature**
 
 ```apex
-SOSL systemMode()
+ISearchable systemMode();
 ```
 
 **Example**
 
 ```apex
-SOSL.of(Account.SObjectType)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
     .systemMode()
-    .toList();
+    .toSearchList();
 ```
 
 ## SHARING MODE
@@ -501,16 +489,20 @@ Execute query `with sharing`.
 **Signature**
 
 ```apex
-SOSL withSharing()
+ISearchable withSharing();
 ```
 
 **Example**
 
 ```apex
-SOSL.of(Account.SObjectType)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
     .systemMode()
     .withSharing()
-    .toList();
+    .toSearchList();
 ```
 
 ### withoutSharing
@@ -522,16 +514,20 @@ Execute query `without sharing`.
 **Signature**
 
 ```apex
-SOSL withoutSharing()
+ISearchable withoutSharing()
 ```
 
 **Example**
 
 ```apex
-SOSL.of(Account.SObjectType)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
     .systemMode()
     .withoutSharing()
-    .toList();
+    .toSearchList();
 ```
 
 ## MOCKING
@@ -571,27 +567,29 @@ TBD
 **Signature**
 
 ```apex
-SOSL preview()
+ISearchable preview();
 ```
 
 **Example**
 
 ```apex
-SOSL.of(Account.SObjectType)
-    .preview()
-    .toList();
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
+    .toSearchResult();
 ```
 
-Query preview will be available in debug logs:
+SOSL preview will be available in debug logs:
 
 ```
 ============ SOSL Preview ============
-SELECT Name, AccountNumber, BillingCity, BillingCountry, BillingCountryCode
-FROM Account
-WHERE ((Id = :v1 OR Name LIKE :v2))
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
 =======================================
 ```
-
 
 ## RESULT
 
