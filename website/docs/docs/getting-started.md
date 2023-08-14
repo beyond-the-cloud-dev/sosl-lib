@@ -35,8 +35,10 @@ List<List<SObject>> searchResults = SOSL.find('Company')
 
 ## Deploy to Salesforce
 
-<button href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
-    Deploy to Salesforce
+<button>
+    <a hrhref="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
+        Deploy to Salesforce
+    </a>
 </button>
 
 ## Documentation
@@ -51,7 +53,6 @@ Read about the features in the [documentation](https://sosl.beyondthecloud.dev/d
 2. **Control FLS**
 - 2.1 **User Mode**
 - 2.2 **System Mode**
-- 2.3 **stripInaccessible**
 3. **Control Sharings Mode**
 - 3.1 **with sharing**
 - 3.2 **without sharing**

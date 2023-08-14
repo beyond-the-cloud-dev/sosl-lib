@@ -15,8 +15,10 @@ sidebar_position: 15
 
 Click the button below to deploy SOSL Lib to your environment.
 
-<button href="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
-    Deploy to Salesforce
+<button>
+    <a hrhref="https://githubsfdeploy.herokuapp.com?owner=beyond-the-cloud-dev&repo=sosl-lib&ref=main">
+        Deploy to Salesforce
+    </a>
 </button>
 
 ### Copy and Deploy
