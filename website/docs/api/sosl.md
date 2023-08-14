@@ -42,10 +42,10 @@ The following are methods for `SOSL`.
 
 - [`setLimit(Integer amount)`](#setlimit)
 
-[**UPDATE**](#offset)
+[**UPDATE**](#update)
 
-- [`updateViewStat()`](#offset)
-- [`updateTracking()`](#offset)
+- [`updateViewStat()`](#updateviewstat)
+- [`updateTracking()`](#updatetracking)
 
 [**FIELD-LEVEL SECURITY**](#field-level-security)
 
@@ -441,6 +441,61 @@ SOSL.find('MySearch')
         SOQL.Returning(Account.SObjectType)
     )
     .setLimit(100)
+    .toSearchList();
+```
+
+## UPDATE
+
+### updateViewStat
+
+**Signature**
+
+```apex
+ISearchable updateViewStat();
+```
+
+**Example**
+
+```sql
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+UPDATE VIEWSTAT
+```
+```apex
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
+    .updateViewStat()
+    .toSearchList();
+```
+
+### updateTracking
+
+
+**Signature**
+
+```apex
+ISearchable updateTracking();
+```
+
+**Example**
+
+```sql
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account
+UPDATE TRACKING
+```
+```apex
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+    )
+    .updateTracking()
     .toSearchList();
 ```
 
