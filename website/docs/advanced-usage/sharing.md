@@ -20,24 +20,25 @@ none (by default) | `USER_MODE` | `with sharing`
 `USER_MODE` is a enabled by default. It means that the object permissions, field-level security and **sharing rules are enforced**.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
-    public static SOQL_Account query() {
-        return new SOQL_Account();
-    }
-
-    private SOQL_Account() {
-        super(Account.SObjectType);
-        with(Account.Name, Account.AccountNumber);
-    }
-}
+SOSL.find('SearchText')
+    .inAllFields()
+    .returning(
+        SOSL.Returning(Account.SObjectType)
+    )
+    .toSearchList();
 ```
 
 The object permissions, field-level security, and sharing rules are enforced. Class sharing mode is ignored (`without sharing`).
 
 ```apex
 public without sharing class ExampleController {
-    public static List<Account> getAccountsByRecordType(String recordType) {
-        return SOQL_Account.query().toList();
+    public static List<List<SObject>> searchInAccounts(String searchText) {
+        return SOSL.find(searchText)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .toSearchList();
     }
 }
 ```
@@ -52,25 +53,27 @@ Developers can control the sharing mode (`inherited sharing`, `with sharing`, an
 **NOTE!** To make it work, always set `inherited sharing` in your selector class.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
-    public static SOQL_Account query() {
-        return new SOQL_Account();
-    }
-
-    private SOQL_Account() {
-        super(Account.SObjectType);
-        with(Account.Name, Account.AccountNumber)
-            .systemMode();
-    }
-}
+SOSL.find('SearchText')
+    .inAllFields()
+    .returning(
+        SOSL.Returning(Account.SObjectType)
+    )
+    .systemMode()
+    .toSearchList();
 ```
 
 The object permissions and field-level permissions are ignored. Sharing rules are controlled by the sharing mode (`without sharing`).
 
 ```apex
 public without sharing class ExampleController {
-    public static List<Account> getAccountsByRecordType(String recordType) {
-        return SOQL_Account.query().toList();
+    public static List<List<SObject>> searchInAccounts(String searchText) {
+        return SOSL.find(searchText)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .toSearchList();
     }
 }
 ```
@@ -80,26 +83,28 @@ public without sharing class ExampleController {
 You can force the sharing mode for all of your queries.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
-    public static SOQL_Account query() {
-        return new SOQL_Account();
-    }
-
-    private SOQL_Account() {
-        super(Account.SObjectType);
-        with(Account.Name, Account.AccountNumber)
-            .systemMode()
-            .withSharing();
-    }
-}
+SOSL.find('SearchText')
+    .inAllFields()
+    .returning(
+        SOSL.Returning(Account.SObjectType)
+    )
+    .systemMode()
+    .withSharing()
+    .toSearchList();
 ```
 
 The object permissions and field-level permissions are ignored. Sharing rules are controlled by the sharing mode specified in the `query()` method (`.withSharing()`).
 
 ```apex
 public with sharing class ExampleController {
-    public static List<Account> getAccountsByRecordType(String recordType) {
-        return SOQL_Account.query().toList();
+    public static List<List<SObject>> searchInAccounts(String searchText) {
+        return SOSL.find(searchText)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .toSearchList();
     }
 }
 ```
@@ -110,26 +115,29 @@ public with sharing class ExampleController {
 You can force the sharing mode for all of your queries.
 
 ```apex
-public inherited sharing class SOQL_Account extends SOSL implements SOSL.Selector {
-    public static SOQL_Account query() {
-        return new SOQL_Account();
-    }
-
-    private SOQL_Account() {
-        super(Account.SObjectType);
-        with(Account.Name, Account.AccountNumber)
-            .systemMode()
-            .withoutSharing();
-    }
-}
+SOSL.find('SearchText')
+    .inAllFields()
+    .returning(
+        SOSL.Returning(Account.SObjectType)
+    )
+    .systemMode()
+    .withoutSharing()
+    .toSearchList();
 ```
 
 The object permissions and field-level permissions are ignored. Sharing rules are controlled by the sharing mode specified in the `query()` method (`.withoutSharing()`).
 
 ```apex
 public with sharing class ExampleController {
-    public static List<Account> getAccountsByRecordType(String recordType) {
-        return SOQL_Account.query().toList();
+    public static List<List<SObject>> searchInAccounts(String searchText) {
+        return SOSL.find(searchText)
+            .inAllFields()
+            .returning(
+                SOSL.Returning(Account.SObjectType)
+            )
+            .systemMode()
+            .withoutSharing()
+            .toSearchList();
     }
 }
 ```
