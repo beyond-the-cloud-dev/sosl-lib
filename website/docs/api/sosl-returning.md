@@ -10,11 +10,9 @@ Construct sub-query with provided API.
 
 The following are methods for `Returning`.
 
-[**INIT**](#init)
+[**RETURNING**](#returning)
 
-- [`of(String ofObject)`](#of)
-
-[**SELECT**](#select)
+[**FIELDS**](#fields)
 
 - [`with(SObjectField field)`](#with-fields)
 - [`with(SObjectField field1, SObjectField field2)`](#with-field1---field5)
@@ -22,11 +20,6 @@ The following are methods for `Returning`.
 - [`with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4)`](#with-field1---field5)
 - [`with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5)`](#with-field1---field5)
 - [`with(List<SObjectField> fields)`](#with-fields)
-- [`with(String relationshipName, List<SObjectField> fields)`](#with-related-fields)
-
-[**SUBQUERY**](#sub-query)
-
-- [`with(SubQuery subQuery)`](#with-subquery)
 
 [**WHERE**](#where)
 
@@ -35,6 +28,8 @@ The following are methods for `Returning`.
 
 [**ORDER BY**](#order-by)
 
+- [`orderBy(String field)`](#order-by)
+- [`orderBy(String field, String direction)`](#order-by)
 - [`orderBy(SObjectField field)`](#order-by)
 - [`orderBy(String relationshipName, SObjectField field)`](#orderby-related)
 - [`sortDesc()`](#sortdesc)
@@ -48,72 +43,47 @@ The following are methods for `Returning`.
 
 - [`offset(Integer startingRow)`](#offset)
 
-[**FOR**](#for)
+## RETURNING
 
-- [`forReference()`](#forreference)
-- [`forView()`](#forview)
+TBD
 
-## INIT
-### of
-
-Conctructs an `SubQuery`.
-
-**Signature**
-
-```apex
-SubQuery of(String ofObject)
-```
-
-**Example**
-
-```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
-) FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts'))
-    .toList();
-```
-
-## SELECT
+## FIELDS
 
 ### with field1 - field5
 
 **Signature**
 
 ```apex
-SubQuery with(SObjectField field);
+IReturning with(SObjectField field);
 ```
 ```apex
-SubQuery with(SObjectField field1, SObjectField field2);
+IReturning with(SObjectField field1, SObjectField field2);
 ```
 ```apex
-SubQuery with(SObjectField field1, SObjectField field2, SObjectField field3);
+IReturning with(SObjectField field1, SObjectField field2, SObjectField field3);
 ```
 ```apex
-SubQuery with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
+IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4);
 ```
 ```apex
-SubQuery with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
+IReturning with(SObjectField field1, SObjectField field2, SObjectField field3, SObjectField field4, SObjectField field5);
 ```
 
 **Example**
 
 ```sql
-SELECT Id, (
-    SELECT Id, Name
-    FROM Contacts
-) FROM Account
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Account(Id, Name)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .with(Contact.Id, Contact.Name)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Account.SObjectType)
+            .with(Account.Id, Account.Name)
     )
-    .toList();
+    .toSearchList();
 ```
 
 ### with fields
@@ -123,7 +93,7 @@ Use for more than 5 fields.
 **Signature**
 
 ```apex
-SubQuery with(List<SObjectField> fields)
+IReturning with(List<SObjectField> fields);
 ```
 
 **Example**
@@ -148,64 +118,28 @@ SOSL.of(Account.SObjectType)
     )
     .toList();
 ```
-
-### with related fields
-
-**Signature**
-
-```apex
-SubQuery with(String relationshipName, List<SObjectField> fields)
-```
-
-
 **Example**
 
 ```sql
-SELECT Id, (
-    SELECT CreatedBy.Id, CreatedBy.Name
-    FROM Contacts
-) FROM Account
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(Id, Name, Phone, RecordTypeId, Title, Salutation)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .with('CreatedBy', new List<SObjectField>{
-            User.Id, User.Name
-        })
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(new List<SObjectField>{
+                Contact.Id,
+                Contact.Name,
+                Contact.Phone,
+                Contact.RecordTypeId,
+                Contact.Title,
+                Contact.Salutation
+            })
     )
-    .toList();
-```
-
-## SUB-QUERY
-### with subquery
-
-[Query Five Levels of Parent-to-Child Relationships in SOSL Queries](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql_5level.htm&release=244&type=5)
-
-> Use SOSL to query several relationship types.
-
-**Signature**
-
-```apex
-SubQuery with(SOSL.SubQuery subQuery)
-```
-
-**Example**
-
-```sql
-SELECT Name, (
-    SELECT LastName , (
-        SELECT AssetLevel FROM Assets
-    ) FROM Contacts
-) FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .with(Contact.LastName)
-        .with(SOSL.SubQuery.of('Assets')
-            .with(Asset.AssetLevel)
-        )
-    ).toList();
+    .toSearchList();
 ```
 
 ## WHERE
@@ -216,7 +150,7 @@ For more details check [`SOSL.FilterGroup`](sosl-filters-group.md) and [`SOSL.Fi
 **Signature**
 
 ```apex
-SubQuery whereAre(FilterClause conditions)
+IReturning whereAre(FilterClause conditions);
 ```
 
 **Example**
@@ -240,13 +174,36 @@ SOSL.of(Account.SObjectType)
     .toList();
 ```
 
+```sql
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
+    WHERE Id = 'contactId' OR Name = 'John'
+)
+```
+```apex
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .whereAre(SOSL.FilterGroup
+                .add(SOSL.Filter.with(Contact.Id).equal(contactId))
+                .add(SOSL.Filter.with(Contact.Name).contains('John'))
+                .conditionLogic('1 OR 2')
+            )
+    )
+    .toSearchList();
+```
+
 ## ORDER BY
 ### order by
 
 **Signature**
 
 ```apex
-SubQuery orderBy(SObjectField field)
+IReturning orderBy(SObjectField field);
 ```
 
 **Example**
@@ -266,6 +223,24 @@ SOSL.of(Account.SObjectType)
     .toList();
 ```
 
+```sql
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
+    ORDER BY Name
+)
+```
+```apex
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .orderBy(Contact.Name)
+    )
+    .toSearchList();
+```
 ### orderBy related
 
 Order SOSL query by parent field.
@@ -273,7 +248,7 @@ Order SOSL query by parent field.
 **Signature**
 
 ```apex
-SubQuery orderBy(String relationshipName, SObjectField field)
+IReturning orderBy(String relationshipName, SObjectField field);
 ```
 
 **Example**
@@ -293,6 +268,25 @@ SOSL.of(Account.SObjectType)
     .toList();
 ```
 
+```sql
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
+    ORDER BY CreatedBy.Name
+)
+```
+```apex
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .orderBy('CreatedBy', User.Name)
+    )
+    .toSearchList();
+```
+
 ### sortDesc
 
 Default order is ascending (`ASC`).
@@ -300,27 +294,29 @@ Default order is ascending (`ASC`).
 **Signature**
 
 ```apex
-SubQuery sortDesc()
+IReturning sortDesc();
 ```
 
 **Example**
 
 ```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
     ORDER BY Name DESC
-) FROM Account
+)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .orderBy(Contact.Name)
-        .sortDesc()
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .orderBy(Contact.Name).sortDesc()
     )
-    .toList();
+    .toSearchList();
 ```
-
 ### nullsLast
 
 By default, null values are sorted first (`NULLS FIRST`).
@@ -328,128 +324,83 @@ By default, null values are sorted first (`NULLS FIRST`).
 **Signature**
 
 ```apex
-SubQuery nullsLast()
+IReturning nullsLast();
 ```
 
 **Example**
 
 ```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
-    ORDER BY Name NULLS LAST
-) FROM Account
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
+    ORDER BY Name ASC NULLS LAST
+)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .orderBy(Contact.Name)
-        .nullsLast()
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .orderBy(Contact.Name).nullsLast()
     )
-    .toList();
+    .toSearchList();
 ```
 
 ## LIMIT
 ### setLimit
 
-
 **Signature**
 
 ```apex
-SubQuery setLimit(Integer amount)
+IReturning setLimit(Integer amount);
 ```
-
-**Example**
 
 ```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
     LIMIT 100
-) FROM Account
+)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .setLimit(100)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .setLimit(100)
     )
-    .toList();
+    .toSearchList();
 ```
 
 ## OFFSET
-### offset
 
 **Signature**
 
 ```apex
-SubQuery offset(Integer startingRow)
+IReturning offset(Integer startingRow);
 ```
 
 **Example**
 
 ```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
+FIND 'MySearch'
+IN ALL FIELDS
+RETURNING Contact(
+    Id, Name
     OFFSET 10
-) FROM Account
+)
 ```
 ```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .offset(10)
+SOSL.find('MySearch')
+    .inAllFields()
+    .returning(
+        SOQL.Returning(Contact.SObjectType)
+            .with(Contact.Id, Contact.Name)
+            .offset(10)
     )
-    .toList();
-```
-
-## FOR
-
-### forReference
-
-**Signature**
-
-```apex
-SubQuery forReference()
-```
-
-**Example**
-
-```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
-    FOR REFERENCE
-) FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .forReference()
-    )
-    .toList();
-```
-
-### forView
-
-**Signature**
-
-```apex
-SubQuery forView()
-```
-
-**Example**
-
-```sql
-SELECT Id, (
-    SELECT Id
-    FROM Contacts
-    FOR VIEW
-) FROM Account
-```
-```apex
-SOSL.of(Account.SObjectType)
-    .with(SOSL.SubQuery.of('Contacts')
-        .forView()
-    )
-    .toList();
+    .toSearchList();
 ```
