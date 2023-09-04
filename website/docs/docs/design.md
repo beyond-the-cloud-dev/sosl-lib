@@ -68,6 +68,8 @@ public interface ISearchable {
     // RESULT
     List<List<SObject>> toSearchList();
     Search.SearchResults toSearchResult();
+    // MOCKING
+    ISearchable mockId(String queryIdentifier);
 }
 
 public interface IReturning {

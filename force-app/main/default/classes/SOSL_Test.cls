@@ -1210,4 +1210,25 @@ private class SOSL_Test {
             )
             .preview();
     }
+
+    @IsTest
+    static void mock(){
+        List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+        SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
+
+        List<List<SObject>> results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(
+                SOSL.returning(Account.SObjectType)
+            )
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) testAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+
+    }
 }

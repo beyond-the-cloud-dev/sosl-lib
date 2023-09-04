@@ -5,29 +5,33 @@ sidebar_position: 13
 # MOCKING
 
 Mock SOSL results in Unit Tests.
+Currently you can mock only `search` (`.toSearchList`) queries. Because `.find` (`.toSearchResult`) returns `Search.SearchResult` object which cannot be constructed in apex.
 
 You need to mock external objects.
 
 > In Apex tests, use dynamic SOSL to query external objects. Tests that perform static SOSL queries of external objects fail. ~ Salesforce
 
-## Mock Single Record
+## Mock Search results
 
-Set mocking ID in Query declaration.
+Firstly, set mocking ID in Query declaration.
 
 ```apex
 public with sharing class ExampleController {
 
-    public static List<Account> getAccountByName(String accountName) {
-        return SOQL_Account.query()
-            .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOSL.Filter.name().contains(accountName))
-            .mockId('ExampleController.getAccountByName')
-            .toObject();
-    }
+    public static List<Account> searchAccountsByName(String accountName) {
+        return SOSL.find(accountName)
+            .inAllFields()
+            .returning(
+                SOSL.returning(Account.SObjectType)
+            )
+            .mockId('MockingExample')
+            .toSearchList()
+            .get(0);
+        }
 }
 ```
 
-Pass single SObject record to SOSL class, and use mock ID to target query to be mocked.
+Pass list of `List<Sobject>` to SOSL class, and use mock Id to target query to be mocked.
 
 ```apex
 @IsTest
@@ -36,220 +40,16 @@ public class ExampleControllerTest {
 
     @IsTest
     static void getAccountByName() {
-        SOSL.setMock('ExampleController.getAccountByName', new Account(Name = TEST_ACCOUNT_NAME));
+        List<SObject> testAccounts = new List<Account>{ new Account(Name = TEST_ACCOUNT_NAME) };
+        SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
 
         Test.startTest();
-        Account result = (Account) ExampleController.getAccountByName(TEST_ACCOUNT_NAME);
+        Account result = (Account) ExampleController.searchAccountsByName(TEST_ACCOUNT_NAME);
         Test.stopTest();
 
-        Assert.areEqual(TEST_ACCOUNT_NAME, result.Name);
+        Assert.areEqual(TEST_ACCOUNT_NAME, result.get(0).Name);
     }
 }
 ```
 
 During execution Selector will return record that was set by `.setMock` method.
-
-## Mock Multiple Records
-
-Set mocking ID in Query declaration.
-
-```apex
-public with sharing class ExampleController {
-
-    public static List<Account> getPartnerAccounts(String accountName) {
-        return SOQL_Account.query()
-            .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOSL.FilterGroup
-                .add(SOSL.Filter.name().contains(accountName))
-                .add(SOSL.Filter.recordType().equal('Partner'))
-            )
-            .mockId('ExampleController.getPartnerAccounts')
-            .toList();
-    }
-}
-```
-Pass List of SObject records to SOSL class, and use mock ID to target query to be mocked.
-
-```apex
-@IsTest
-public class ExampleControllerTest {
-
-    @IsTest
-    static void getPartnerAccounts() {
-        List<Account> accounts = new List<Account>{
-            new Account(Name = 'MyAccount 1'),
-            new Account(Name = 'MyAccount 2')
-        };
-
-        SOSL.setMock('ExampleController.getPartnerAccounts', accounts);
-
-        Test.startTest();
-        List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
-        Test.stopTest();
-
-        Assert.areEqual(accounts, result);
-    }
-}
-```
-
-During execution Selector will return List of records that was set by `.setMock` method.
-
-## Mock Count Result
-
-Set mocking ID in Query declaration.
-
-```apex
-public with sharing class ExampleController {
-
-    public static List<Account> getPartnerAccountsCount(String accountName) {
-        return SOQL_Account.query()
-            .count()
-            .whereAre(SOSL.FilterGroup
-                .add(SOSL.Filter.name().contains(accountName))
-                .add(SOSL.Filter.recordType().equal('Partner'))
-            )
-            .mockId('ExampleController.getPartnerAccountsCount')
-            .toInteger();
-    }
-}
-```
-Pass Integer value to SOSL class, and use mock ID to target query to be mocked.
-
-```apex
-@IsTest
-public class ExampleControllerTest {
-    private static final Integer TEST_VALUE = 5;
-
-    @IsTest
-    static void getPartnerAccountsCount() {
-        SOSL.setMock('ExampleController.getPartnerAccountsCount', TEST_VALUE);
-
-        Test.startTest();
-        Integer result = ExampleController.getPartnerAccounts('MyAccount');
-        Test.stopTest();
-
-        Assert.areEqual(TEST_VALUE, result);
-    }
-}
-```
-
-During execution Selector will return Integer count that was set by `.setMock` method.
-
-## Mock with Static Resource
-
-Set mocking ID in Query declaration.
-
-```apex
-public with sharing class ExampleController {
-
-    public static List<Account> getPartnerAccounts(String accountName) {
-        return SOQL_Account.query()
-            .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOSL.FilterGroup
-                .add(SOSL.Filter.name().contains(accountName))
-                .add(SOSL.Filter.recordType().equal('Partner'))
-            )
-            .mockId('ExampleController.getPartnerAccounts')
-            .toList();
-    }
-}
-```
-
-Pass String value with name of Static Resource file with `.csv` records, and use mock ID to target query to be mocked.
-
-```apex
-@IsTest
-public class ExampleControllerTest {
-
-    @IsTest
-    static void getPartnerAccounts() {
-        SOSL.setMock('ExampleController.getPartnerAccounts', Test.loadData(Account.SObjectType, 'MyAccounts'));
-
-        Test.startTest();
-        List<Account> result = ExampleController.getPartnerAccounts('MyAccount');
-        Test.stopTest();
-
-        Assert.isNotNull(result);
-    }
-}
-```
-
-During execution Selector will return records from Static Resource that was set by `.setMock` method.
-
-## Mock Sub-Query
-
-Set mocking ID in Query declaration.
-
-```
-public without sharing class AccountsController {
-    public static List<Account> getAccountsWithContacts() {
-        return SOSL.of(Account.SObjectType)
-            .with(Account.Name)
-            .with(
-                SOSL.SubQuery.of('Contacts')
-                    .with(Contact.Id, Contact.Name, Contact.AccountId, Contact.Email)
-            )
-            .mockId('AccountsController.getAccountsWithContacts')
-            .toList();
-    }
-}
-```
-
-Deserialize desired data from JSON format to selected SObjectType. And pass data in form of single record or list of records.
-
-```
-@IsTest
-static void getAccountsWithContacts() {
-    List<Account> mocks = (List<Account>) JSON.deserialize(
-        '[{ "Name": "Account Name", "Contacts": { "totalSize": 1, "done": true, "records": [{ "Name": "Contact Name", "Email": "contact.email@address.com" }] }  }],
-        List<Account>.class
-    );
-
-    List<Account> accounts;
-
-    Test.startTest();
-    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
-    accounts = AccountsController.getAccountsWithContacts();
-    Test.stopTest();
-
-    Assert.isNotNull(accounts);
-    Assert.isNotNull(accounts[0].contacts);
-    Assert.areEqual(1, accounts[0].contacts.size());
-}
-```
-
-Or create data with Test Data Factory and Serialize/Deserialize it to use as a Mock.
-
-```
-@IsTest
-static void getAccountsWithContacts() {
-    List<Account> mocks = (List<Account>) JSON.deserialize(
-        JSON.serialize(
-            new List<Map<String, Object>>{
-                new Map<String, Object>{
-                    'Name' => 'Account Name',
-                    'Contacts' => new Map<String, Object>{
-                        'totalSize' => 1,
-                        'done' => true,
-                        'records' => new List<Contact>{ new Contact(FirstName = 'Contact', LastName = 'Name', Email = 'contact.email@address.com') }
-                    }
-                }
-            }
-        ),
-        List<Account>.class
-    );
-
-    List<Account> accounts;
-
-    Test.startTest();
-    SOSL.setMock('AccountsController.getAccountsWithContacts', mocks);
-    accounts = AccountsController.getAccountsWithContacts();
-    Test.stopTest();
-
-    Assert.isNotNull(accounts);
-    Assert.isNotNull(accounts[0].contacts);
-    Assert.areEqual(1, accounts[0].contacts.size());
-}
-```
-
-During execution Selector will ignore filters and return data set by a mock.

@@ -92,26 +92,26 @@ SOSL.of(Account.SObjectType)
 
 ## Mocking
 
-Mocking provides a way to substitute records from a Database with some prepared data. Data can be prepared in form of SObject records and lists in Apex code or Static Resource `.csv` file.
-Mocked queries won't make any SOSL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
+Mocking provides a way to substitute records from a Database search with some prepared data. Data can be prepared in form of list of `List<SObject>`, in this format you can set multiple SObject types that will be passed to SOSL class.
+Mocked queries won't make any SOSL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data. Currently you can mock only `search` (`.toSearchList`) queries. Because `.find` (`.toSearchResult`) returns `Search.SearchResult` object which cannot be constructed in apex.
 
 ```apex
 public with sharing class ExampleController {
 
-    public static List<Account> getPartnerAccounts(String accountName) {
-        return SOQL_Account.query()
-            .with(Account.BillingCity, Account.BillingCountry)
-            .whereAre(SOSL.FilterGroup
-                .add(SOSL.Filter.name().contains(accountName))
-                .add(SOSL.Filter.recordType().equal('Partner'))
+    public static List<Account> searchAccountsByName(String accountName) {
+        return SOSL.find(accountName)
+            .inAllFields()
+            .returning(
+                SOSL.returning(Account.SObjectType)
             )
-            .mockId('ExampleController.getPartnerAccounts')
-            .toList();
-    }
+            .mockId('MockingExample')
+            .toSearchList()
+            .get(0);
+        }
 }
 ```
 
-Then in test simply pass data you want to get from Selector to `SOSL.setMock(id, data)` method. Acceptable formats are: `List<SObject>` or `SObject`. Then during execution Selector will return desired data.
+Then in test simply pass data you want to get from Selector to `SOSL.setMock(id, data)` method. Acceptable format is: `List<List<SObject>>`. Then during execution Selector will return desired data.
 
 ### List of records
 

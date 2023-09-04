@@ -68,7 +68,7 @@ public inherited sharing class SOSL implements ISearchable {
         List<List<SObject>> toSearchList();
         Search.SearchResults toSearchResult();
         // MOCKING
-        ISearchable mockId(String id);
+        ISearchable mockId(String queryIdentifier);
     }
 
     public interface IReturning {
@@ -154,7 +154,7 @@ public inherited sharing class SOSL implements ISearchable {
 
     private SearchableBuilder builder;
     private Executor executor;
-    private Mock mock;
+    private static Mock mock = new Mock();
 
     public static SOSL find(String searchText) {
         return new SOSL(searchText);
@@ -163,7 +163,6 @@ public inherited sharing class SOSL implements ISearchable {
     private SOSL(String searchValue) {
        builder = new SearchableBuilder(searchValue);
        executor = new Executor();
-       mock = new Mock();
     }
 
     public SOSL inAllFields() {
@@ -1106,10 +1105,6 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public Search.SearchResults find(String query) {
-            if(mock.hasMock(mockId)){
-                return mock.getMock(mockId);
-            }
-
             return sharingExecutor.find(query, accessMode);
         }
     }
