@@ -1125,15 +1125,15 @@ public inherited sharing class SOSL implements ISearchable {
         protected Object binded8;
 
         public DatabaseSearch setBinding(List<Object> bindedValues) {
-            binded0 = bindedValues[0];
-            binded1 = bindedValues[1];
-            binded2 = bindedValues[2];
-            binded3 = bindedValues[3];
-            binded4 = bindedValues[4];
-            binded5 = bindedValues[5];
-            binded6 = bindedValues[6];
-            binded7 = bindedValues[7];
-            binded8 = bindedValues[8];
+            binded0 = bindedValues.size() > 0 ? bindedValues[0] : null;
+            binded1 = bindedValues.size() > 1 ? bindedValues[1] : null;
+            binded2 = bindedValues.size() > 2 ? bindedValues[2] : null;
+            binded3 = bindedValues.size() > 3 ? bindedValues[3] : null;
+            binded4 = bindedValues.size() > 4 ? bindedValues[4] : null;
+            binded5 = bindedValues.size() > 5 ? bindedValues[5] : null;
+            binded6 = bindedValues.size() > 6 ? bindedValues[6] : null;
+            binded7 = bindedValues.size() > 7 ? bindedValues[7] : null;
+            binded8 = bindedValues.size() > 8 ? bindedValues[8] : null;
             return this;
         }
 
