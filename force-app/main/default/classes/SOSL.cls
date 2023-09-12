@@ -121,9 +121,7 @@ public inherited sharing class SOSL implements ISearchable {
         IFilter isTrue();
         IFilter isFalse();
         IFilter equal(Object value);
-        IFilter equal(String value);
         IFilter notEqual(Object value);
-        IFilter notEqual(String value);
         IFilter lessThan(Object value);
         IFilter greaterThan(Object value);
         IFilter lessOrEqual(Object value);
@@ -963,16 +961,8 @@ public inherited sharing class SOSL implements ISearchable {
             return set('=', value);
         }
 
-        public IFilter equal(String value) {
-            return  set('=', quote(value));
-        }
-
         public IFilter notEqual(Object value) {
             return set('!=', value);
-        }
-
-        public IFilter notEqual(String value) {
-            return set('!=', quote(value));
         }
 
         public IFilter lessThan(Object value) {
@@ -992,7 +982,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter containsSome(Iterable<String> values) {
-            return set('LIKE', '(\'' + String.join(values, '\'') + '\')');
+            return set('LIKE', values);
         }
 
         public IFilter contains(String value) {
@@ -1008,7 +998,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter contains(String prefix, String value, String suffix) {
-            return set('LIKE', quote(prefix + formattedString(value) + suffix));
+            return set('LIKE', prefix + formattedString(value) + suffix);
         }
 
         private String formattedString(String value) {
@@ -1052,8 +1042,8 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         private IFilter set(String comperator, Object value) {
-            this.value = value;
             this.comperator = comperator;
+            this.value = value;
             return this;
         }
 

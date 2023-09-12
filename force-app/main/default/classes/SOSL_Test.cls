@@ -217,7 +217,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE RecordType.DeveloperName = \'Partner\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE RecordType.DeveloperName = :binded0)', sosl.toString());
+        Assert.areEqual('Partner', sosl.binding()[0]);
     }
 
     @IsTest
@@ -232,7 +233,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = \'Test\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
+        Assert.areEqual('Test', sosl.binding()[0]);
     }
 
     @IsTest
@@ -247,7 +249,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = \'IT\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
+        Assert.areEqual('IT', sosl.binding()[0]);
     }
 
     @IsTest
@@ -262,7 +265,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name WHERE Account.Industry = \'IT\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name WHERE Account.Industry = :binded0)', sosl.toString());
+        Assert.areEqual('IT', sosl.binding()[0]);
     }
 
     @IsTest
@@ -277,7 +281,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = \'IT\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
+        Assert.areEqual('IT', sosl.binding()[0]);
     }
 
     @IsTest
@@ -292,7 +297,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = null)', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
+        Assert.areEqual(null, sosl.binding()[0]);
     }
 
     @IsTest
@@ -352,7 +358,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees = 10)', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees = :binded0)', sosl.toString());
+        Assert.areEqual(10, sosl.binding()[0]);
     }
 
     @IsTest
@@ -367,7 +374,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = \'My Account\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
+        Assert.areEqual('My Account', sosl.binding()[0]);
     }
 
     @IsTest
@@ -382,7 +390,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees != 10)', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE NumberOfEmployees != :binded0)', sosl.toString());
+        Assert.areEqual(10, sosl.binding()[0]);
     }
 
     @IsTest
@@ -397,7 +406,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name != \'My Account\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name != :binded0)', sosl.toString());
+        Assert.areEqual('My Account', sosl.binding()[0]);
     }
 
     @IsTest
@@ -462,17 +472,21 @@ private class SOSL_Test {
 
     @IsTest
     static void filterContainsSome() {
+        // Setup
+        List<String> names = new List<String>{ 'Test'};
+
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
             .returning(
                 SOSL.Returning(Account.SObjectType)
                     .with(Account.Id, Account.Name)
-                    .whereAre(SOSL.Filter.with(Account.Name).containsSome(new List<String>{ 'Test'}))
+                    .whereAre(SOSL.Filter.with(Account.Name).containsSome(names))
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE (\'Test\'))', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE :binded0)', sosl.toString());
+        Assert.areEqual(names, sosl.binding()[0]);
     }
 
     @IsTest
@@ -487,7 +501,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE \'%Test%\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE :binded0)', sosl.toString());
+        Assert.areEqual('%Test%', sosl.binding()[0]);
     }
 
     @IsTest
@@ -502,7 +517,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE \'Test%\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE :binded0)', sosl.toString());
+        Assert.areEqual('Test%', sosl.binding()[0]);
     }
 
     @IsTest
@@ -517,11 +533,15 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE \'%Test\')', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE :binded0)', sosl.toString());
+        Assert.areEqual('%Test', sosl.binding()[0]);
     }
 
     @IsTest
     static void filterIsInListOfStrings() {
+        // Setup
+        List<String> industries = new List<String>{ 'IT' };
+
         // Test
         SOSL sosl = SOSL.find(SEARCH_TEXT)
             .inAllFields()
@@ -532,7 +552,8 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry IN (\'IT\'))', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry IN :binded0', sosl.toString());
+        Assert.areEqual(industries, sosl.binding()[0]);
     }
 
     @IsTest
@@ -676,7 +697,11 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = \'MyAccount\' AND Industry = \'IT\'))', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1))', sosl.toString());
+
+        List<Object> bindedValues = sosl.binding();
+        Assert.areEqual('MyAccount', bindedValues[0]);
+        Assert.areEqual('IT', bindedValues[1]);
     }
 
     @IsTest
@@ -695,7 +720,11 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = \'MyAccount\' OR Industry = \'IT\'))', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 OR Industry = :binded1))', sosl.toString());
+
+        List<Object> bindedValues = sosl.binding();
+        Assert.areEqual('MyAccount', bindedValues[0]);
+        Assert.areEqual('IT', bindedValues[1]);
     }
 
     @IsTest
@@ -718,7 +747,13 @@ private class SOSL_Test {
             );
 
         // Verify
-        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = \'MyAccount\' AND Industry = \'IT\' AND (NumberOfEmployees > 5 OR IsDeleted = false)))', sosl.toString());
+        Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1 AND (NumberOfEmployees > :binded2 OR IsDeleted = :binded3)))', sosl.toString());
+
+        List<Object> bindedValues = sosl.binding();
+        Assert.areEqual('MyAccount', bindedValues[0]);
+        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual(5, bindedValues[2]);
+        Assert.areEqual(false, bindedValues[3]);
     }
 
     @IsTest
