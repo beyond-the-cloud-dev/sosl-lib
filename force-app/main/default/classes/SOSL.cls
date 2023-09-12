@@ -1010,7 +1010,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter isIn(List<String> iterable) {
-            return set('IN', '(\'' + String.join(iterable, '\'') + '\')');
+            return set('IN', iterable);
         }
 
         public IFilter notIn(Iterable<Object> iterable) {
@@ -1018,7 +1018,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter notIn(List<String> iterable) {
-            return set('NOT IN', '(\'' + String.join(iterable, '\'') + '\')');
+            return set('NOT IN', iterable);
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
