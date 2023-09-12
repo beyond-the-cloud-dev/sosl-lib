@@ -273,6 +273,10 @@ public inherited sharing class SOSL implements ISearchable {
         return builder.toString();
     }
 
+    public List<Object> binding() {
+        return binder.getBindedValues();
+    }
+
     public SOSL preview() {
         System.debug(LoggingLevel.ERROR, '\n\n============ SOSL Preview ============\n' + toString() + '\n=======================================\n');
         return this;
