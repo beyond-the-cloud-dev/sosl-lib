@@ -149,6 +149,7 @@ public inherited sharing class SOSL implements ISearchable {
     }
 
     // Config
+    private static Binder binder;
 
     private SearchableBuilder builder;
     private Executor executor;
@@ -160,6 +161,7 @@ public inherited sharing class SOSL implements ISearchable {
     private SOSL(String searchValue) {
        builder = new SearchableBuilder(searchValue);
        executor = new Executor();
+       binder = new Binder();
     }
 
     public SOSL inAllFields() {
@@ -277,11 +279,11 @@ public inherited sharing class SOSL implements ISearchable {
     }
 
     public List<List<SObject>> toSearchList() {
-        return executor.search(builder.toString());
+        return executor.search(builder.toString(), binder.getBindedValues());
     }
 
     public Search.SearchResults toSearchResult() {
-        return executor.find(builder.toString());
+        return executor.find(builder.toString(), binder.getBindedValues());
     }
 
     public interface QueryClause {
@@ -910,6 +912,7 @@ public inherited sharing class SOSL implements ISearchable {
         private String field;
         private String comperator;
         private Object value;
+        private Boolean skipBinding = false;
 
         public IFilter id() {
             return with('Id');
@@ -1025,18 +1028,22 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter includesAll(Iterable<String> iterable) {
+            skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
         public IFilter includesSome(Iterable<String> iterable) {
+            skipBinding = true;
             return set('INCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesAll(Iterable<String> iterable) {
+            skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, '\', \'') + '\')');
         }
 
         public IFilter excludesSome(Iterable<String> iterable) {
+            skipBinding = true;
             return set('EXCLUDES', '(\'' + String.join(iterable, ';') + '\')');
         }
 
@@ -1059,8 +1066,23 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public override String toString() {
-            // Dynamic binding not available for SOSL
-             return field + ' ' + comperator + ' ' + value;
+            if (skipBinding) {
+                return field + ' ' + comperator + ' ' + value;
+            }
+            return field + ' ' + comperator + ' :' + binder.bind(value);
+        }
+    }
+
+    private class Binder {
+        private List<Object> bindedValues = new List<Object>();
+
+        public String bind(Object value) {
+            bindedValues.add(value);
+            return 'binded' + (bindedValues.size() - 1);
+        }
+
+        public List<Object> getBindedValues() {
+            return bindedValues;
         }
     }
 
@@ -1082,46 +1104,69 @@ public inherited sharing class SOSL implements ISearchable {
             accessMode = AccessLevel.SYSTEM_MODE;
         }
 
-        public List<List<SObject>> search(String query) {
-            return sharingExecutor.search(query, accessMode);
+        public List<List<SObject>> search(String query, List<Object> bindedValues) {
+            return sharingExecutor.setBinding(bindedValues).search(query, accessMode);
         }
 
-        public Search.SearchResults find(String query) {
-            return sharingExecutor.find(query, accessMode);
+        public Search.SearchResults find(String query, List<Object> bindedValues) {
+            return sharingExecutor.setBinding(bindedValues).find(query, accessMode);
         }
     }
 
-    private interface DatabaseSearch {
-        List<List<SObject>> search(String query, AccessLevel accessLevel);
-        Search.SearchResults find(String query, AccessLevel accessLevel);
+    private abstract class DatabaseSearch {
+        protected Object binded0;
+        protected Object binded1;
+        protected Object binded2;
+        protected Object binded3;
+        protected Object binded4;
+        protected Object binded5;
+        protected Object binded6;
+        protected Object binded7;
+        protected Object binded8;
+
+        public DatabaseSearch setBinding(List<Object> bindedValues) {
+            binded0 = bindedValues[0];
+            binded1 = bindedValues[1];
+            binded2 = bindedValues[2];
+            binded3 = bindedValues[3];
+            binded4 = bindedValues[4];
+            binded5 = bindedValues[5];
+            binded6 = bindedValues[6];
+            binded7 = bindedValues[7];
+            binded8 = bindedValues[8];
+            return this;
+        }
+
+        abstract List<List<SObject>> search(String query, AccessLevel accessLevel);
+        abstract Search.SearchResults find(String query, AccessLevel accessLevel);
     }
 
-    private inherited sharing class InheritedSharing implements DatabaseSearch {
-        public List<List<SObject>> search(String query, AccessLevel accessLevel) {
+    private inherited sharing class InheritedSharing extends DatabaseSearch {
+        public override List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
         }
 
-        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+        public override Search.SearchResults find(String query, AccessLevel accessLevel) {
             return Search.find(query, accessLevel);
         }
     }
 
-    private without sharing class WithoutSharing implements DatabaseSearch {
-        public List<List<SObject>> search(String query, AccessLevel accessLevel) {
+    private without sharing class WithoutSharing extends DatabaseSearch {
+        public override List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
         }
 
-        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+        public override Search.SearchResults find(String query, AccessLevel accessLevel) {
             return Search.find(query, accessLevel);
         }
     }
 
-    private with sharing class WithSharing implements DatabaseSearch {
-        public List<List<SObject>> search(String query, AccessLevel accessLevel) {
+    private with sharing class WithSharing extends DatabaseSearch {
+        public override List<List<SObject>> search(String query, AccessLevel accessLevel) {
             return Search.query(query, accessLevel);
         }
 
-        public Search.SearchResults find(String query, AccessLevel accessLevel) {
+        public override Search.SearchResults find(String query, AccessLevel accessLevel) {
             return Search.find(query, accessLevel);
         }
     }

@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# SELECT
+# FIND
 
 Specify fields that will be retrieved via query. Check [SOSL API - SELECT](../api/sosl.md#select).
 
