@@ -1212,15 +1212,13 @@ private class SOSL_Test {
     }
 
     @IsTest
-    static void mock(){
+    static void mock() {
         List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
         SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
 
         List<List<SObject>> results = SOSL.find(SEARCH_TEXT)
             .inAllFields()
-            .returning(
-                SOSL.returning(Account.SObjectType)
-            )
+            .returning(SOSL.returning(Account.SObjectType))
             .mockId('MockingExample')
             .preview()
             .toSearchList();
@@ -1229,6 +1227,35 @@ private class SOSL_Test {
         Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
         Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
         Assert.areEqual(((Account) testAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+    }
 
+    @IsTest
+    static void mockFixedIds() {
+        List<Account> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+        insert testAccounts;
+
+        List<Id> fixedIds = new List<Id>();
+        for(Account account: testAccounts){
+            fixedIds.add(account.Id);
+        }
+
+        SOSL.setMock('MockingExample', fixedIds);
+
+        List<List<SObject>> results;
+        Test.startTest();
+        results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+        Test.stopTest();
+
+        List<Account> fixedAccounts = [SELECT Name FROM Account];
+
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
     }
 }

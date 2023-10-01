@@ -255,7 +255,7 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
-    public SOSL mockId(String mockId){
+    public SOSL mockId(String mockId) {
         executor.mockId = mockId;
         return this;
     }
@@ -276,10 +276,14 @@ public inherited sharing class SOSL implements ISearchable {
     }
 
     @TestVisible
-    private static void setMock(String mockId, List<List<SObject>> results){
+    private static void setMock(String mockId, List<List<SObject>> results) {
         mock.setMock(mockId, results);
     }
 
+    @TestVisible
+    private static void setMock(String mockId, List<Id> results) {
+        mock.setMock(mockId, results);
+    }
 
     public override String toString() {
         return builder.toString();
@@ -383,23 +387,23 @@ public inherited sharing class SOSL implements ISearchable {
     private class SoslSearchClause implements QueryClause {
         private String searchGroup;
 
-        public void inAllFields(){
+        public void inAllFields() {
             this.searchGroup = 'ALL';
         }
 
-        public void inEmailFields(){
+        public void inEmailFields() {
             this.searchGroup = 'EMAIL';
         }
 
-        public void inNameFields(){
+        public void inNameFields() {
             this.searchGroup = 'NAME';
         }
 
-        public void inPhoneFields(){
+        public void inPhoneFields() {
             this.searchGroup = 'PHONE';
         }
 
-        public void inSidebarFields(){
+        public void inSidebarFields() {
             this.searchGroup = 'SIDEBAR';
         }
 
@@ -742,7 +746,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public void withNetworkIn(Iterable<Id> networkIds) {
-            add('NETWORK IN (\'' +  String.join(networkIds, '\', \'') + '\')');
+            add('NETWORK IN (\'' + String.join(networkIds, '\', \'') + '\')');
         }
 
         public void withPriceBookId(Id priceBookId) {
@@ -772,7 +776,6 @@ public inherited sharing class SOSL implements ISearchable {
 
     public class SoslUpdateClauses implements QueryClause {
         private List<String> updateClauses = new List<String>();
-
 
         public void updateViewStat() {
             updateClauses.add('VIEWSTAT');
@@ -971,7 +974,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public IFilter equal(String value) {
-            return  set('=', quote(value));
+            return set('=', quote(value));
         }
 
         public IFilter notEqual(Object value) {
@@ -1097,7 +1100,9 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public List<List<SObject>> search(String query) {
-            if(mock.hasMock(mockId)){
+            if (mock.hasFixedMock(mockId)) {
+                Test.setFixedSearchResults(mock.getFixedMock(mockId));
+            } else if (mock.hasMock(mockId)) {
                 return mock.getMock(mockId);
             }
 
@@ -1105,6 +1110,10 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public Search.SearchResults find(String query) {
+            if (mock.hasFixedMock(mockId)) {
+                Test.setFixedSearchResults(mock.getFixedMock(mockId));
+            }
+
             return sharingExecutor.find(query, accessMode);
         }
     }
@@ -1146,17 +1155,30 @@ public inherited sharing class SOSL implements ISearchable {
 
     private class Mock {
         private final Map<String, List<List<SObject>>> sObjectsMocks = new Map<String, List<List<SObject>>>();
+        private final Map<String, List<Id>> fixedResultsMocks = new Map<String, List<Id>>();
 
-        public void setMock(String mockId, List<List<SObject>> results){
+        public void setMock(String mockId, List<List<SObject>> results) {
             sObjectsMocks.put(mockId, results);
         }
 
-        public Boolean hasMock(String mockId){
+        public void setMock(String mockId, List<Id> results) {
+            fixedResultsMocks.put(mockId, results);
+        }
+
+        public Boolean hasMock(String mockId) {
             return sObjectsMocks.containsKey(mockId);
         }
 
-        public List<List<SObject>> getMock(String mockId){
+        public Boolean hasFixedMock(String mockId) {
+            return fixedResultsMocks.containsKey(mockId);
+        }
+
+        public List<List<SObject>> getMock(String mockId) {
             return sObjectsMocks.get(mockId);
+        }
+
+        public List<Id> getFixedMock(String mockId) {
+            return fixedResultsMocks.get(mockId);
         }
     }
 
