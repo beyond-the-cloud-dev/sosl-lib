@@ -1213,6 +1213,7 @@ private class SOSL_Test {
 
     @IsTest
     static void mock() {
+        // Test
         List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
         SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
 
@@ -1223,6 +1224,7 @@ private class SOSL_Test {
             .preview()
             .toSearchList();
 
+        // Verify
         Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
         Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
         Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
@@ -1231,28 +1233,24 @@ private class SOSL_Test {
 
     @IsTest
     static void mockFixedIds() {
-        List<Account> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+        // Test
+        List<Account> testAccounts = new List<Account>{ new Account(Name = SEARCH_TEXT) };
         insert testAccounts;
 
-        List<Id> fixedIds = new List<Id>();
-        for(Account account: testAccounts){
-            fixedIds.add(account.Id);
-        }
-
-        SOSL.setMock('MockingExample', fixedIds);
+        SOSL.setMock('MockingExample', new List<Id>{ testAccounts.get(0).Id });
 
         List<List<SObject>> results;
         Test.startTest();
         results = SOSL.find(SEARCH_TEXT)
             .inAllFields()
-            .returning(SOSL.returning(Account.SObjectType))
+            .returning(SOSL.returning(Account.SObjectType).with(Account.Name))
             .mockId('MockingExample')
             .preview()
             .toSearchList();
         Test.stopTest();
 
+        // Verify
         List<Account> fixedAccounts = [SELECT Name FROM Account];
-
         Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
         Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
         Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
