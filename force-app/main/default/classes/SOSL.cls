@@ -67,6 +67,8 @@ public inherited sharing class SOSL implements ISearchable {
         // RESULT
         List<List<SObject>> toSearchList();
         Search.SearchResults toSearchResult();
+        // MOCKING
+        ISearchable mockId(String queryIdentifier);
     }
 
     public interface IReturning {
@@ -151,6 +153,7 @@ public inherited sharing class SOSL implements ISearchable {
 
     private SearchableBuilder builder;
     private Executor executor;
+    private static Mock mock = new Mock();
 
     public static SOSL find(String searchText) {
         return new SOSL(searchText);
@@ -252,6 +255,11 @@ public inherited sharing class SOSL implements ISearchable {
         return this;
     }
 
+    public SOSL mockId(String mockId) {
+        executor.mockId = mockId;
+        return this;
+    }
+
     public ISearchable systemMode() {
         executor.systemMode();
         return this;
@@ -265,6 +273,16 @@ public inherited sharing class SOSL implements ISearchable {
     public ISearchable withoutSharing() {
         executor.withoutSharing();
         return this;
+    }
+
+    @TestVisible
+    private static void setMock(String mockId, List<List<SObject>> results) {
+        mock.setMock(mockId, results);
+    }
+
+    @TestVisible
+    private static void setMock(String mockId, List<Id> results) {
+        mock.setMock(mockId, results);
     }
 
     public override String toString() {
@@ -373,23 +391,23 @@ public inherited sharing class SOSL implements ISearchable {
     private class SoslSearchClause implements QueryClause {
         private String searchGroup;
 
-        public void inAllFields(){
+        public void inAllFields() {
             this.searchGroup = 'ALL';
         }
 
-        public void inEmailFields(){
+        public void inEmailFields() {
             this.searchGroup = 'EMAIL';
         }
 
-        public void inNameFields(){
+        public void inNameFields() {
             this.searchGroup = 'NAME';
         }
 
-        public void inPhoneFields(){
+        public void inPhoneFields() {
             this.searchGroup = 'PHONE';
         }
 
-        public void inSidebarFields(){
+        public void inSidebarFields() {
             this.searchGroup = 'SIDEBAR';
         }
 
@@ -732,7 +750,7 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public void withNetworkIn(Iterable<Id> networkIds) {
-            add('NETWORK IN (\'' +  String.join(networkIds, '\', \'') + '\')');
+            add('NETWORK IN (\'' + String.join(networkIds, '\', \'') + '\')');
         }
 
         public void withPriceBookId(Id priceBookId) {
@@ -762,7 +780,6 @@ public inherited sharing class SOSL implements ISearchable {
 
     public class SoslUpdateClauses implements QueryClause {
         private List<String> updateClauses = new List<String>();
-
 
         public void updateViewStat() {
             updateClauses.add('VIEWSTAT');
@@ -961,6 +978,10 @@ public inherited sharing class SOSL implements ISearchable {
             return set('=', value);
         }
 
+        public IFilter equal(String value) {
+            return set('=', quote(value));
+        }
+
         public IFilter notEqual(Object value) {
             return set('!=', value);
         }
@@ -1099,10 +1120,20 @@ public inherited sharing class SOSL implements ISearchable {
         }
 
         public List<List<SObject>> search(String query, List<Object> bindedValues) {
+            if (mock.hasFixedMock(mockId)) {
+                Test.setFixedSearchResults(mock.getFixedMock(mockId));
+            } else if (mock.hasMock(mockId)) {
+                return mock.getMock(mockId);
+            }
+
             return sharingExecutor.setBinding(bindedValues).search(query, accessMode);
         }
 
         public Search.SearchResults find(String query, List<Object> bindedValues) {
+            if (mock.hasFixedMock(mockId)) {
+                Test.setFixedSearchResults(mock.getFixedMock(mockId));
+            }
+
             return sharingExecutor.setBinding(bindedValues).find(query, accessMode);
         }
     }
@@ -1162,6 +1193,35 @@ public inherited sharing class SOSL implements ISearchable {
 
         public override Search.SearchResults find(String query, AccessLevel accessLevel) {
             return Search.find(query, accessLevel);
+        }
+    }
+
+    private class Mock {
+        private final Map<String, List<List<SObject>>> sObjectsMocks = new Map<String, List<List<SObject>>>();
+        private final Map<String, List<Id>> fixedResultsMocks = new Map<String, List<Id>>();
+
+        public void setMock(String mockId, List<List<SObject>> results) {
+            sObjectsMocks.put(mockId, results);
+        }
+
+        public void setMock(String mockId, List<Id> results) {
+            fixedResultsMocks.put(mockId, results);
+        }
+
+        public Boolean hasMock(String mockId) {
+            return sObjectsMocks.containsKey(mockId);
+        }
+
+        public Boolean hasFixedMock(String mockId) {
+            return fixedResultsMocks.containsKey(mockId);
+        }
+
+        public List<List<SObject>> getMock(String mockId) {
+            return sObjectsMocks.get(mockId);
+        }
+
+        public List<Id> getFixedMock(String mockId) {
+            return fixedResultsMocks.get(mockId);
         }
     }
 

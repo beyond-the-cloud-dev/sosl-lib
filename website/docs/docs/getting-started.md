@@ -58,7 +58,6 @@ Read about the features in the [documentation](https://sosl.beyondthecloud.dev/d
 - 3.2 **without sharing**
 - 3.3 **inherited sharing**
 4. **Mocking**
-- 4.1 **Mock list of records**
 5. **Dynamic conditions**
 
 ----

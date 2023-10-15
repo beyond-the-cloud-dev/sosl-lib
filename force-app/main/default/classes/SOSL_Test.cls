@@ -1270,4 +1270,50 @@ private class SOSL_Test {
             )
             .preview();
     }
+
+    @IsTest
+    static void mock() {
+        // Test
+        List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+        SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
+
+        List<List<SObject>> results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+
+        // Verify
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) testAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+    }
+
+    @IsTest
+    static void mockFixedIds() {
+        // Test
+        List<Account> testAccounts = new List<Account>{ new Account(Name = SEARCH_TEXT) };
+        insert testAccounts;
+
+        SOSL.setMock('MockingExample', new List<Id>{ testAccounts.get(0).Id });
+
+        List<List<SObject>> results;
+        Test.startTest();
+        results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType).with(Account.Name))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+        Test.stopTest();
+
+        // Verify
+        List<Account> fixedAccounts = [SELECT Name FROM Account];
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+    }
 }
