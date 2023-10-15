@@ -92,8 +92,11 @@ SOSL.of(Account.SObjectType)
 
 ## Mocking
 
-Mocking provides a way to substitute records from a Database search with some prepared data. Data can be prepared in form of list of `List<SObject>`, in this format you can set multiple SObject types that will be passed to SOSL class.
-Mocked queries won't make any SOSL's and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data. Currently you can mock only `search` (`.toSearchList`) queries. Because `.find` (`.toSearchResult`) returns `Search.SearchResult` object which cannot be constructed in apex.
+Mocking provides a way to substitute records from a Database search with some prepared data. Data can be prepared in form of list of lists (similar to SOSL return) `List<List<SObject>>`, in this format you can set multiple SObject types that will be passed to SOSL class. Or you can provide fixed ids, as to out of the box SOSL in form of `List<Id>`.
+
+In case of preset results SOSL won't make any SOSL's queries and simply return data set in method definition, mock __will ignore all filters and relations__, what is returned depends __solely on data provided to the method__. Mocking is working __only during test execution__. If fixed Ids are provided to SOSL class it will use standard `Test.setFixedSearchResults` method, to make sure expected results are returned.
+
+To mock SOSL query, use `.mockId(id)` method to make it identifiable. If you mark more than one query with the same ID, all marked queries will return the same data.
 
 ```apex
 public with sharing class ExampleController {
@@ -111,7 +114,11 @@ public with sharing class ExampleController {
 }
 ```
 
-Then in test simply pass data you want to get from Selector to `SOSL.setMock(id, data)` method. Acceptable format is: `List<List<SObject>>`. Then during execution Selector will return desired data.
+If you want to use `search` and don't want to insert any records to database, you can simply set mock data with `SOSL.setMock(String mockId, List<List<SObject>> data)` method.
+
+If you need to use `find` or it doesn't matter if records are in database, you can set fixed results by providing records ids with `SOSL.setMock(String mockId, List<Id> ids)` method.
+
+Then during execution Selector will return desired data.
 
 ### List of records
 

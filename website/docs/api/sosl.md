@@ -594,7 +594,7 @@ Query needs unique id that allows for mocking.
 **Signature**
 
 ```apex
-SOQL mockId(String queryIdentifier)
+SOSL mockId(String queryIdentifier)
 ```
 
 **Example**
