@@ -219,7 +219,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE RecordType.DeveloperName = :binded0)', sosl.toString());
-        Assert.areEqual('Partner', sosl.binding()[0]);
+        Assert.areEqual('\'Partner\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -235,7 +235,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
-        Assert.areEqual('Test', sosl.binding()[0]);
+        Assert.areEqual('\'Test\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -251,7 +251,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -267,7 +267,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name WHERE Account.Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -283,7 +283,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -379,7 +379,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
-        Assert.areEqual('My Account', sosl.binding()[0]);
+        Assert.areEqual('\'My Account\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -700,7 +700,7 @@ private class SOSL_Test {
 
          // Verify
          Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Industry = :binded0))', sosl.toString());
-         Assert.areEqual('IT', sosl.binding()[0]);
+         Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -721,8 +721,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @IsTest
@@ -744,8 +744,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 OR Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @IsTest
@@ -771,8 +771,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1 AND (NumberOfEmployees > :binded2 OR IsDeleted = :binded3)))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
         Assert.areEqual(5, bindedValues[2]);
         Assert.areEqual(false, bindedValues[3]);
     }
@@ -813,8 +813,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 OR Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @isTest

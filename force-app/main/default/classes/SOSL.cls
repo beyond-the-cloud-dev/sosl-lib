@@ -122,6 +122,7 @@ public inherited sharing class SOSL implements ISearchable {
         IFilter isNotNull();
         IFilter isTrue();
         IFilter isFalse();
+        IFilter equal(String value);
         IFilter equal(Object value);
         IFilter notEqual(Object value);
         IFilter lessThan(Object value);
