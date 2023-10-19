@@ -1316,4 +1316,29 @@ private class SOSL_Test {
         Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
         Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
     }
+
+    @IsTest
+    static void mockFindFixedIds() {
+        // Test
+        List<Account> testAccounts = new List<Account>{ new Account(Name = SEARCH_TEXT) };
+        insert testAccounts;
+
+        SOSL.setMock('MockingExample', new List<Id>{ testAccounts.get(0).Id });
+
+        Search.SearchResults results;
+        Test.startTest();
+        results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType).with(Account.Name))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchResult();
+        Test.stopTest();
+
+        // Verify
+        List<Account> fixedAccounts = [SELECT Name FROM Account];
+        Assert.isFalse(results.get('Account').isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get('Account').get(0), 'Account should be returned');
+        Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get('Account').get(0).getSObject()).Name, 'Accounts name should be equal');
+    }
 }
