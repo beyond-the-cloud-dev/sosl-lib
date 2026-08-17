@@ -1,0 +1,48 @@
+# SOSL Lib
+
+> Apex library that provides functional constructs for building SOSL (Salesforce Object Search Language) queries in Salesforce. Open source (MIT), maintained by Beyond The Cloud as part of Apex Fluently.
+
+SOSL Lib wraps SOSL search queries in a fluent Apex builder: `SOSL.find('term').returning(SOSL.Returning(Account.SObject).with(Account.Id, Account.Name)).toSearchList()`. It covers FIND, RETURNING, WHERE, USING SCOPE, ORDER BY, LIMIT, OFFSET, field-level security, sharing mode and mocking of search results in unit tests.
+
+## Docs
+
+- [Getting Started](https://sosl.beyondthecloud.dev/): deploy to Salesforce, feature list, license notes
+- [Installation](https://sosl.beyondthecloud.dev/installation): how to add SOSL Lib to a Salesforce project
+- [Overview](https://sosl.beyondthecloud.dev/docs/overview): single class, functional style, dynamic SOSL, FLS, sharing, mocking, dynamic conditions
+- [Basic Features](https://sosl.beyondthecloud.dev/docs/basic-features): dynamic SOSL, controlling FLS, sharing mode, mocking, dynamic conditions with code samples
+- [Design](https://sosl.beyondthecloud.dev/design): single-class design (SOSL.cls) and functional programming approach
+
+## API
+
+- [SOSL](https://sosl.beyondthecloud.dev/api/sosl): main entry point, FIND clause, scope, limit, offset, sharing, mocking, result methods
+- [Returning](https://sosl.beyondthecloud.dev/api/sosl-returning): RETURNING clause per SObject, fields, filters, ordering, subqueries
+- [Filter](https://sosl.beyondthecloud.dev/api/sosl-filter): single WHERE condition on a field
+- [FilterGroup](https://sosl.beyondthecloud.dev/api/sosl-filters-group): grouping and combining filters with AND/OR
+
+## Examples
+
+- [FIND](https://sosl.beyondthecloud.dev/examples/find)
+- [SUBQUERY](https://sosl.beyondthecloud.dev/examples/subquery)
+- [USING SCOPE](https://sosl.beyondthecloud.dev/examples/scope)
+- [WHERE](https://sosl.beyondthecloud.dev/examples/where)
+- [GROUP BY](https://sosl.beyondthecloud.dev/examples/group-by)
+- [ORDER BY](https://sosl.beyondthecloud.dev/examples/order-by)
+- [LIMIT](https://sosl.beyondthecloud.dev/examples/limit)
+- [OFFSET](https://sosl.beyondthecloud.dev/examples/offset)
+- [FIELD-LEVEL SECURITY](https://sosl.beyondthecloud.dev/examples/fls)
+- [SHARING MODE](https://sosl.beyondthecloud.dev/examples/sharing-settings)
+- [MOCKING](https://sosl.beyondthecloud.dev/examples/mocking)
+- [DEBUGGING](https://sosl.beyondthecloud.dev/examples/debug)
+- [RESULT](https://sosl.beyondthecloud.dev/examples/result)
+
+## Advanced Usage
+
+- [Field-Level Security](https://sosl.beyondthecloud.dev/advanced-usage/fls): how FLS is enforced and how to bypass it
+- [Sharing Rules](https://sosl.beyondthecloud.dev/advanced-usage/sharing): with sharing, without sharing, inherited sharing
+- [Mocking](https://sosl.beyondthecloud.dev/advanced-usage/mocking): returning fake search results in Apex tests
+
+## Links
+
+- [Source code on GitHub](https://github.com/beyond-the-cloud-dev/sosl-lib)
+- [Apex Fluently](https://apexfluently.beyondthecloud.dev): the family of Apex libraries this project belongs to
+- [Beyond The Cloud](https://beyondthecloud.dev): Salesforce consultancy that maintains the library
