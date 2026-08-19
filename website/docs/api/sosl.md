@@ -589,7 +589,7 @@ SOSL.find('MySearch')
 
 ### mockId
 
-TBD
+Query needs unique id that allows for mocking.
 
 **Signature**
 
@@ -600,20 +600,17 @@ SOSL mockId(String queryIdentifier)
 **Example**
 
 ```apex
-TBD
-```
-### list mock
+SOSL.find(SEARCH_TEXT)
+    .inAllFields()
+    .returning(
+        SOSL.returning(Account.SObjectType)
+    )
+    .mockId('MockingExample')
+    .toSearchList();
 
-**Signature**
-
-```apex
-SOSL setMock(String mockId, List<SObject> records)
-```
-
-**Example**
-
-```apex
-TBD
+// In Unit Test
+List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
 ```
 
 ## DEBUGGING

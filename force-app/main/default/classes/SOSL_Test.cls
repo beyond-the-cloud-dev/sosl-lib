@@ -219,7 +219,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE RecordType.DeveloperName = :binded0)', sosl.toString());
-        Assert.areEqual('Partner', sosl.binding()[0]);
+        Assert.areEqual('\'Partner\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -235,7 +235,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
-        Assert.areEqual('Test', sosl.binding()[0]);
+        Assert.areEqual('\'Test\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -251,7 +251,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -267,7 +267,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Contact(Id, Name WHERE Account.Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -283,7 +283,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Industry = :binded0)', sosl.toString());
-        Assert.areEqual('IT', sosl.binding()[0]);
+        Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -379,7 +379,7 @@ private class SOSL_Test {
 
         // Verify
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE Name = :binded0)', sosl.toString());
-        Assert.areEqual('My Account', sosl.binding()[0]);
+        Assert.areEqual('\'My Account\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -700,7 +700,7 @@ private class SOSL_Test {
 
          // Verify
          Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Industry = :binded0))', sosl.toString());
-         Assert.areEqual('IT', sosl.binding()[0]);
+         Assert.areEqual('\'IT\'', sosl.binding()[0]);
     }
 
     @IsTest
@@ -721,8 +721,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @IsTest
@@ -744,8 +744,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 OR Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @IsTest
@@ -771,8 +771,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 AND Industry = :binded1 AND (NumberOfEmployees > :binded2 OR IsDeleted = :binded3)))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
         Assert.areEqual(5, bindedValues[2]);
         Assert.areEqual(false, bindedValues[3]);
     }
@@ -813,8 +813,8 @@ private class SOSL_Test {
         Assert.areEqual('FIND \'SearchText\' IN ALL FIELDS RETURNING Account(Id, Name WHERE (Name = :binded0 OR Industry = :binded1))', sosl.toString());
 
         List<Object> bindedValues = sosl.binding();
-        Assert.areEqual('MyAccount', bindedValues[0]);
-        Assert.areEqual('IT', bindedValues[1]);
+        Assert.areEqual('\'MyAccount\'', bindedValues[0]);
+        Assert.areEqual('\'IT\'', bindedValues[1]);
     }
 
     @isTest
@@ -1269,5 +1269,76 @@ private class SOSL_Test {
                 SOSL.Returning(Account.SObjectType)
             )
             .preview();
+    }
+
+    @IsTest
+    static void mock() {
+        // Test
+        List<SObject> testAccounts = new List<Account>{ new Account(Name = 'Mock') };
+        SOSL.setMock('MockingExample', new List<List<SObject>>{ testAccounts });
+
+        List<List<SObject>> results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+
+        // Verify
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) testAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+    }
+
+    @IsTest
+    static void mockFixedIds() {
+        // Test
+        List<Account> testAccounts = new List<Account>{ new Account(Name = SEARCH_TEXT) };
+        insert testAccounts;
+
+        SOSL.setMock('MockingExample', new List<Id>{ testAccounts.get(0).Id });
+
+        List<List<SObject>> results;
+        Test.startTest();
+        results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType).with(Account.Name))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchList();
+        Test.stopTest();
+
+        // Verify
+        List<Account> fixedAccounts = [SELECT Name FROM Account];
+        Assert.isFalse(results.isEmpty(), 'Should return results for at least one SObject');
+        Assert.isFalse(results.get(0).isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get(0).get(0), 'Account should be returned');
+        Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get(0).get(0)).Name, 'Accounts name should be equal');
+    }
+
+    @IsTest
+    static void mockFindFixedIds() {
+        // Test
+        List<Account> testAccounts = new List<Account>{ new Account(Name = SEARCH_TEXT) };
+        insert testAccounts;
+
+        SOSL.setMock('MockingExample', new List<Id>{ testAccounts.get(0).Id });
+
+        Search.SearchResults results;
+        Test.startTest();
+        results = SOSL.find(SEARCH_TEXT)
+            .inAllFields()
+            .returning(SOSL.returning(Account.SObjectType).with(Account.Name))
+            .mockId('MockingExample')
+            .preview()
+            .toSearchResult();
+        Test.stopTest();
+
+        // Verify
+        List<Account> fixedAccounts = [SELECT Name FROM Account];
+        Assert.isFalse(results.get('Account').isEmpty(), 'Accounts list shouldnt be empty');
+        Assert.isNotNull(results.get('Account').get(0), 'Account should be returned');
+        Assert.areEqual(((Account) fixedAccounts.get(0)).Name, ((Account) results.get('Account').get(0).getSObject()).Name, 'Accounts name should be equal');
     }
 }
