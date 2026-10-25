@@ -48,6 +48,9 @@ const config = {
     ],
   ],
 
+  // Markdown twin of each doc page (/page.md) for AI agents
+  plugins: [require.resolve('./plugins/markdown-twins')],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
