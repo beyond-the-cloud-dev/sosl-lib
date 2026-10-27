@@ -54,6 +54,8 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      // Bing Webmaster Tools site verification
+      metadata: [{ name: 'msvalidate.01', content: 'E86DF40B08FDAC5301E67AD10EFB3E28' }],
       // Replace with your project's social card
       image: 'img/cloud-icon.png',
       navbar: {
