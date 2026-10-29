@@ -41,6 +41,10 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
         },
+        gtag: {
+          trackingID: 'G-ML6MXX1YS4',
+          anonymizeIP: false
+        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
